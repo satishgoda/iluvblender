@@ -1,0 +1,2 @@
+#!/bin/sh
+env BLENDER_USER_CONFIG=./config blender $1
