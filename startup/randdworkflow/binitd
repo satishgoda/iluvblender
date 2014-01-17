@@ -1,2 +1,2 @@
 #!/bin/sh
-env BLENDER_USER_CONFIG=./config blender -d $1
+env BLENDER_USER_CONFIG=./config BLENDER_USER_SCRIPTS=./scripts blender -d $1
