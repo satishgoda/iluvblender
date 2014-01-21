@@ -13,13 +13,26 @@ bl_info = {
 import bpy
 from bpy.props import IntProperty
 
+def _update_attr(self, context, name):
+    scene = context.scene
+    point_cache = scene.rigidbody_world.point_cache
+    value = getattr(self, name)
+    for bobject in (scene, point_cache):
+        setattr(bobject, name, value)
+
+def _update_frame_start(self, context):
+    _update_attr(self, context, 'frame_start')
+
+def _update_frame_end(self, context):
+    _update_attr(self, context, 'frame_end')
+
 class RBDChangeFrangeOperator(bpy.types.Operator):
     """Modify the frame range for the RBD simulation"""
     bl_idname = "object.rbd_change_frange"
     bl_label = "RBD Change Frange"
 
-    frame_start = IntProperty(name="Start Frame")
-    frame_end = IntProperty(name="End Frame")
+    frame_start = IntProperty(name="Start Frame", update=_update_frame_start)
+    frame_end = IntProperty(name="End Frame", update=_update_frame_end)
 
     @classmethod
     def poll(cls, context):
@@ -36,12 +49,6 @@ class RBDChangeFrangeOperator(bpy.types.Operator):
         return wm.invoke_props_dialog(self)
 
     def execute(self, context):
-        scene = context.scene
-        rbdworld = scene.rigidbody_world
-        scene.frame_start = self.frame_start
-        scene.frame_end = self.frame_end
-        rbdworld.point_cache.frame_start = self.frame_start
-        rbdworld.point_cache.frame_end = self.frame_end
         return {'FINISHED'}
 
 
@@ -58,4 +65,3 @@ if __name__ == "__main__":
 
     # test call
     bpy.ops.object.rbd_change_frange('INVOKE_DEFAULT')
-
