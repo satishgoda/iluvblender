@@ -46,6 +46,7 @@ class RenameObject(bpy.types.Operator):
         return ( context.selected_objects and (len(context.selected_objects) == 1) )
     
     def invoke(self, context, event):
+        self.new_name = context.selected_objects[0].name
         return context.window_manager.invoke_props_popup(self, event)
     
     def execute(self, context):
