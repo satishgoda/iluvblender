@@ -41,7 +41,7 @@ def main(context):
 class SCREEN_OT_toggle_area_headers(bpy.types.Operator):
     """Toggles the Area headers for the current screen"""
     bl_idname = "screen.toggle_area_headers"
-    bl_label = "Screen Areas Header Toggle"
+    bl_label = "Toggle Area Headers"
     bl_options = {'REGISTER'}
 
     def execute(self, context):

@@ -45,7 +45,7 @@ def main(context):
 class SCREEN_OT_toggle_grid(bpy.types.Operator):
     """Toggles the Grid display in all 3D Views for the current screen"""
     bl_idname = "screen.toggle_grid"
-    bl_label = "Screen Toggle Grid"
+    bl_label = "Toggle Grid Display"
     bl_options = {'REGISTER'}
 
     def execute(self, context):
