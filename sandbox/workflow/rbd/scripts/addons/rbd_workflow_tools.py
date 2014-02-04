@@ -96,11 +96,12 @@ class View3DQuadViewCustom(bpy.types.Operator):
         return all(predicates)
 
     def execute(self, context):
-        quad_view = context.area.spaces.active.region_quadview
+        space_data = context.area.spaces.active
+        quad_view = space_data.region_quadview
         bpy.ops.screen.region_quadview()
         if quad_view is None:
-            context.area.spaces.active.region_quadview.lock_rotation = True
-            context.area.spaces.active.region_quadview.show_sync_view = True
+            for attr in ('lock_rotation', 'show_sync_view'):
+                setattr(space_data.region_quadview, attr, True)
         return {'FINISHED'}
 
 
