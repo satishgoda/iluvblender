@@ -92,7 +92,7 @@ class View3DQuadViewCustom(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        predicates = (context.area.type == 'VIEW_3D')
+        predicates = (context.area.spaces.active.type == 'VIEW_3D',)
         return all(predicates)
 
     def execute(self, context):
