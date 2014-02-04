@@ -84,9 +84,29 @@ class RBDSelectAndHideMacro(bpy.types.Macro, RBDView3DPoll):
     bl_label = "RBD Select and Hide"
     bl_options = {'REGISTER', 'UNDO'}
 
+class View3DQuadViewCustom(bpy.types.Operator):
+    """Toggle the quad view and also set lock and sync properties"""
+    bl_idname = "view3d.quad_view"
+    bl_label = "V3D Quad View"
+    bl_options = {'REGISTER'}
+
+    @classmethod
+    def poll(cls, context):
+        predicates = (context.area.type == 'VIEW_3D')
+        return all(predicates)
+
+    def execute(self, context):
+        quad_view = context.area.spaces.active.region_quadview
+        bpy.ops.screen.region_quadview()
+        if quad_view is None:
+            context.area.spaces.active.region_quadview.lock_rotation = True
+            context.area.spaces.active.region_quadview.show_sync_view = True
+        return {'FINISHED'}
+
 
 def register():
     bpy.utils.register_class(RBDChangeFrangeOperator)
+    bpy.utils.register_class(View3DQuadViewCustom)
     
     bpy.utils.register_class(RBDSelectMacro)
     op = RBDSelectMacro.define("OBJECT_OT_select_linked")
@@ -101,6 +121,7 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(RBDChangeFrangeOperator)
+    bpy.utils.unregister_class(View3DQuadViewCustom)
     bpy.utils.unregister_class(RBDSelectAndHideMacro)
     bpy.utils.unregister_class(RBDSelectMacro)
 
