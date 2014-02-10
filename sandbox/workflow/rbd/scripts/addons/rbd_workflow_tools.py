@@ -126,6 +126,10 @@ class DisplayAxis(bpy.types.Operator):
         )
         return all(predicates)
 
+    def draw(self, context):
+        layout = self.layout
+        layout.operator_menu_enum(self.bl_idname, 'show_axis')
+
     def execute(self, context):
         kwargs = {
                 'data_path_iter': 'selected_editable_objects',
