@@ -12,7 +12,7 @@ bl_info = {
 """Suite of Tools to abet RBD Workflow"""
 
 import bpy
-from bpy.props import IntProperty
+from bpy.props import IntProperty, BoolProperty
 
 def _update_attr(self, context, name):
     scene = context.scene
@@ -104,10 +104,32 @@ class View3DQuadViewCustom(bpy.types.Operator):
                 setattr(space_data.region_quadview, attr, True)
         return {'FINISHED'}
 
+class DisplayAxis(bpy.types.Operator):
+    """Turn on/off display"""
+    bl_idname = "object.display_axis"
+    bl_label = "DSP Axis"
+    bl_description = bpy.types.Object.bl_rna.properties['show_axis'].description
+    bl_options = {'REGISTER'}
+
+    show_axis = BoolProperty(name="Axis", description=bl_label, default=True)
+
+    @classmethod
+    def poll(cls, context):
+        predicates = (
+            context.selected_editable_objects,
+            len(context.selected_editable_objects),
+        )
+        return all(predicates)
+
+    def execute(self, context):
+        for object in context.selected_editable_objects:
+            object.show_axis = self.show_axis
+        return {'FINISHED'}
 
 def register():
     bpy.utils.register_class(RBDChangeFrangeOperator)
     bpy.utils.register_class(View3DQuadViewCustom)
+    bpy.utils.register_class(DisplayAxis)
     
     bpy.utils.register_class(RBDSelectMacro)
     op = RBDSelectMacro.define("OBJECT_OT_select_linked")
@@ -123,6 +145,7 @@ def register():
 def unregister():
     bpy.utils.unregister_class(RBDChangeFrangeOperator)
     bpy.utils.unregister_class(View3DQuadViewCustom)
+    bpy.utils.unregister_class(DisplayAxis)
     bpy.utils.unregister_class(RBDSelectAndHideMacro)
     bpy.utils.unregister_class(RBDSelectMacro)
 
