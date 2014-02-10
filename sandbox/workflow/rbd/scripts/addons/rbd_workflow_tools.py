@@ -12,7 +12,7 @@ bl_info = {
 """Suite of Tools to abet RBD Workflow"""
 
 import bpy
-from bpy.props import IntProperty, BoolProperty
+from bpy.props import IntProperty, BoolProperty, EnumProperty
 
 def _update_attr(self, context, name):
     scene = context.scene
@@ -109,8 +109,14 @@ class DisplayAxis(bpy.types.Operator):
     bl_idname = "object.display_axis"
     bl_label = "DSP Axis"
     bl_description = bpy.types.Object.bl_rna.properties['show_axis'].description
-    bl_options = {'REGISTER','UNDO'}
-    show_axis = BoolProperty(name="Axis", description=bl_label, default=True)
+    bl_options = {'REGISTER', 'UNDO'}
+
+    show_axis = EnumProperty(items=(('TOGGLE', 'Toggle', 'Toggle the axis display'),
+                                    ('ENABLE', 'Enable', 'Display the axis'),
+                                    ('DISABLE', 'Disable', 'Hide the acis')),
+                            name="Axis",
+                            description=bl_description,
+                            default='TOGGLE')
 
     @classmethod
     def poll(cls, context):
@@ -121,9 +127,13 @@ class DisplayAxis(bpy.types.Operator):
         return all(predicates)
 
     def execute(self, context):
-        for object in context.selected_editable_objects:
-            object.show_axis = self.show_axis
-        return {'FINISHED'}
+        kwargs = {
+                'data_path_iter': 'selected_editable_objects',
+                'data_path_item': 'show_axis',
+                'type': self.show_axis
+            }
+        
+        return bpy.ops.wm.context_collection_boolean_set(**kwargs)
 
 def register():
     bpy.utils.register_class(RBDChangeFrangeOperator)
