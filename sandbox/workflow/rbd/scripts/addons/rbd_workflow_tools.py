@@ -109,8 +109,7 @@ class DisplayAxis(bpy.types.Operator):
     bl_idname = "object.display_axis"
     bl_label = "DSP Axis"
     bl_description = bpy.types.Object.bl_rna.properties['show_axis'].description
-    bl_options = {'REGISTER'}
-
+    bl_options = {'REGISTER','UNDO'}
     show_axis = BoolProperty(name="Axis", description=bl_label, default=True)
 
     @classmethod
