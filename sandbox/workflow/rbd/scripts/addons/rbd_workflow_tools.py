@@ -169,7 +169,27 @@ class PlayblastFromCameras(bpy.types.Operator):
         return wm.invoke_props_popup(self, event)
 
     def execute(self, context):
-        context.scene.camera = context.blend_data.groups.get('PlayblastCameras').objects.get(self.camera)
+        kwargs = {
+                'data_path_iter': 'selected_editable_objects',
+                'data_path_item': 'select',
+                'type': 'DISABLE'
+        }
+        bpy.ops.wm.context_collection_boolean_set(**kwargs)
+
+        #kwargs['data_path_iter'] = 'blend_data.groups["PlayblastCameras"].objects'
+        #kwargs['data_path_item'] = 'hide'
+        #kwargs['type'] = 'ENABLE'
+        #bpy.ops.wm.context_collection_boolean_set(**kwargs)
+
+        playblast_cameras = context.blend_data.groups.get('PlayblastCameras').objects
+
+        playblast_cameras.foreach_set('hide', [True]*len(playblast_cameras))
+
+        context.scene.camera = playblast_cameras.get(self.camera)
+        context.scene.objects.active = context.scene.camera
+        context.scene.camera.select = True
+        context.scene.camera.hide = False
+
         render = context.scene.render
         render.resolution_percentage = 100
         render.filepath = '//' + bpy.path.display_name(bpy.data.filepath) + '_' + self.camera + '.'
@@ -177,9 +197,14 @@ class PlayblastFromCameras(bpy.types.Operator):
         render.ffmpeg.format = 'MPEG4'
         render.display_mode = 'NONE'
         render.use_lock_interface = True
+
+        space_data = context.space_data
+        space_data.show_relationship_lines = False
+        
         bpy.ops.view3d.viewnumpad(type='CAMERA')
-        if context.space_data.region_3d.view_perspective in ('PERSP', 'ORTHO'):
+        if space_data.region_3d.view_perspective in ('PERSP', 'ORTHO'):
             bpy.ops.view3d.viewnumpad(type='CAMERA')
+
         return {'FINISHED'}
 
 #class DisplayShadowProperties(bpy.types.Operator)
