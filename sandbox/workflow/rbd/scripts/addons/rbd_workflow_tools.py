@@ -185,10 +185,21 @@ class PlayblastFromCameras(bpy.types.Operator):
 
         playblast_cameras.foreach_set('hide', [True]*len(playblast_cameras))
 
-        context.scene.camera = playblast_cameras.get(self.camera)
-        context.scene.objects.active = context.scene.camera
-        context.scene.camera.select = True
-        context.scene.camera.hide = False
+        scene = context.scene
+
+        scene.camera = playblast_cameras.get(self.camera)
+        scene.objects.active = context.scene.camera
+        scene.camera.select = True
+        scene.camera.hide = False
+
+        if 'playblast_settings' in scene.camera:
+            code = scene.camera.get('playblast_settings')
+            custom_preview_settings = eval(code)
+            scene.use_preview_range = True
+            for key, value in custom_preview_settings.items():
+                setattr(scene, key, value)
+        else:
+            scene.use_preview_range = False
 
         render = context.scene.render
         render.resolution_percentage = 100
