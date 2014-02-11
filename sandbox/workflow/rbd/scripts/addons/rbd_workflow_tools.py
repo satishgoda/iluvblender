@@ -141,9 +141,14 @@ class DisplayAxis(bpy.types.Operator):
 
 def _cameralist(self, context):
     data = context.blend_data
-    cameras = data.groups.get('PlayblastCameras').objects
-    camera_list = [(camera.name, camera.name, "{0} {1}".format(context.scene.name, camera.name)) for camera in cameras]
-    return camera_list
+    scene = context.scene
+    group = data.groups.get('PlayblastCameras', None)
+    if not group:
+        return []
+    else:
+        cameras = group.objects
+        camera_list = [(camera.name, camera.name, "{0} {1}".format(scene.name, camera.name)) for camera in cameras]
+        return camera_list
 
 class PlayblastFromCamerasMenu(bpy.types.Menu):
     bl_idname = "VIEW3D_MT_playblast"
@@ -151,9 +156,13 @@ class PlayblastFromCamerasMenu(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        for camera in sorted(_cameralist(self, context), key=lambda cam: cam[0]):
-            op = layout.operator('render.playblast_from_camera', text=camera[0])
-            op.camera = camera[0]
+        cameras = _cameralist(self, context)
+        if not cameras:
+            layout.label("Group PlayblastCameras is missing or empty")
+        else:
+            for camera in sorted(cameras, key=lambda cam: cam[0]):
+                op = layout.operator('render.playblast_from_camera', text=camera[0])
+                op.camera = camera[0]
 
 class PlayblastFromCameras(bpy.types.Operator):
     """Playblast from chosen camera"""
