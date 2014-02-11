@@ -200,6 +200,12 @@ class PlayblastFromCameras(bpy.types.Operator):
                 setattr(scene, key, value)
         else:
             scene.use_preview_range = False
+            pairs = zip(
+                        ('frame_preview_start', 'frame_preview_end'), 
+                        ('frame_start', 'frame_end')
+                       )
+            for preview, normal in pairs:
+                setattr(scene, preview, getattr(scene, normal))
 
         render = context.scene.render
         render.resolution_percentage = 100
