@@ -151,7 +151,7 @@ def _cameralist(self, context):
         return camera_list
 
 class PlayblastFromCamerasMenu(bpy.types.Menu):
-    bl_idname = "VIEW3D_MT_playblast"
+    bl_idname = "VIEW3D_MT_playblast_from_cameras"
     bl_label = "Playblast from"
 
     def draw(self, context):
@@ -161,9 +161,19 @@ class PlayblastFromCamerasMenu(bpy.types.Menu):
             layout.label("Group PlayblastCameras is missing or empty")
         else:
             for camera in sorted(cameras, key=lambda cam: cam[0]):
+                layout.operator_context = 'EXEC_DEFAULT'
                 op = layout.operator('render.playblast_from_camera', text=camera[0])
                 op.camera = camera[0]
 
+class PlayblastMenu(bpy.types.Menu):
+    bl_idname = "VIEW3D_MT_playblast"
+    bl_label = "Playblast"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.menu('VIEW3D_MT_playblast_from_cameras', text="Create")
+
+                
 class PlayblastFromCameras(bpy.types.Operator):
     """Playblast from chosen camera"""
     bl_idname = "render.playblast_from_camera"
@@ -219,10 +229,9 @@ class PlayblastFromCameras(bpy.types.Operator):
                 setattr(scene, key, value)
         else:
             scene.use_preview_range = False
-            pairs = zip(
-                        ('frame_preview_start', 'frame_preview_end'), 
+            pairs = zip(('frame_preview_start', 'frame_preview_end'), 
                         ('frame_start', 'frame_end')
-                       )
+                        )
             for preview, normal in pairs:
                 setattr(scene, preview, getattr(scene, normal))
 
@@ -251,6 +260,7 @@ def register():
     bpy.utils.register_class(DisplayAxis)
     bpy.utils.register_class(PlayblastFromCameras)
     bpy.utils.register_class(PlayblastFromCamerasMenu)
+    bpy.utils.register_class(PlayblastMenu)
     
     bpy.utils.register_class(RBDSelectMacro)
     op = RBDSelectMacro.define("OBJECT_OT_select_linked")
@@ -267,6 +277,7 @@ def unregister():
     bpy.utils.unregister_class(RBDChangeFrangeOperator)
     bpy.utils.unregister_class(View3DQuadViewCustom)
     bpy.utils.unregister_class(DisplayAxis)
+    bpy.utils.unregister_class(PlayblastMenu)
     bpy.utils.unregister_class(PlayblastFromCamerasMenu)
     bpy.utils.unregister_class(PlayblastFromCameras)
     bpy.utils.unregister_class(RBDSelectAndHideMacro)
