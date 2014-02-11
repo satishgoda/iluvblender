@@ -160,10 +160,12 @@ class PlayblastFromCamerasMenu(bpy.types.Menu):
         if not cameras:
             layout.label("Group PlayblastCameras is missing or empty")
         else:
+            layout.operator_context = 'EXEC_DEFAULT'
             for camera in sorted(cameras, key=lambda cam: cam[0]):
-                layout.operator_context = 'EXEC_DEFAULT'
-                op = layout.operator('render.playblast_from_camera', text=camera[0])
+                row = layout.row()
+                op = row.operator('render.playblast_from_camera', text=camera[0])
                 op.camera = camera[0]
+                row.enabled = not (camera[0] == context.scene.camera.name)
 
 class PlayblastMenu(bpy.types.Menu):
     bl_idname = "VIEW3D_MT_playblast"
