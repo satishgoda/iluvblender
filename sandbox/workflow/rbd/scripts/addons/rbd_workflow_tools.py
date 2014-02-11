@@ -145,6 +145,16 @@ def _cameralist(self, context):
     camera_list = [(camera.name, camera.name, "{0} {1}".format(context.scene.name, camera.name)) for camera in cameras]
     return camera_list
 
+class PlayblastFromCamerasMenu(bpy.types.Menu):
+    bl_idname = "VIEW3D_MT_playblast"
+    bl_label = "Playblast from"
+
+    def draw(self, context):
+        layout = self.layout
+        for camera in sorted(_cameralist(self, context), key=lambda cam: cam[0]):
+            op = layout.operator('render.playblast_from_camera', text=camera[0])
+            op.camera = camera[0]
+
 class PlayblastFromCameras(bpy.types.Operator):
     """Playblast from chosen camera"""
     bl_idname = "render.playblast_from_camera"
@@ -231,6 +241,7 @@ def register():
     bpy.utils.register_class(View3DQuadViewCustom)
     bpy.utils.register_class(DisplayAxis)
     bpy.utils.register_class(PlayblastFromCameras)
+    bpy.utils.register_class(PlayblastFromCamerasMenu)
     
     bpy.utils.register_class(RBDSelectMacro)
     op = RBDSelectMacro.define("OBJECT_OT_select_linked")
@@ -247,6 +258,7 @@ def unregister():
     bpy.utils.unregister_class(RBDChangeFrangeOperator)
     bpy.utils.unregister_class(View3DQuadViewCustom)
     bpy.utils.unregister_class(DisplayAxis)
+    bpy.utils.unregister_class(PlayblastFromCamerasMenu)
     bpy.utils.unregister_class(PlayblastFromCameras)
     bpy.utils.unregister_class(RBDSelectAndHideMacro)
     bpy.utils.unregister_class(RBDSelectMacro)
