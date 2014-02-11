@@ -139,10 +139,56 @@ class DisplayAxis(bpy.types.Operator):
         
         return bpy.ops.wm.context_collection_boolean_set(**kwargs)
 
+def _cameralist(self, context):
+    data = context.blend_data
+    cameras = data.groups.get('PlayblastCameras').objects
+    camera_list = [(camera.name, camera.name, "{0} {1}".format(context.scene.name, camera.name)) for camera in cameras]
+    return camera_list
+
+class PlayblastFromCameras(bpy.types.Operator):
+    """Playblast from chosen camera"""
+    bl_idname = "render.playblast_from_camera"
+    bl_label = "REN Playblast from Camera"
+    bl_description = "Playblast from the chosen camera in the scene"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    camera = EnumProperty(items=_cameralist, name="Choose Camera")
+
+    @classmethod
+    def poll(cls, context):
+        data = context.blend_data
+        predicates = (
+            context.area.spaces.active.type == 'VIEW_3D',
+            data.filepath,
+            data.groups.get('PlayblastCameras') is not None,
+        )
+        return all(predicates)
+
+    def invoke(self, context, event):
+        wm = context.window_manager
+        return wm.invoke_props_popup(self, event)
+
+    def execute(self, context):
+        context.scene.camera = context.blend_data.groups.get('PlayblastCameras').objects.get(self.camera)
+        render = context.scene.render
+        render.resolution_percentage = 100
+        render.filepath = '//' + bpy.path.display_name(bpy.data.filepath) + '_' + self.camera + '.'
+        render.image_settings.file_format = 'H264'
+        render.ffmpeg.format = 'MPEG4'
+        render.display_mode = 'NONE'
+        render.use_lock_interface = True
+        bpy.ops.view3d.viewnumpad(type='CAMERA')
+        if context.space_data.region_3d.view_perspective in ('PERSP', 'ORTHO'):
+            bpy.ops.view3d.viewnumpad(type='CAMERA')
+        return {'FINISHED'}
+
+#class DisplayShadowProperties(bpy.types.Operator)
+
 def register():
     bpy.utils.register_class(RBDChangeFrangeOperator)
     bpy.utils.register_class(View3DQuadViewCustom)
     bpy.utils.register_class(DisplayAxis)
+    bpy.utils.register_class(PlayblastFromCameras)
     
     bpy.utils.register_class(RBDSelectMacro)
     op = RBDSelectMacro.define("OBJECT_OT_select_linked")
@@ -159,6 +205,7 @@ def unregister():
     bpy.utils.unregister_class(RBDChangeFrangeOperator)
     bpy.utils.unregister_class(View3DQuadViewCustom)
     bpy.utils.unregister_class(DisplayAxis)
+    bpy.utils.unregister_class(PlayblastFromCameras)
     bpy.utils.unregister_class(RBDSelectAndHideMacro)
     bpy.utils.unregister_class(RBDSelectMacro)
 
