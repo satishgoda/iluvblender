@@ -171,9 +171,9 @@ class PlayblastMenu(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.menu('VIEW3D_MT_playblast_from_cameras', text="Create")
+        layout.menu('VIEW3D_MT_playblast_from_cameras', text="Set")
+        layout.operator('render.play_rendered_anim', text='View')
 
-                
 class PlayblastFromCameras(bpy.types.Operator):
     """Playblast from chosen camera"""
     bl_idname = "render.playblast_from_camera"
