@@ -161,11 +161,14 @@ class PlayblastFromCamerasMenu(bpy.types.Menu):
             layout.label("Group PlayblastCameras is missing or empty")
         else:
             layout.operator_context = 'EXEC_DEFAULT'
+            #layout.operator_menu_enum('render.playblast_from_camera', 'camera')
+            #layout.operator_enum('render.playblast_from_camera', 'camera')
             for camera in sorted(cameras, key=lambda cam: cam[0]):
                 row = layout.row()
                 op = row.operator('render.playblast_from_camera', text=camera[0])
                 op.camera = camera[0]
-                row.enabled = not (camera[0] == context.scene.camera.name)
+                row.enabled = not (camera[0] == context.scene.camera.name and 
+                                   context.region_data.view_perspective in ('CAMERA',))
 
 class PlayblastMenu(bpy.types.Menu):
     bl_idname = "VIEW3D_MT_playblast"
@@ -173,8 +176,14 @@ class PlayblastMenu(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.menu('VIEW3D_MT_playblast_from_cameras', text="Set")
-        layout.operator('render.play_rendered_anim', text='View')
+        column1 = layout.column()
+        column1.menu('VIEW3D_MT_playblast_from_cameras', text="Set")
+        column2 = layout.column()
+        column2.operator('render.play_rendered_anim', text='View')
+        cameras = _cameralist(self, context)
+        if not cameras:
+            column1.enabled = False
+            column2.enabled = False
 
 class PlayblastFromCameras(bpy.types.Operator):
     """Playblast from chosen camera"""
