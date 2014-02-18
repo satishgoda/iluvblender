@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import bpy
 
-# Scene Settings
 
+# Scene Settings
 scene = bpy.context.scene
 
 scene.unit_settings.system = 'METRIC'
