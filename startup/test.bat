@@ -1,0 +1,6 @@
+@ECHO OFF
+
+set BLENDER_USER_CONFIG=%CD%\config
+set BLENDER_USER_SCRIPTS=%CD%\scripts
+
+CALL %BLENDER_INSTALL_DIR%\blender270a.lnk --debug
