@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
 import bpy
 
+# Scene Settings
+
+scene = bpy.context.scene
+
+scene.unit_settings.system = 'METRIC'
+
+
+# User Preferences
 userprefs = bpy.context.user_preferences
 
 
@@ -26,6 +34,7 @@ system.use_scripts_auto_execute = True
 system.author = "First Last(emailid@domain) - learningblender3dsoftware.blogspot.in"
 
 
+# Hide the menus
 for area in bpy.context.window_manager.windows[0].screen.areas:
     area.show_menus = False
     area.tag_redraw()
