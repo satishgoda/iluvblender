@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 bl_info = {
     "name": "Zen Mode for working peacefully",
     "author": "Satish Goda (iluvblender on BA, satishgoda@gmail.com)",
@@ -14,18 +16,12 @@ bl_info = {
 
 import bpy
 
+
 def screen_areas_zen(context, enable=True):
     for area in context.screen.areas:
-        if enable:
-            area.show_menus = False
-            area.header_text_set('')
-        else:
-            area.show_menus = True
-            area.header_text_set()
+        area.show_menus = not enable
+        area.header_text_set('' if enable else Ellipsis)
         area.tag_redraw()
-
-def main(context, enable):
-    screen_areas_zen(context, enable)
 
 
 class ScreenModeZenOperator(bpy.types.Operator):
@@ -40,7 +36,7 @@ class ScreenModeZenOperator(bpy.types.Operator):
         return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
-        main(context, self.enable)
+        screen_areas_zen(context, self.enable)
         return {'FINISHED'}
 
 
