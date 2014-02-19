@@ -43,12 +43,8 @@ system.use_scripts_auto_execute = True
 system.author = "First Last(emailid@domain)- learningblender3dsoftware.blogspot.in"
 
 
-for area in context.window_manager.windows[0].screen.areas:
-    area.show_menus = False
-    area.tag_redraw()
-
 # Addons to Disable (Factory addons)
-for addon in userprefs.addons:
+for addon in filter(lambda addon: addon.module != 'cycles', userprefs.addons):
     print("{0} - {1}".format("Disabling", addon))
     bpy.ops.wm.addon_disable(module=addon.module)
 
@@ -60,6 +56,9 @@ if myaddonpath:
     for module in myaddonmodules:
         print("{0} - {1}".format("Enabling", module))
         bpy.ops.wm.addon_enable(module=module.__name__)
+
+
+bpy.ops.screen.mode_zen(show_menus=False)
 
 
 # Window Manager
