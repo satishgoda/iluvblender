@@ -8,6 +8,12 @@ scene = bpy.context.scene
 scene.unit_settings.system = 'METRIC'
 
 
+# Rendering Settings
+render = scene.render
+
+render.engine = 'CYCLES'
+
+
 # User Preferences
 userprefs = bpy.context.user_preferences
 
