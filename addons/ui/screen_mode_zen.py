@@ -17,11 +17,11 @@ bl_info = {
 import bpy
 
 
-def screen_areas_zen(context, enable=True):
+def screen_areas_zen(context, settings):
     for area in context.screen.areas:
-        area.show_menus = not enable
+        area.show_menus = settings['show_menus'] and not settings['enable']
         cb = area.header_text_set
-        cb('') if enable else cb()
+        cb('') if settings['enable'] else cb()
         area.tag_redraw()
 
 
@@ -31,13 +31,14 @@ class ScreenModeZenOperator(bpy.types.Operator):
     bl_label = "Screen Mode Zen"
     bl_options = {'REGISTER', 'UNDO'}
 
-    enable = bpy.props.BoolProperty(name='Enable', description="Enable/Disable Zen Mode", default=False)    
+    enable = bpy.props.BoolProperty(name='Enable', description="Enable/Disable Zen Mode", default=False)
+    show_menus = bpy.props.BoolProperty(name='Show Menus?', description="Should the menus be shown", default=False)
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
-        screen_areas_zen(context, self.enable)
+        screen_areas_zen(context, self.as_keywords())
         return {'FINISHED'}
 
 
