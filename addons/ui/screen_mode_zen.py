@@ -20,7 +20,8 @@ import bpy
 def screen_areas_zen(context, enable=True):
     for area in context.screen.areas:
         area.show_menus = not enable
-        area.header_text_set('' if enable else Ellipsis)
+        cb = area.header_text_set
+        cb('') if enable else cb()
         area.tag_redraw()
 
 
