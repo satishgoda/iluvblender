@@ -3,15 +3,18 @@ import bpy
 
 
 # Scene Settings
-
 scene = bpy.context.scene
 
-if scene:
-    scene.unit_settings.system = 'METRIC'
-else:
-    print(type(bpy.context))
+# Scene Units
+unit_settings = scene.unit_settings
 
-scene.render.engine = 'CYCLES'
+unit_settings.system = 'METRIC'
+
+# Scene Render Settings
+render = scene.render
+
+render.engine = 'CYCLES'
+
 
 # User Preferences
 userprefs = bpy.context.user_preferences
@@ -36,7 +39,7 @@ system = userprefs.system
 system.use_vertex_buffer_objects = True
 system.use_region_overlap = True
 system.use_scripts_auto_execute = True
-system.author = "Satish Goda (satishgoda@gmail) - learningblender3dsoftware.blogspot.in"
+system.author = "First Last(emailid@domain)- learningblender3dsoftware.blogspot.in"
 
 
 for area in bpy.context.window_manager.windows[0].screen.areas:
