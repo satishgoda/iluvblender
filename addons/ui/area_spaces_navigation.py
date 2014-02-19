@@ -15,6 +15,7 @@ bl_info = {
 
 import bpy
 
+
 def draw(self, context):
      row = self.layout.row(align=True)
      for space in filter(lambda space: space.type != context.area.type, context.area.spaces):
@@ -22,23 +23,22 @@ def draw(self, context):
          op_props.data_path = "area.type"
          op_props.value = space.type
 
+
+def _doIt(process):
+    only_headers = lambda typestr: typestr.find('HT_header') != -1
+    processstr = ('remove', 'append')
+    for headerstr in filter(only_headers, dir(bpy.types)):
+        headertype = eval('bpy.types.' + headerstr)
+        getattr(headertype, processstr[process])(draw)
+
+
 def register():
-    bpy.types.VIEW3D_HT_header.append(draw)
-    bpy.types.CONSOLE_HT_header.append(draw)
-    bpy.types.NODE_HT_header.append(draw)
-    bpy.types.IMAGE_HT_header.append(draw)
-    bpy.types.OUTLINER_HT_header.append(draw)
-    bpy.types.PROPERTIES_HT_header.append(draw)
-    bpy.types.TEXT_HT_header.append(draw)
+    _doIt(1)
+
 
 def unregister():
-    bpy.types.VIEW3D_HT_header.remove(draw)
-    bpy.types.CONSOLE_HT_header.remove(draw)
-    bpy.types.NODE_HT_header.remove(draw)
-    bpy.types.IMAGE_HT_header.remove(draw)
-    bpy.types.OUTLINER_HT_header.remove(draw)
-    bpy.types.PROPERTIES_HT_header.remove(draw)
-    bpy.types.TEXT_HT_header.remove(draw)
+    _doIt(0)
+   
     
 if __name__ == '__main__':
     register()
