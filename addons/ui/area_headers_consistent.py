@@ -1,14 +1,14 @@
 import bpy
 
 
-def main(context):
+def main(self, context):
     window = context.window
     screen = window.screen
 
     is_header_bottom = lambda area: area.y == area.regions[0].y
 
     for area in screen.areas:
-        if is_header_bottom(area):
+        if (self.header_to == 'TOP' and is_header_bottom(area)) or (self.header_to == 'BOTTOM' and not is_header_bottom(area)):
             print("Flipping header for {0}".format(area.spaces.active.type))
 
             overrides = {
@@ -27,8 +27,15 @@ class AreaHeadersConsistentOperator(bpy.types.Operator):
     bl_label = "Make Area Headers Consistent"
     bl_options = {'REGISTER', 'UNDO'}
 
+    items = [('TOP', 'Top', 'Header on top'), ('BOTTOM', 'Bottom', 'Header at Bottom')]
+
+    header_to = bpy.props.EnumProperty(items=items, default='TOP', name="Header Location")
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_popup(self, event)
+
     def execute(self, context):
-        main(context)
+        main(self, context)
         return {'FINISHED'}
 
 
