@@ -19,6 +19,7 @@ import bpy
 def draw(self, context):
      row = self.layout.row(align=True)
      for space in filter(lambda space: space.type != context.area.type, context.area.spaces):
+         row.alert = True
          op_props = row.operator('wm.context_set_enum', text=space.bl_rna.name.replace('Space', '').strip())
          op_props.data_path = "area.type"
          op_props.value = space.type
