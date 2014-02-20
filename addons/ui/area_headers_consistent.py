@@ -9,7 +9,8 @@ def main(self, context):
 
     for area in screen.areas:
         if self.header_to != where_is_header(area):
-            print("Flipping header for {0}".format(area.spaces.active.type))
+            if bpy.app.debug:
+                print("Flipping header for {0}".format(area.spaces.active.type))
 
             overrides = {
                 'window':window,
