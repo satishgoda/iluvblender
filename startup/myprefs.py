@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 import bpy
 
+
+if False:
+    bpy.app.debug = True
+    bpy.app.debug_python = True
+    bpy.app.debug_wm = True
+
+
 context = bpy.context
 
 # Scene Settings
@@ -58,8 +65,25 @@ if myaddonpath:
         bpy.ops.wm.addon_enable(module=module.__name__)
 
 
+# User Interface Customizations
+
 bpy.ops.screen.mode_zen(show_menus=False)
 
+window = bpy.context.window
+screen = window.screen
+
+for area in screen.areas:
+    if area.y == area.regions[0].y:
+        print("Flipping header for {0}".format(area.spaces.active.type))
+
+        overrides = {
+            'window':window,
+            'screen':screen,
+            'area': area,
+            'region':area.regions[0]
+        }
+
+        bpy.ops.screen.header_flip(overrides)
 
 # Window Manager
 wm = context.window_manager
