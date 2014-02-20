@@ -5,10 +5,10 @@ def main(self, context):
     window = context.window
     screen = window.screen
 
-    is_header_bottom = lambda area: area.y == area.regions[0].y
+    where_is_header = lambda area: 'BOTTOM' if area.y == area.regions[0].y else 'TOP'
 
     for area in screen.areas:
-        if (self.header_to == 'TOP' and is_header_bottom(area)) or (self.header_to == 'BOTTOM' and not is_header_bottom(area)):
+        if self.header_to != where_is_header(area):
             print("Flipping header for {0}".format(area.spaces.active.type))
 
             overrides = {
