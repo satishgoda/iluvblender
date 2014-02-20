@@ -1,5 +1,18 @@
+# <pep8 compliant>
+
 import bpy
 
+bl_info = {
+    "name": "Control positioning of Area Headers",
+    "author": "Satish Goda (iluvblender on BA, satishgoda@gmail.com)",
+    "version": (0, 1),
+    "blender": (2, 7, 0),
+    "location": "Operator Search Menu -> Make Area Headers Consistent",
+    "description": "Move all headers to the top/or bottom in all areas of the current screen",
+    "warning": "",
+    "category": "System"}
+
+"""Display Area Spaces in Header"""
 
 def main(self, context):
     window = context.window
