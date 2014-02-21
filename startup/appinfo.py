@@ -6,6 +6,9 @@ def factory(value):
     if value:
         if isinstance(value, dict):
             return value.keys()
+        elif isinstance(value, tuple):
+            fields = set(dir(value)) - set(dir(tuple))
+            return tuple(fields)
         else:
             return value
     elif isinstance(value, bool):
@@ -23,5 +26,3 @@ attr_value_pairs = dict(map(lambda attr: (attr, getattr(bpy.app, attr)), non_spe
 
 for key, value in sorted(attr_value_pairs.items(), key=lambda t: t[0]):
     print("{0}\n\t{1}".format(key, factory(value)))
-
-
