@@ -19,6 +19,7 @@ attr_map = {}
 for attr in attrs_partitioned:
     first = attr[0]
     others = attr[1:]
+    
     if not all(others) or (first not in attr_map):
         attr_map[first] = []
     else:
@@ -41,9 +42,12 @@ for key in keys_sorted:
     print(key)
     items = attr_map[key]
     if items:
-        item_string_repr = lambda item: '    {0}_{1}'.format(key, item)
+        pair = lambda item: (item, getattr(bpy.app, key+'_'+item))
+        item_string_repr = lambda item: '   {0}\n      {1}'.format(*pair(item))
         item_strings = map(item_string_repr, items)
         print('\n'.join(item_strings))
+    else:
+        print('   {0}'.format(getattr(bpy.app, key)))
 
 
 print(''.join(('\n', 'E'*79, '\n')))
