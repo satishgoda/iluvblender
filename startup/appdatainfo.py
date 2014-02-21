@@ -41,8 +41,9 @@ for key in keys_sorted:
     print(key)
     items = attr_map[key]
     if items:
-        for item in items:
-            print('   {0}_{1}'.format(key, item))
+        item_string_repr = lambda item: '    {0}_{1}'.format(key, item)
+        item_strings = map(item_string_repr, items)
+        print('\n'.join(item_strings))
 
 
 print(''.join(('\n', 'E'*79, '\n')))
