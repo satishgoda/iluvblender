@@ -13,15 +13,16 @@ attrs = tuple(set(dir(mros[0])) - set(dir(mros[1])))
 attrs_partitioned = tuple(map(lambda attr: attr.partition('_'), sorted(attrs)))
 
 
-attr_map = {}
+prefixes_unique = set(map(lambda partition: partition[0], attrs_partitioned))
+
+
+attr_map = dict(map(lambda prefix: (prefix, []), prefixes_unique))
 
 
 for attr in attrs_partitioned:
     first, others = attr[0], attr[1:]
-    if first not in attr_map:
-        attr_map[first] = []
     if all(others):
-        attr_map[first].extend(others[1:])
+        attr_map[first].append(others[-1])
 
 
 kwargs = {
