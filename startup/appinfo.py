@@ -4,7 +4,10 @@ import bpy
 
 def factory(value):
     if value:
-        return value
+        if isinstance(value, dict):
+            return value.keys()
+        else:
+            return value
     elif isinstance(value, bool):
         return False
     elif isinstance(value, str):
