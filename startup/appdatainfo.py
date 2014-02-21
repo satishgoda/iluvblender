@@ -38,20 +38,18 @@ print(''.join(('\n', 'S'*79, '\n')))
 
 for key in keys_sorted:
     items = attr_map[key]
-    if items:
-        if len(items) > 1:
-            print(key)
-            pair = lambda item: (item, getattr(bpy.app, key+'_'+item))
-            item_string_repr = lambda item: '   {0}\n      {1}'.format(*pair(item))
-            item_strings = map(item_string_repr, items)
-            print('\n'.join(item_strings))
-        else:
-            attr = key + '_' + items[0]
-            print('{0}\n   {1}'.format(attr, getattr(bpy.app, attr)))
+    if len(items) > 1:
+        print(key)
+        pair = lambda item: (item, getattr(bpy.app, key+'_'+item))
+        item_string_repr = lambda item: '   {0}\n      {1}'.format(*pair(item))
+        item_strings = map(item_string_repr, items)
+        print('\n'.join(item_strings))
     else:
-        attr = key
+        if len(items) == 1:
+            attr = key + '_' + items[0]
+        else:
+            attr = key
         print('{0}\n   {1}'.format(attr, getattr(bpy.app, attr)))
-    
     print()
 
 
