@@ -10,13 +10,13 @@ mros = inspect.getmro(type(bpy.app))
 attrs = tuple(set(dir(mros[0])) - set(dir(mros[1])))
 
 
-attrs_partiotioned = tuple(map(lambda attr: attr.partition('_'), sorted(attrs)))
+attrs_partitioned = tuple(map(lambda attr: attr.partition('_'), sorted(attrs)))
 
 
 attr_map = {}
 
 
-for attr in attrs_partiotioned:
+for attr in attrs_partitioned:
     first = attr[0]
     others = attr[1:]
     if not all(others) or (first not in attr_map):
