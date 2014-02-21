@@ -34,6 +34,9 @@ kwargs = {
 keys_sorted = sorted(attr_map.keys(), **kwargs)
 
 
+print(''.join(('\n', 'S'*79, '\n')))
+
+
 for key in keys_sorted:
     print(key)
     items = attr_map[key]
@@ -41,3 +44,5 @@ for key in keys_sorted:
         for item in items:
             print('   {0}_{1}'.format(key, item))
 
+
+print(''.join(('\n', 'E'*79, '\n')))
