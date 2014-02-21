@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import bpy
+import inspect
 
 def factory(value):
     if value:
@@ -18,11 +19,13 @@ def factory(value):
     else:
         return value
 
-names_in_scope = dir(bpy.app)
+mros = inspect.getmro(bpy.app.__class__)
 
-non_specials = list(filter(lambda s: not s.startswith('__'), names_in_scope))
+app_attrs = set(dir(mros[0])) - set(dir(mros[1]))
 
-attr_value_pairs = dict(map(lambda attr: (attr, getattr(bpy.app, attr)), non_specials))
+app_attr_value_pairs = map(lambda attr: (attr, getattr(bpy.app, attr)), app_attrs)
 
-for key, value in sorted(attr_value_pairs.items(), key=lambda t: t[0]):
+app_attr_value_pairs = sorted(app_attr_value_pairs, key=lambda t: t[0])
+
+for key, value in app_attr_value_pairs:
     print("{0}\n\t{1}".format(key, factory(value)))
