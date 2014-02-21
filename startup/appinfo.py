@@ -5,20 +5,19 @@ import inspect
 
 mros = inspect.getmro(type(bpy.app))
 
-app_attrs = tuple(set(dir(mros[0])) - set(dir(mros[1])))
+attrs = tuple(set(dir(mros[0])) - set(dir(mros[1])))
 
-base_attrs = tuple(filter(lambda attr: attr.find('_') == -1, app_attrs))
+attrs_no_underscore = tuple(filter(lambda attr: attr.find('_') == -1, attrs))
 
-prefix_attrs = tuple(set(app_attrs) - set(base_attrs))
+attrs_underscore = tuple(set(attrs) - set(attrs_no_underscore))
 
-base_prefix_attrs = tuple(map(lambda attr: tuple(filter(lambda pattr: pattr.startswith(attr), prefix_attrs)), base_attrs))
+base_prefix_attrs = tuple(filter(lambda base: set(filter(lambda pattr: pattr.startswith(base), attrs_underscore)), attrs_no_underscore))
 
-print(sorted(base_attrs))
+print(sorted(attrs_no_underscore))
 print()
-print(sorted(prefix_attrs))
+
+print(sorted(attrs_underscore))
 print()
-print(base_prefix_attrs)
 
-
-#for attr in app_attrs:
-#    print(attr, getattr(bpy.app, attr))
+print(sorted(base_prefix_attrs))
+print()
