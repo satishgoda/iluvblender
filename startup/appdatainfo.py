@@ -7,16 +7,16 @@ import pprint
 mros = inspect.getmro(type(bpy.app))
 
 
-attrs = tuple(set(dir(mros[0])) - set(dir(mros[1])))
+attrs = set(dir(mros[0])) - set(dir(mros[1]))
 
 
-attrs_partitioned = tuple(map(lambda attr: attr.partition('_'), sorted(attrs)))
+attrs_partitioned = tuple(attr.partition('_') for attr in sorted(attrs))
 
 
-prefixes_unique = set(map(lambda partition: partition[0], attrs_partitioned))
+prefixes_unique = { partition[0] for partition in attrs_partitioned }
 
 
-attr_map = dict(map(lambda prefix: (prefix, []), prefixes_unique))
+attr_map = { prefix: [] for prefix in prefixes_unique }
 
 
 for attr in attrs_partitioned:
