@@ -22,33 +22,29 @@ attr_repr_indent = lambda attr: _attr_repr(attr, indent='   ')
 
 mros = inspect.getmro(type(bpy.app))
 
-attrs = sorted(set.difference(*map(setdir, mros[:2])))
+attrs = set.difference(*map(setdir, mros[:2]))
 
 attr_map = {}
 
-for key, group in itertools.groupby(attrs, prefix):
-    attr_map[key] = list(group)
-
+for key, group in itertools.groupby(sorted(attrs), prefix):
+    grouped = list(group)
+    k, v = (key, grouped) if len(grouped) > 1 else (grouped[0], None)
+    attr_map[k] = v
 
 # Organize
 
-kwargs = {
-    'key': lambda key: len(attr_map[key]), 
-    'reverse': True
-}
-
-keys_sorted = sorted(attr_map.keys(), **kwargs)
+grouped = sorted(filter(attr_map.get, attr_map))
+plain = sorted(set(attr_map.keys()) - set(grouped))
 
 buffer = []
 
-for key in keys_sorted:
-    items = attr_map[key]
-    if len(items) > 1:
-        buffer.append(key.upper()+'\n')
-        buffer.extend(list(map(attr_repr_indent, items)))
-    else:
-        attr = items[0] if items else key
-        buffer.append(attr_repr_normal(attr))
+for prefix in grouped:
+    items = attr_map[prefix]
+    buffer.append(prefix.upper()+'\n')
+    buffer.extend(list(map(attr_repr_indent, items)))
+
+for attr in plain:
+   buffer.append(attr_repr_normal(attr))
 
 
 # Print
