@@ -31,6 +31,7 @@ for key, group in itertools.groupby(sorted(attrs), prefix):
     k, v = (key, grouped) if len(grouped) > 1 else (grouped[0], None)
     attr_map[k] = v
 
+
 # Organize
 
 grouped = sorted(filter(attr_map.get, attr_map))
