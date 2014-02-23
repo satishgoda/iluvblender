@@ -31,20 +31,19 @@ keys_sorted = sorted(attr_map.keys(), **kwargs)
 print(''.join(('\n', 'S'*79, '\n')))
 
 
+pair = lambda attr: (attr, getattr(bpy.app, attr))
+_attr_repr = lambda attr, indent='': '{0}{1}\n      {2}'.format(indent, *pair(attr))
+attr_repr_normal = lambda attr: _attr_repr(attr)
+attr_repr_indent = lambda attr: _attr_repr(attr, indent='   ')
+
 for key in keys_sorted:
     items = attr_map[key]
     if len(items) > 1:
-        print(key)
-        pair = lambda item: (item, getattr(bpy.app, item))
-        item_string_repr = lambda item: '   {0}\n      {1}'.format(*pair(item))
-        item_strings = map(item_string_repr, items)
-        print('\n'.join(item_strings))
+        print(key.upper()+'\n')
+        print('\n'.join(map(attr_repr_indent, items)))
     else:
-        if len(items) == 1:
-            attr = items[0]
-        else:
-            attr = key
-        print('{0}\n   {1}'.format(attr, getattr(bpy.app, attr)))
+        attr = items[0] if items else key
+        print(attr_repr_normal(attr))
     print()
 
 
