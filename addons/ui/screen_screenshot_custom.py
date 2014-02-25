@@ -1,26 +1,5 @@
 import bpy
 
-import os
-
-_filepath = bpy.data.filepath
-
-_screenshot = dict()
-_screenshot['filename'] = bpy.path.display_name_from_filepath(_filepath) if _filepath else 'untitled'
-_screenshot['filename_ext'] = 'png'
-_screenshot['dirname'] = os.path.dirname(_filepath) if _filepath else os.getcwd()
-_screenshot['filename_suffix_char'] = '_'
-_screenshot['filename_suffix'] = None
-
-def _get_filepath(screenshot):
-    import os
-    s = screenshot
-    filename = s['filename']
-    if s['filename_suffix']:
-        filename += s['filename_suffix_char'] + s['filename_suffix']
-    filename += '.' + s['filename_ext']
-    filepath = os.path.join(s['dirname'], filename)
-    return filepath
-
 class ScreenshotsCustom(bpy.types.Operator):
     """Create and save screenshots of different areas"""
     bl_idname = "screen.screenshot_custom"
@@ -34,18 +13,23 @@ class ScreenshotsCustom(bpy.types.Operator):
         print("Executing " + self.bl_idname)
         
         overrides = {}
-        overrides['window'] = bpy.context.window
+        overrides['window'] = context.window
+        overrides['screen'] = context.screen
+        overrides['scene'] = context.scene
         
         kwargs = { 'full': False }
+        
+        import screenshot
+        screenshot = screenshot.Screenshot()
         
         for area in context.screen.areas:
             overrides['area'] = area
             overrides['region'] = area.regions[1]
+            overrides['space_data'] = area.spaces.active
             
-            screenshot = _screenshot.copy()
-            screenshot['filename_suffix'] = area.type
+            screenshot.filename_suffix = area.type
             
-            kwargs['filepath'] = _get_filepath(screenshot)
+            kwargs['filepath'] = screenshot.filepath
 
             bpy.ops.screen.screenshot(overrides, **kwargs)
         
