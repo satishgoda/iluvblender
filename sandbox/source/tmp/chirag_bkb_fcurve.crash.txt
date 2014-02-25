@@ -1,0 +1,59 @@
+# Blender 2.69 (sub 11), Commit date: 2014-02-20 05:32, Hash 10f4c62
+bpy.ops.anim.keyframe_insert_menu(type='Location')  # Operator
+Keying set 'Location' - successfully added 3 keyframes  # Info
+bpy.ops.graph.view_all()  # Operator
+bpy.ops.transform.translate(value=(0, 0, 4), constraint_axis=(False, False, True), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)  # Operator
+bpy.ops.anim.keyframe_insert_menu(type='Location')  # Operator
+Keying set 'Location' - successfully added 3 keyframes  # Info
+bpy.ops.object.location_clear()  # Operator
+bpy.ops.anim.keyframe_insert_menu(type='Location')  # Operator
+Keying set 'Location' - successfully added 3 keyframes  # Info
+bpy.ops.transform.translate(value=(0, 0, -4), constraint_axis=(False, False, True), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)  # Operator
+bpy.ops.anim.keyframe_insert_menu(type='Location')  # Operator
+Keying set 'Location' - successfully added 3 keyframes  # Info
+bpy.ops.object.location_clear()  # Operator
+bpy.ops.anim.keyframe_insert_menu(type='Location')  # Operator
+Keying set 'Location' - successfully added 3 keyframes  # Info
+bpy.ops.graph.view_all()  # Operator
+bpy.data.texts["Notes"].name = "Notes"  # Property
+bpy.context.area.type = 'CONSOLE'  # Property
+bpy.context.scene.lock_frame_selection_to_range = True  # Property
+bpy.context.scene.use_preview_range = True  # Property
+bpy.context.scene.use_preview_range = False  # Property
+bpy.context.scene.use_preview_range = True  # Property
+bpy.context.scene.frame_preview_end = 100  # Property
+bpy.data.window_managers["WinMan"].(null) = 100  # Property
+bpy.ops.object.paths_calculate(start_frame=1, end_frame=100)  # Operator
+bpy.ops.object.select_all(action='INVERT')  # Operator
+bpy.ops.object.delete(use_global=False)  # Operator
+bpy.ops.graph.select_all_toggle(invert=False)  # Operator
+bpy.ops.graph.select_all_toggle(invert=False)  # Operator
+bpy.ops.anim.channels_editable_toggle()  # Operator
+bpy.ops.anim.channels_editable_toggle()  # Operator
+bpy.ops.anim.channels_editable_toggle()  # Operator
+bpy.ops.anim.channels_editable_toggle()  # Operator
+bpy.ops.object.paths_calculate(start_frame=1, end_frame=100)  # Operator
+bpy.ops.graph.handle_type(type='AUTO_CLAMPED')  # Operator
+bpy.ops.graph.handle_type(type='AUTO')  # Operator
+
+# backtrace
+blender270() [0xfbcd04]
+blender270() [0xfbcf5a]
+/lib64/libc.so.6() [0x3548c32920]
+/lib64/libc.so.6() [0x3548d32d5f]
+blender270(PyUnicode_FromFormatV+0xa67) [0x2c15007]
+blender270(PyUnicode_FromFormat+0x8c) [0x2c15dbc]
+blender270() [0x1845ffe]
+blender270(PyObject_Repr+0x2c) [0x2bd928c]
+blender270(PyFile_WriteObject+0x50) [0x2ccdda0]
+blender270() [0x2c6ef18]
+blender270(PyObject_Call+0x5a) [0x2b9531a]
+blender270(PyEval_EvalFrameEx+0x533d) [0x2c418bd]
+blender270(PyEval_EvalCodeEx+0x83b) [0x2c3c4ab]
+blender270(PyEval_EvalCode+0x3b) [0x2c3c57b]
+blender270() [0x2c3a0cd]
+blender270(PyEval_EvalFrameEx+0x6745) [0x2c42cc5]
+blender270(PyEval_EvalFrameEx+0x66b2) [0x2c42c32]
+blender270(PyEval_EvalCodeEx+0x83b) [0x2c3c4ab]
+blender270(PyEval_EvalFrameEx+0x61b6) [0x2c42736]
+blender270(PyEval_EvalFrameEx+0x66b2) [0x2c42c32]
