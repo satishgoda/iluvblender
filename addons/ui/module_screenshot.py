@@ -3,15 +3,17 @@ import os
 
 
 class Screenshot(object):
-    if bpy.data.filepath:
-        filename = bpy.path.display_name_from_filepath(bpy.data.filepath)  
-        dirname = os.path.dirname(bpy.data.filepath)
-    else:
-        filename = 'untitled'
-        dirname = os.getcwd()
     filename_ext = 'png'
     filename_suffix = None
     filename_suffix_char = '_'
+    filename = 'untitled'
+    dirname = os.getcwd()
+    
+    def __init__(self):
+        _filepath = bpy.data.filepath
+        if _filepath:
+            self.filename = bpy.path.display_name_from_filepath(_filepath)  
+            self.dirname = os.path.dirname(_filepath)
     
     @property
     def filepath(self):
@@ -21,6 +23,7 @@ class Screenshot(object):
             filename += self.filename_suffix
         filename += '.' + self.filename_ext
         return os.path.join(self.dirname, filename)
+
         
 if __name__ == '__main__':
     pass
