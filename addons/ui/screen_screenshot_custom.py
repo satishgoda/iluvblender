@@ -14,17 +14,25 @@ bl_info = {
 import bpy
 
 
-def _screen(self, context, screenshot):
+def _screen(self, context):
+    import screenshot
+    screenshot = screenshot.Screenshot()
+
     bpy.ops.screen.screenshot(filepath=screenshot.filepath)
 
+    context.window_manager.clipboard = screenshot.dirname
 
-def _screen_all_areas(self, context, screenshot):
+
+def _screen_all_areas(self, context):
+    import screenshot
+    screenshot = screenshot.Screenshot()
+
     overrides = {}
 
     overrides['window'] = context.window
     overrides['screen'] = context.screen
     overrides['scene'] = context.scene
-    
+
     kwargs = { 'full': False }
 
     for area in context.screen.areas:
@@ -37,6 +45,8 @@ def _screen_all_areas(self, context, screenshot):
         kwargs['filepath'] = screenshot.filepath
 
         bpy.ops.screen.screenshot(overrides, **kwargs)
+
+    context.window_manager.clipboard = screenshot.dirname
 
 
 class ScreenshotsCustom(bpy.types.Operator):
@@ -64,24 +74,19 @@ class ScreenshotsCustom(bpy.types.Operator):
     
     def execute(self, context):
         print("Executing " + self.bl_idname)
-        
-        import screenshot
-        screenshot = screenshot.Screenshot()
 
         if self.capture_mode == 'SCREEN':
-            _screen(self, context, screenshot)
+            _screen(self, context)
         elif self.capture_mode == 'SCREEN_ALL_AREAS':
-            _screen_all_areas(self, context, screenshot)
+            _screen_all_areas(self, context)
         elif self.capture_mode == 'SCREEN_AND_ALL_AREAS':
-            _screen_all_areas(self, context, screenshot)
-            _screen(self, context, screenshot)
+            _screen_all_areas(self, context)
+            _screen(self, context)
         else:
             self.report({'ERROR'}, "Save Screenshot Custom: No other capture modes supported")
             return {'CANCELLED'}
 
-        self.report({'INFO'}, "Screenshot saved in {0}".format(screenshot.dirname))
-        
-        context.window_manager.clipboard = screenshot.dirname
+        self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
         
         return {'FINISHED'}
     
@@ -109,7 +114,7 @@ def register():
 
     kmi = keymap.keymap_items.new('screen.screenshot_custom', 'C', 'PRESS', ctrl=True, oskey=True)
 
-    setattr(kmi.properties, 'capture_mode', 'SCREEN_ALL_AREAS')
+    setattr(kmi.properties, 'capture_mode', 'SCREEN_AND_ALL_AREAS')
 
   
 def unregister():
