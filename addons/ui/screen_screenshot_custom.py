@@ -88,7 +88,12 @@ class ScreenshotsCustom(bpy.types.Operator):
 
         self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
 
-        file_browser_areas = filter(lambda area: area.spaces.active.type == 'FILE_BROWSER', context.screen.areas)
+        FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
+        SCREENSHOT_DIRECTORY = lambda params: context.window_manager.clipboard in params.directory
+
+        to_update_filebrowser = lambda area: FILE_BROWSER(area) and SCREENSHOT_DIRECTORY(area.spaces.active.params)
+
+        file_browser_areas = filter(to_update_filebrowser, context.screen.areas)
 
         overrides = context.copy()
         
@@ -101,7 +106,6 @@ class ScreenshotsCustom(bpy.types.Operator):
             params.use_filter = True
             params.use_filter_image = True
             params.display_type = 'FILE_IMGDISPLAY'
-            params.directory = context.window_manager.clipboard
             
             overrides['area'] = file_browser
             overrides['space_data'] = file_browser.spaces.active
