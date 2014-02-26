@@ -88,11 +88,21 @@ class ScreenshotsCustom(bpy.types.Operator):
 
         self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
 
-        file_browser_areas = filter(lambda area: area.type == 'FILE_BROWSER', context.screen.areas)
+        file_browser_areas = filter(lambda area: area.spaces.active.type == 'FILE_BROWSER', context.screen.areas)
 
         overrides = context.copy()
         
         for file_browser in file_browser_areas:
+            params = file_browser.spaces.active.params
+
+            for prop in filter(lambda prop: prop.identifier.startswith('use_filter') , params.bl_rna.properties):
+                setattr(params, prop.identifier, False)
+
+            params.use_filter = True
+            params.use_filter_image = True
+            params.display_type = 'FILE_IMGDISPLAY'
+            params.directory = context.window_manager.clipboard
+            
             overrides['area'] = file_browser
             bpy.ops.file.refresh(overrides)
         
