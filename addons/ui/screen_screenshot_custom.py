@@ -87,6 +87,14 @@ class ScreenshotsCustom(bpy.types.Operator):
             return {'CANCELLED'}
 
         self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
+
+        file_browser_areas = filter(lambda area: area.type == 'FILE_BROWSER', context.screen.areas)
+
+        overrides = context.copy()
+        
+        for file_browser in file_browser_areas:
+            overrides['area'] = file_browser
+            bpy.ops.file.refresh(overrides)
         
         return {'FINISHED'}
     
@@ -119,7 +127,7 @@ def unregister():
 
     keymap = keyconfigs.addon.keymaps['Screen']
 
-    for i in range(3):
+    for i in ScreenshotsCustom._items:
         kmi = keymap.keymap_items[ScreenshotsCustom.bl_idname]
         keymap.keymap_items.remove(kmi)
 
