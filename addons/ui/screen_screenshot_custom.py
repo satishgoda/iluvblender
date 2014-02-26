@@ -26,13 +26,9 @@ def _screen(self, context):
 def _screen_all_areas(self, context):
     import screenshot
     screenshot = screenshot.Screenshot()
-
-    overrides = {}
-
-    overrides['window'] = context.window
-    overrides['screen'] = context.screen
-    overrides['scene'] = context.scene
-
+    
+    overrides = context.copy()
+    
     kwargs = { 'full': False }
 
     for area in context.screen.areas:
