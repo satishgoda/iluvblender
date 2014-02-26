@@ -1,12 +1,13 @@
 @ECHO OFF
 
-if EXIST config RD /S /Q config
-if EXIST scripts RMDIR /S /Q scripts
+SET BLENDER_USER_CONFIG=%CD%\config
+SET BLENDER_USER_SCRIPTS=%CD%\scripts
 
-mkdir config
-mkdir scripts
+if EXIST %BLENDER_USER_CONFIG%\userpref.blend DEL /P %BLENDER_USER_CONFIG%\userpref.blend
+if EXIST %BLENDER_USER_CONFIG%\startup.blend DEL /P %BLENDER_USER_CONFIG%\startup.blend
 
-set BLENDER_USER_CONFIG=%CD%\config
-set BLENDER_USER_SCRIPTS=%CD%\scripts
+IF NOT EXIST %BLENDER_USER_CONFIG% MKDIR %BLENDER_USER_CONFIG%
 
-CALL %BLENDER_INSTALL_DIR%\blender270a.lnk --debug --background --python %CD%\myprefs.py
+CALL %BLENDER_INSTALL_DIR%\blender270.lnk  --background --python %CD%\myprefs.py
+
+PAUSE
