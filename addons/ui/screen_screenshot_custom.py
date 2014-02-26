@@ -103,20 +103,17 @@ def register():
         keyconfigs.addon.keymaps.new('Screen')
 
     keymap = keyconfigs.addon.keymaps['Screen']
-    
-    kmi = keymap.keymap_items.new('screen.screenshot_custom', 'C', 'PRESS', oskey=True)
-    
-    setattr(kmi.properties, 'capture_mode', 'SCREEN')
 
-    kmi = keymap.keymap_items.new('screen.screenshot_custom', 'C', 'PRESS', shift=True, oskey=True)
+    capture_mode_mapping = (('SCREEN', {}),
+                            ('SCREEN_ALL_AREAS', {'shift': True}),
+                            ('SCREEN_AND_ALL_AREAS', {'ctrl': True})
+                            )
 
-    setattr(kmi.properties, 'capture_mode', 'SCREEN_ALL_AREAS')
+    for capture_mode, kwargs in capture_mode_mapping:
+        kmi = keymap.keymap_items.new(ScreenshotsCustom.bl_idname, 'C', 'PRESS', oskey=True, **kwargs)
+        setattr(kmi.properties, 'capture_mode', capture_mode)
 
-    kmi = keymap.keymap_items.new('screen.screenshot_custom', 'C', 'PRESS', ctrl=True, oskey=True)
 
-    setattr(kmi.properties, 'capture_mode', 'SCREEN_AND_ALL_AREAS')
-
-  
 def unregister():
     keyconfigs = bpy.context.window_manager.keyconfigs
 
