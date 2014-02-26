@@ -30,7 +30,10 @@ class ScreenshotsCustom(bpy.types.Operator):
 
     def invoke(self, context, event):
         print("Invoking " + self.bl_idname)
-        return context.window_manager.invoke_props_dialog(self)
+        if (event.oskey and event.type == 'C'):
+            return self.execute(context)
+        else:
+            return context.window_manager.invoke_props_dialog(self)
     
     def execute(self, context):
         print("Executing " + self.bl_idname)
