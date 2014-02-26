@@ -1,3 +1,15 @@
+
+bl_info = {
+    "name": "Custom Screenshot Creator",
+    "author": "Satish Goda (iluvblender on BA, satishgoda@gmail.com)",
+    "version": (0, 1),
+    "blender": (2, 7, 0),
+    "location": "Save Screenshot Custom",
+    "description": "Create screenshots of all the individual areas in the current screen (and the whole area also if you want)",
+    "warning": "",
+    "category": "Screen"
+}
+
 import bpy
 
 class ScreenshotsCustom(bpy.types.Operator):
@@ -49,4 +61,4 @@ def unregister():
     
 if __name__ == '__main__':
     register()
-    bpy.ops.screen.screenshot_custom()
+    #bpy.ops.screen.screenshot_custom()
