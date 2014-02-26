@@ -104,6 +104,8 @@ class ScreenshotsCustom(bpy.types.Operator):
             params.directory = context.window_manager.clipboard
             
             overrides['area'] = file_browser
+            overrides['space_data'] = file_browser.spaces.active
+            
             bpy.ops.file.refresh(overrides)
         
         return {'FINISHED'}
