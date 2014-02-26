@@ -17,9 +17,20 @@ class ScreenshotsCustom(bpy.types.Operator):
     bl_idname = "screen.screenshot_custom"
     bl_label = "Save Screenshot Custom"
     bl_options = {'REGISTER'}
+
+    _items = [('SCREEN', 'Current Screen', 'Capture the current screen'),
+              ('SCREEN_ALL_AREAS', 'All Screen Areas', 'Capture all the areas of the current screen'),
+              ('SCREEN_AND_ALL_AREAS', 'Current Screen and all Areas', 'Capture screen and also all its areas')
+              ]
+
+    capture_mode = bpy.props.EnumProperty(items=_items, name="Capture mode", default='SCREEN_AND_ALL_AREAS')
     
     def __init__(self):
         print("Initializing " + self.bl_idname)        
+
+    def invoke(self, context, event):
+        print("Invoking " + self.bl_idname)
+        return context.window_manager.invoke_props_dialog(self)
     
     def execute(self, context):
         print("Executing " + self.bl_idname)
@@ -29,21 +40,26 @@ class ScreenshotsCustom(bpy.types.Operator):
         overrides['screen'] = context.screen
         overrides['scene'] = context.scene
         
-        kwargs = { 'full': False }
-        
         import screenshot
         screenshot = screenshot.Screenshot()
-        
-        for area in context.screen.areas:
-            overrides['area'] = area
-            overrides['region'] = area.regions[1]
-            overrides['space_data'] = area.spaces.active
-            
-            screenshot.filename_suffix = area.type
-            
-            kwargs['filepath'] = screenshot.filepath
 
-            bpy.ops.screen.screenshot(overrides, **kwargs)
+        if self.capture_mode == 'SCREEN':
+            bpy.ops.screen.screenshot(filepath=screenshot.filepath)
+        elif self.capture_mode == 'SCREEN_ALL_AREAS':
+            kwargs = { 'full': False }
+
+            for area in context.screen.areas:
+                overrides['area'] = area
+                overrides['region'] = area.regions[1]
+                overrides['space_data'] = area.spaces.active
+
+                screenshot.filename_suffix = area.type
+
+                kwargs['filepath'] = screenshot.filepath
+
+                bpy.ops.screen.screenshot(overrides, **kwargs)
+        else:
+            self.report({'INFO'}, self.capture_mode)
         
         return {'FINISHED'}
     
