@@ -39,19 +39,21 @@ class Screenshot(object):
 
 
 def _update_observer_file_browser(self, context):
+    from rna_info import get_direct_properties
+    
     FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
     SCREENSHOT_DIRECTORY = lambda params: context.window_manager.clipboard in params.directory
-
     to_update_filebrowser = lambda area: FILE_BROWSER(area) and SCREENSHOT_DIRECTORY(area.spaces.active.params)
-
-    file_browser_areas = filter(to_update_filebrowser, context.screen.areas)
+    use_filter_props = lambda prop: prop.identifier.startswith('use_filter')
 
     overrides = context.copy()
+    
+    file_browser_areas = filter(to_update_filebrowser, context.screen.areas)
 
     for file_browser in file_browser_areas:
         params = file_browser.spaces.active.params
 
-        for prop in filter(lambda prop: prop.identifier.startswith('use_filter') , params.bl_rna.properties):
+        for prop in filter(use_filter_props , get_direct_properties(params.bl_rna)):
             setattr(params, prop.identifier, False)
 
         params.use_filter = True
