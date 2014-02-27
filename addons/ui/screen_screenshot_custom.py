@@ -14,6 +14,32 @@ bl_info = {
 import bpy
 
 
+def _update_observer_file_browser(self, context):
+    FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
+    SCREENSHOT_DIRECTORY = lambda params: context.window_manager.clipboard in params.directory
+
+    to_update_filebrowser = lambda area: FILE_BROWSER(area) and SCREENSHOT_DIRECTORY(area.spaces.active.params)
+
+    file_browser_areas = filter(to_update_filebrowser, context.screen.areas)
+
+    overrides = context.copy()
+
+    for file_browser in file_browser_areas:
+        params = file_browser.spaces.active.params
+
+        for prop in filter(lambda prop: prop.identifier.startswith('use_filter') , params.bl_rna.properties):
+            setattr(params, prop.identifier, False)
+
+        params.use_filter = True
+        params.use_filter_image = True
+        params.display_type = 'FILE_IMGDISPLAY'
+
+        overrides['area'] = file_browser
+        overrides['space_data'] = file_browser.spaces.active
+
+        bpy.ops.file.refresh(overrides)
+
+
 def _screen(self, context):
     import screenshot
     screenshot = screenshot.Screenshot()
@@ -22,27 +48,33 @@ def _screen(self, context):
 
     context.window_manager.clipboard = screenshot.dirname
 
+    _update_observer_file_browser(self, context)
+
 
 def _screen_all_areas(self, context):
     import screenshot
     screenshot = screenshot.Screenshot()
-    
+
     overrides = context.copy()
-    
+
     kwargs = { 'full': False }
 
     for area in context.screen.areas:
-        overrides['area'] = area
-        overrides['region'] = area.regions[1]
-        overrides['space_data'] = area.spaces.active
-
         screenshot.filename_suffix = area.type
+
+        overrides.update((
+                          ('area', area),
+                          ('region', area.regions[1]),
+                          ('space_data', area.spaces.active)
+                        ))
 
         kwargs['filepath'] = screenshot.filepath
 
         bpy.ops.screen.screenshot(overrides, **kwargs)
 
     context.window_manager.clipboard = screenshot.dirname
+
+    _update_observer_file_browser(self, context)
 
 
 class ScreenshotsCustom(bpy.types.Operator):
@@ -83,30 +115,6 @@ class ScreenshotsCustom(bpy.types.Operator):
             return {'CANCELLED'}
 
         self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
-
-        FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
-        SCREENSHOT_DIRECTORY = lambda params: context.window_manager.clipboard in params.directory
-
-        to_update_filebrowser = lambda area: FILE_BROWSER(area) and SCREENSHOT_DIRECTORY(area.spaces.active.params)
-
-        file_browser_areas = filter(to_update_filebrowser, context.screen.areas)
-
-        overrides = context.copy()
-        
-        for file_browser in file_browser_areas:
-            params = file_browser.spaces.active.params
-
-            for prop in filter(lambda prop: prop.identifier.startswith('use_filter') , params.bl_rna.properties):
-                setattr(params, prop.identifier, False)
-
-            params.use_filter = True
-            params.use_filter_image = True
-            params.display_type = 'FILE_IMGDISPLAY'
-            
-            overrides['area'] = file_browser
-            overrides['space_data'] = file_browser.spaces.active
-            
-            bpy.ops.file.refresh(overrides)
         
         return {'FINISHED'}
     
