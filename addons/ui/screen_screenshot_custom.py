@@ -21,12 +21,18 @@ class Screenshot(object):
     filename_suffix_char = '_'
     filename = 'untitled'
     dirname = os.getcwd()
+    full = False
+    
 
-    def __init__(self):
+    def __init__(self, context, full=False):
+        self.context = context
         _filepath = bpy.data.filepath
         if _filepath:
             self.filename = bpy.path.display_name_from_filepath(_filepath)
             self.dirname = os.path.dirname(_filepath)
+
+        if full:
+            self.full = True
 
     @property
     def filepath(self):
@@ -37,20 +43,25 @@ class Screenshot(object):
         filename += '.' + self.filename_ext
         return os.path.join(self.dirname, filename)
 
+    @property
+    def kwargs(self):
+        return {'full': self.full, 'filepath': self.filepath}
+
 
 def _observer_file_browser(subject):
     from rna_info import get_direct_properties
 
-    context = subject
+    window_manager = subject.context.window_manager if subject.full else subject.context['window_manager']
+    screen = subject.context.screen if subject.full else subject.context['screen']
     
     FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
-    SCREENSHOT_DIRECTORY = lambda params: context.window_manager.clipboard in params.directory
+    SCREENSHOT_DIRECTORY = lambda params: window_manager.clipboard in params.directory
     to_update_filebrowser = lambda area: FILE_BROWSER(area) and SCREENSHOT_DIRECTORY(area.spaces.active.params)
     use_filter_props = lambda prop: prop.identifier.startswith('use_filter')
 
-    overrides = context.copy()
+    overrides = subject.context.copy()
     
-    file_browser_areas = filter(to_update_filebrowser, context.screen.areas)
+    file_browser_areas = filter(to_update_filebrowser, screen.areas)
 
     for file_browser in file_browser_areas:
         params = file_browser.spaces.active.params
@@ -68,43 +79,42 @@ def _observer_file_browser(subject):
         bpy.ops.file.refresh(overrides)
 
 
-def _observer_clipboard(context, subject):
-    context.window_manager.clipboard = subject.dirname
+def _observer_clipboard(subject):
+    data = subject.dirname
+    window_manager = subject.context.window_manager if subject.full else subject.context['window_manager']
+    window_manager.clipboard = subject.dirname
 
 
-def _capture(context, screenshot, area=None):
-    if area:
-        overrides = context.copy()
-
-        overrides.update((
-                            ('area', area),
-                            ('region', area.regions[1]),
-                            ('space_data', area.spaces.active)
-                        ))
-
-        kwargs = { 'full': False }
-        kwargs['filepath'] = screenshot.filepath
-
-        bpy.ops.screen.screenshot(overrides, **kwargs)
+def _capture(screenshot):
+    if screenshot.full:
+        bpy.ops.screen.screenshot(screenshot.context.copy(), filepath=screenshot.filepath, full=screenshot.full)
     else:
-        bpy.ops.screen.screenshot(filepath=screenshot.filepath)
-
-    _observer_clipboard(context, screenshot)
-    _observer_file_browser(context)
+        bpy.ops.screen.screenshot(screenshot.context, filepath=screenshot.filepath, full=screenshot.full)
+    _observer_clipboard(screenshot)
+    _observer_file_browser(screenshot)
 
 
 def _screen(context):
-    screenshot = Screenshot()
-    _capture(context, screenshot)
+    screenshot = Screenshot(context, True)
+    _capture(screenshot)
 
 
 def _screen_area(context):
     area = context.area
 
-    screenshot = Screenshot()
+    overrides = context.copy()
+
+    overrides.update((
+                        ('area', area),
+                        ('region', area.regions[1]),
+                        ('space_data', area.spaces.active)
+                      ))
+
+    screenshot = Screenshot(overrides)
+    
     screenshot.filename_suffix = "{0}-{1}".format(area.type, 0)
 
-    _capture(context, screenshot, area)
+    _capture(screenshot)
 
 
 def _screen_all_areas(context):
@@ -121,9 +131,21 @@ def _screen_all_areas(context):
     
     for area_type, areas in area_map.items():
         for index, area_info in enumerate(areas):
-            screenshot = Screenshot()
+            area = area_info[1]
+            
+            overrides = context.copy()
+            
+            overrides.update((
+                        ('area', area),
+                        ('region', area.regions[1]),
+                        ('space_data', area.spaces.active)
+                      ))
+
+            screenshot = Screenshot(overrides)
+
             screenshot.filename_suffix  = "{0}-{1}".format(area_type, index)
-            _capture(context, screenshot, area_info[1])
+
+            _capture(screenshot)
 
 
 def _screen_and_all_areas(context):
