@@ -38,8 +38,10 @@ class Screenshot(object):
         return os.path.join(self.dirname, filename)
 
 
-def _update_observer_file_browser(self, context):
+def _observer_file_browser(subject):
     from rna_info import get_direct_properties
+
+    context = subject
     
     FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
     SCREENSHOT_DIRECTORY = lambda params: context.window_manager.clipboard in params.directory
@@ -66,18 +68,25 @@ def _update_observer_file_browser(self, context):
         bpy.ops.file.refresh(overrides)
 
 
-def _screen(self, context):
-    screenshot = Screenshot()
+def _observer_clipboard(context, subject):
+    context.window_manager.clipboard = subject.dirname
 
+
+def add_screenshot_observers(capture_mode):
+    def capture(context, screenshot):
+        capture_mode(context, screenshot)
+        _observer_clipboard(context, screenshot)
+        _observer_file_browser(context)
+    return capture
+
+
+@add_screenshot_observers
+def _screen(context, screenshot):
     bpy.ops.screen.screenshot(filepath=screenshot.filepath)
 
-    context.window_manager.clipboard = screenshot.dirname
 
-    _update_observer_file_browser(self, context)
-
-
-def _screen_all_areas(self, context):
-    screenshot = Screenshot()
+@add_screenshot_observers
+def _screen_all_areas(context, screenshot):
 
     overrides = context.copy()
 
@@ -95,10 +104,6 @@ def _screen_all_areas(self, context):
         kwargs['filepath'] = screenshot.filepath
 
         bpy.ops.screen.screenshot(overrides, **kwargs)
-
-    context.window_manager.clipboard = screenshot.dirname
-
-    _update_observer_file_browser(self, context)
 
 
 class ScreenshotsCustom(bpy.types.Operator):
@@ -127,13 +132,15 @@ class ScreenshotsCustom(bpy.types.Operator):
     def execute(self, context):
         print("Executing " + self.bl_idname)
 
+        screenshot = Screenshot()
+        
         if self.capture_mode == 'SCREEN':
-            _screen(self, context)
+            _screen(context, screenshot)
         elif self.capture_mode == 'SCREEN_ALL_AREAS':
-            _screen_all_areas(self, context)
+            _screen_all_areas(context, screenshot)
         elif self.capture_mode == 'SCREEN_AND_ALL_AREAS':
-            _screen_all_areas(self, context)
-            _screen(self, context)
+            _screen(context, screenshot)
+            _screen_all_areas(context, screenshot)
         else:
             self.report({'ERROR'}, "Save Screenshot Custom: No other capture modes supported")
             return {'CANCELLED'}
