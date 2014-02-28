@@ -72,47 +72,63 @@ def _observer_clipboard(context, subject):
     context.window_manager.clipboard = subject.dirname
 
 
-def add_screenshot_observers(capture_mode):
-    def capture(context, screenshot):
-        capture_mode(context, screenshot)
-        _observer_clipboard(context, screenshot)
-        _observer_file_browser(context)
-    return capture
+def _capture(context, screenshot, area=None):
+    if area:
+        overrides = context.copy()
+
+        overrides.update((
+                            ('area', area),
+                            ('region', area.regions[1]),
+                            ('space_data', area.spaces.active)
+                        ))
+
+        kwargs = { 'full': False }
+        kwargs['filepath'] = screenshot.filepath
+
+        bpy.ops.screen.screenshot(overrides, **kwargs)
+    else:
+        bpy.ops.screen.screenshot(filepath=screenshot.filepath)
+
+    _observer_clipboard(context, screenshot)
+    _observer_file_browser(context)
 
 
-def _capture_area(context, area, screenshot):
-    overrides = context.copy()
-
-    overrides.update((
-                        ('area', area),
-                        ('region', area.regions[1]),
-                        ('space_data', area.spaces.active)
-                    ))
-
-    screenshot.filename_suffix = area.type
-
-    kwargs = { 'full': False }
-    kwargs['filepath'] = screenshot.filepath
-
-    bpy.ops.screen.screenshot(overrides, **kwargs)
+def _screen(context):
+    screenshot = Screenshot()
+    _capture(context, screenshot)
 
 
-@add_screenshot_observers
-def _screen(context, screenshot):
-    bpy.ops.screen.screenshot(filepath=screenshot.filepath)
-
-
-@add_screenshot_observers
-def _screen_area(context, screenshot):
+def _screen_area(context):
     area = context.area
 
-    _capture_area(context, area, screenshot)
+    screenshot = Screenshot()
+    screenshot.filename_suffix = area.type
+
+    _capture(context, screenshot, area)
 
 
-@add_screenshot_observers
-def _screen_all_areas(context, screenshot):
-    for area in context.screen.areas:
-        _capture_area(context, area, screenshot)
+def _screen_all_areas(context):
+    from itertools import groupby
+
+    area_map = {}
+    
+    area_info = tuple(map(lambda area: (area.type, area, area.spaces.active), context.screen.areas))
+    
+    criterion = lambda iterable: iterable[0]
+    
+    for key, group in groupby(sorted(area_info, key=criterion), criterion):
+        area_map[key] = tuple(group)
+    
+    for area_type, areas in area_map.items():
+        for index, area_info in enumerate(areas):
+            screenshot = Screenshot()
+            screenshot.filename_suffix  = "{0}-{1}".format(area_type, index)
+            _capture(context, screenshot, area_info[1])
+
+
+def _screen_and_all_areas(context):
+    _screen(context)
+    _screen_all_areas(context)
 
 
 class ScreenshotsCustom(bpy.types.Operator):
@@ -141,18 +157,15 @@ class ScreenshotsCustom(bpy.types.Operator):
     
     def execute(self, context):
         print("Executing " + self.bl_idname)
-
-        screenshot = Screenshot()
         
         if self.capture_mode == 'SCREEN':
-            _screen(context, screenshot)
+            _screen(context)
         elif self.capture_mode == 'SCREEN_ACTIVE_AREA':
-            _screen_area(context, screenshot)
+            _screen_area(context)
         elif self.capture_mode == 'SCREEN_ALL_AREAS':
-            _screen_all_areas(context, screenshot)
+            _screen_all_areas(context)
         elif self.capture_mode == 'SCREEN_AND_ALL_AREAS':
-            _screen(context, screenshot)
-            _screen_all_areas(context, screenshot)
+            _screen_and_all_areas(context)
         else:
             self.report({'ERROR'}, "Save Screenshot Custom: No other capture modes supported")
             return {'CANCELLED'}
