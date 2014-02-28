@@ -80,30 +80,39 @@ def add_screenshot_observers(capture_mode):
     return capture
 
 
+def _capture_area(context, area, screenshot):
+    overrides = context.copy()
+
+    overrides.update((
+                        ('area', area),
+                        ('region', area.regions[1]),
+                        ('space_data', area.spaces.active)
+                    ))
+
+    screenshot.filename_suffix = area.type
+
+    kwargs = { 'full': False }
+    kwargs['filepath'] = screenshot.filepath
+
+    bpy.ops.screen.screenshot(overrides, **kwargs)
+
+
 @add_screenshot_observers
 def _screen(context, screenshot):
     bpy.ops.screen.screenshot(filepath=screenshot.filepath)
 
 
 @add_screenshot_observers
+def _screen_area(context, screenshot):
+    area = context.area
+
+    _capture_area(context, area, screenshot)
+
+
+@add_screenshot_observers
 def _screen_all_areas(context, screenshot):
-
-    overrides = context.copy()
-
-    kwargs = { 'full': False }
-
     for area in context.screen.areas:
-        screenshot.filename_suffix = area.type
-
-        overrides.update((
-                          ('area', area),
-                          ('region', area.regions[1]),
-                          ('space_data', area.spaces.active)
-                        ))
-
-        kwargs['filepath'] = screenshot.filepath
-
-        bpy.ops.screen.screenshot(overrides, **kwargs)
+        _capture_area(context, area, screenshot)
 
 
 class ScreenshotsCustom(bpy.types.Operator):
@@ -114,7 +123,7 @@ class ScreenshotsCustom(bpy.types.Operator):
 
     _items = [('SCREEN', 'Current Screen', 'Capture the current screen'),
               ('SCREEN_ALL_AREAS', 'All Screen Areas', 'Capture all the areas of the current screen'),
-              ('SCREEN_AND_ALL_AREAS', 'Current Screen and all Areas', 'Capture screen and also all its areas')
+              ('SCREEN_AND_ALL_AREAS', 'Current Screen and all Areas', 'Capture screen and also all its areas'),
               ]
 
     capture_mode = bpy.props.EnumProperty(items=_items, name="Capture mode", default='SCREEN_AND_ALL_AREAS')
@@ -156,20 +165,20 @@ class ScreenshotsCustom(bpy.types.Operator):
 def register():
     bpy.utils.register_class(ScreenshotsCustom)
     
-    keyconfigs = bpy.context.window_manager.keyconfigs
+    addonKeyConfig = bpy.context.window_manager.keyconfigs.addon
 
-    if 'Screen' not in keyconfigs.addon.keymaps:
-        keyconfigs.addon.keymaps.new('Screen')
+    if 'Screen' not in addonKeyConfig.keymaps:
+        addonKeyConfig.keymaps.new('Screen')
 
-    keymap = keyconfigs.addon.keymaps['Screen']
-
+    keymap_items = addonKeyConfig.keymaps['Screen'].keymap_items
+    
     capture_mode_mapping = (('SCREEN', {}),
                             ('SCREEN_ALL_AREAS', {'shift': True}),
                             ('SCREEN_AND_ALL_AREAS', {'ctrl': True})
                             )
 
     for capture_mode, kwargs in capture_mode_mapping:
-        kmi = keymap.keymap_items.new(ScreenshotsCustom.bl_idname, 'C', 'PRESS', oskey=True, **kwargs)
+        kmi = keymap_items.new(ScreenshotsCustom.bl_idname, 'C', 'PRESS', oskey=True, **kwargs)
         setattr(kmi.properties, 'capture_mode', capture_mode)
 
 
