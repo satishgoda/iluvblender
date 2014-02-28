@@ -51,8 +51,8 @@ class Screenshot(object):
 def _observer_file_browser(subject):
     from rna_info import get_direct_properties
 
-    window_manager = subject.context.window_manager if subject.full else subject.context['window_manager']
-    screen = subject.context.screen if subject.full else subject.context['screen']
+    window_manager = subject.context['window_manager']
+    screen = subject.context['screen']
     
     FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
     SCREENSHOT_DIRECTORY = lambda params: window_manager.clipboard in params.directory
@@ -80,40 +80,44 @@ def _observer_file_browser(subject):
 
 
 def _observer_clipboard(subject):
-    data = subject.dirname
-    window_manager = subject.context.window_manager if subject.full else subject.context['window_manager']
+    window_manager = subject.context['window_manager']
     window_manager.clipboard = subject.dirname
 
 
 def _capture(screenshot):
-    context = screenshot.context.copy() if screenshot.full else screenshot.context
-
-    bpy.ops.screen.screenshot(context, **screenshot.kwargs)
+    bpy.ops.screen.screenshot(screenshot.context, **screenshot.kwargs)
     
     _observer_clipboard(screenshot)
     _observer_file_browser(screenshot)
 
 
+def _prepare_context(context, area=None):
+    overrides = context.copy()
+
+    if area:
+        overrides.update((
+                            ('area', area),
+                            ('region', area.regions[1]),
+                            ('space_data', area.spaces.active)
+                        ))
+    return overrides
+
+
 def _screen(context):
+    context = _prepare_context(context)
+
     screenshot = Screenshot(context, True)
+
     _capture(screenshot)
 
 
 def _screen_area(context):
     area = context.area
-
-    overrides = context.copy()
-
-    overrides.update((
-                        ('area', area),
-                        ('region', area.regions[1]),
-                        ('space_data', area.spaces.active)
-                      ))
-
-    screenshot = Screenshot(overrides)
+    context = _prepare_context(context, area)
     
-    screenshot.filename_suffix = "{0}-{1}".format(area.type, 0)
-
+    screenshot = Screenshot(context)
+    screenshot.filename_suffix  = "{0}-{1}".format(area.type, 0)
+    
     _capture(screenshot)
 
 
@@ -123,7 +127,7 @@ def _screen_all_areas(context):
     area_map = {}
     
     area_info = tuple(map(lambda area: (area.type, area), context.screen.areas))
-    
+
     criterion = lambda iterable: iterable[0]
     
     for key, group in groupby(sorted(area_info, key=criterion), criterion):
@@ -132,19 +136,11 @@ def _screen_all_areas(context):
     for area_type, areas in area_map.items():
         for index, area_info in enumerate(areas):
             area = area_info[1]
+            context = _prepare_context(context, area)
             
-            overrides = context.copy()
+            screenshot = Screenshot(context)
+            screenshot.filename_suffix  = "{0}-{1}".format(area.type, index)
             
-            overrides.update((
-                        ('area', area),
-                        ('region', area.regions[1]),
-                        ('space_data', area.spaces.active)
-                      ))
-
-            screenshot = Screenshot(overrides)
-
-            screenshot.filename_suffix  = "{0}-{1}".format(area_type, index)
-
             _capture(screenshot)
 
 
