@@ -86,10 +86,10 @@ def _observer_clipboard(subject):
 
 
 def _capture(screenshot):
-    if screenshot.full:
-        bpy.ops.screen.screenshot(screenshot.context.copy(), filepath=screenshot.filepath, full=screenshot.full)
-    else:
-        bpy.ops.screen.screenshot(screenshot.context, filepath=screenshot.filepath, full=screenshot.full)
+    context = screenshot.context.copy() if screenshot.full else screenshot.context
+
+    bpy.ops.screen.screenshot(context, **screenshot.kwargs)
+    
     _observer_clipboard(screenshot)
     _observer_file_browser(screenshot)
 
