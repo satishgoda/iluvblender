@@ -122,6 +122,7 @@ class ScreenshotsCustom(bpy.types.Operator):
     bl_options = {'REGISTER'}
 
     _items = [('SCREEN', 'Current Screen', 'Capture the current screen'),
+              ('SCREEN_ACTIVE_AREA', 'Active Screen Area', 'Capture the active screen area'),
               ('SCREEN_ALL_AREAS', 'All Screen Areas', 'Capture all the areas of the current screen'),
               ('SCREEN_AND_ALL_AREAS', 'Current Screen and all Areas', 'Capture screen and also all its areas'),
               ]
@@ -145,6 +146,8 @@ class ScreenshotsCustom(bpy.types.Operator):
         
         if self.capture_mode == 'SCREEN':
             _screen(context, screenshot)
+        elif self.capture_mode == 'SCREEN_ACTIVE_AREA':
+            _screen_area(context, screenshot)
         elif self.capture_mode == 'SCREEN_ALL_AREAS':
             _screen_all_areas(context, screenshot)
         elif self.capture_mode == 'SCREEN_AND_ALL_AREAS':
@@ -173,8 +176,9 @@ def register():
     keymap_items = addonKeyConfig.keymaps['Screen'].keymap_items
     
     capture_mode_mapping = (('SCREEN', {}),
+                            ('SCREEN_ACTIVE_AREA', {'alt': True}),
                             ('SCREEN_ALL_AREAS', {'shift': True}),
-                            ('SCREEN_AND_ALL_AREAS', {'ctrl': True})
+                            ('SCREEN_AND_ALL_AREAS', {'ctrl': True}),
                             )
 
     for capture_mode, kwargs in capture_mode_mapping:
