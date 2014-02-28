@@ -102,7 +102,7 @@ def _screen_area(context):
     area = context.area
 
     screenshot = Screenshot()
-    screenshot.filename_suffix = area.type
+    screenshot.filename_suffix = "{0}-{1}".format(area.type, 0)
 
     _capture(context, screenshot, area)
 
@@ -112,7 +112,7 @@ def _screen_all_areas(context):
 
     area_map = {}
     
-    area_info = tuple(map(lambda area: (area.type, area, area.spaces.active), context.screen.areas))
+    area_info = tuple(map(lambda area: (area.type, area), context.screen.areas))
     
     criterion = lambda iterable: iterable[0]
     
