@@ -100,6 +100,7 @@ def _prepare_context(context, area=None):
                             ('region', area.regions[1]),
                             ('space_data', area.spaces.active)
                         ))
+    
     return overrides
 
 
@@ -111,37 +112,33 @@ def _screen(context):
     _capture(screenshot)
 
 
-def _screen_area(context):
-    area = context.area
+def _handle_area(context, area, index=0):
     context = _prepare_context(context, area)
     
     screenshot = Screenshot(context)
-    screenshot.filename_suffix  = "{0}-{1}".format(area.type, 0)
+    screenshot.filename_suffix  = "{0}-{1}".format(area.type, index)
     
-    _capture(screenshot)
+    _capture(screenshot)   
+
+
+def _screen_area(context):
+    area = context.area
+    _handle_area(context, area)
 
 
 def _screen_all_areas(context):
     from itertools import groupby
 
     area_map = {}
-    
-    area_info = tuple(map(lambda area: (area.type, area), context.screen.areas))
 
-    criterion = lambda iterable: iterable[0]
+    criterion = lambda area: area.type
     
-    for key, group in groupby(sorted(area_info, key=criterion), criterion):
+    for key, group in groupby(sorted(context.screen.areas, key=criterion), criterion):
         area_map[key] = tuple(group)
     
     for area_type, areas in area_map.items():
-        for index, area_info in enumerate(areas):
-            area = area_info[1]
-            context = _prepare_context(context, area)
-            
-            screenshot = Screenshot(context)
-            screenshot.filename_suffix  = "{0}-{1}".format(area.type, index)
-            
-            _capture(screenshot)
+        for index, area in enumerate(areas):
+            _handle_area(context, area, index)
 
 
 def _screen_and_all_areas(context):
