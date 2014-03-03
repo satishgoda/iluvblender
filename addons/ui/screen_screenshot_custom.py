@@ -15,37 +15,64 @@ import bpy
 import os
 
 
-class Screenshot(object):
-    filename_ext = 'png'
-    filename_suffix = None
-    filename_suffix_char = '_'
+class OutputFilename(object):
     filename = 'untitled'
+    ext = 'blend'
+    suffix = None
+    suffix_char = '_'
     dirname = os.getcwd()
-    full = False
     
+    def __init__(self, filepath, ext=''):
+        import bpy
+        import os
+        
+        self.filename = bpy.path.display_name_from_filepath(filepath)
+        self.dirname = os.path.dirname(filepath)
+        
+        if self.ext:
+            self.ext = ext
+
+    def getSuffix(self):
+        return self.suffix_char + self.suffix
+    
+    @property
+    def filepath(self):
+        import os
+        filename = self.filename
+        if self.suffix:
+            filename += self.getSuffix()
+        filename += '.' + self.ext
+        return os.path.join(self.dirname, filename)
+
+
+class OutputImageFilename(OutputFilename):
+    ext = 'png'
+    suffix_index = 0
+    
+    def __init__(self, filepath, suffix='', suffix_index=0):
+        super(OutputImageFilename, self).__init__(filepath)
+        if suffix:
+            self.suffix=suffix
+        if suffix_index:
+            self.suffix_index = suffix_index
+    
+    def getSuffix(self):
+        suffix_base = super(OutputImageFilename, self).getSuffix()
+        return '.'.join([suffix_base, "{0:02}".format(self.suffix_index)])
+        
+
+class Screenshot(object):
+    full = False    
 
     def __init__(self, context, full=False):
         self.context = context
-        _filepath = bpy.data.filepath
-        if _filepath:
-            self.filename = bpy.path.display_name_from_filepath(_filepath)
-            self.dirname = os.path.dirname(_filepath)
 
         if full:
             self.full = True
 
     @property
-    def filepath(self):
-        filename = self.filename
-        if self.filename_suffix:
-            filename += self.filename_suffix_char
-            filename += self.filename_suffix
-        filename += '.' + self.filename_ext
-        return os.path.join(self.dirname, filename)
-
-    @property
     def kwargs(self):
-        return {'full': self.full, 'filepath': self.filepath}
+        return {'full': self.full, 'filepath': self.output.filepath}
 
 
 def _observer_file_browser(subject):
@@ -81,10 +108,11 @@ def _observer_file_browser(subject):
 
 def _observer_clipboard(subject):
     window_manager = subject.context['window_manager']
-    window_manager.clipboard = subject.dirname
+    window_manager.clipboard = subject.output.dirname
 
 
 def _capture(screenshot):
+    print(screenshot.kwargs)
     bpy.ops.screen.screenshot(screenshot.context, **screenshot.kwargs)
     
     _observer_clipboard(screenshot)
@@ -108,6 +136,7 @@ def _screen(context):
     context = _prepare_context(context)
 
     screenshot = Screenshot(context, True)
+    screenshot.output = OutputFilename(context['blend_data'].filepath, 'png')
 
     _capture(screenshot)
 
@@ -115,8 +144,8 @@ def _screen(context):
 def _handle_area(context, area, index=0):
     context = _prepare_context(context, area)
     
-    screenshot = Screenshot(context)
-    screenshot.filename_suffix  = "{0}-{1}".format(area.type, index)
+    screenshot = Screenshot(context, False)
+    screenshot.output = OutputImageFilename(context['blend_data'].filepath, area.type, index)
     
     _capture(screenshot)   
 
