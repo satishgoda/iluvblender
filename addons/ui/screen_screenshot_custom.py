@@ -46,11 +46,10 @@ class OutputFilename(object):
 
 
 class OutputImageFilename(OutputFilename):
-    ext = 'png'
     suffix_index = 0
     
     def __init__(self, filepath, suffix='', suffix_index=0):
-        super(OutputImageFilename, self).__init__(filepath)
+        super(OutputImageFilename, self).__init__(filepath, ext='png')
         if suffix:
             self.suffix=suffix
         if suffix_index:
