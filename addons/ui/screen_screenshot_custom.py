@@ -95,7 +95,7 @@ class ScreenCapture(object):
 
 
     def screen(self):
-        context = _prepare_context(self.context)
+        context = self.__class__._prepare_context(self.context)
 
         output = OutputFilename(context['blend_data'].filepath, 'png')
         self.dirname = output.dirname
@@ -218,7 +218,8 @@ class ScreenshotsCustom(bpy.types.Operator):
         print("Executing " + self.bl_idname)
 
         if self.capture_mode == 'SCREEN':
-            _screen(context)
+            screenshot = Screenshot(context)
+            screenshot.screen()
         elif self.capture_mode == 'SCREEN_ACTIVE_AREA':
             _screen_area(context)
         elif self.capture_mode == 'SCREEN_ALL_AREAS':
