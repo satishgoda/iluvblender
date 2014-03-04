@@ -262,76 +262,62 @@ def _observer_clipboard(subject):
     window_manager.clipboard = subject.output.dirname
 
 
-class ScreenshotCustom(bpy.types.Operator):
+class ScreenCaptureBase(object):
+    bl_options = {'REGISTER'}
+    
+    def __init__(self):
+        print("Initializing " + self.bl_idname)
+
+    def invoke(self, context, event):
+        print("Invoking " + self.bl_idname)
+        if (self.configuredKeys(event)):
+            return self.execute(context)
+        else:
+            return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        print("Executing " + self.bl_idname)
+
+        ret = self.delegated_execute(context)
+
+        if not ret:
+            self.report({'ERROR'}, "{0}: No other capture modes supported".format(self.bl_idname))
+            return {'CANCELLED'}
+
+        #self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
+
+        return {'FINISHED'}
+            
+    def __del__(self):
+        print("Destructing " + self.bl_idname)
+    
+
+class ScreenshotCustom(bpy.types.Operator, ScreenCaptureBase):
     """Create and save screenshots of different areas"""
     bl_idname = "screen.screenshot_custom"
     bl_label = "Save Screenshot Custom"
-    bl_options = {'REGISTER'}
 
     capture_mode = bpy.props.EnumProperty(items=Screenshot.modes, name="Capture mode", default='SCREEN_AND_ALL_AREAS')
 
-    def __init__(self):
-        print("Initializing " + self.bl_idname)
+    def configuredKeys(self, event):
+        return event.oskey and event.type == 'C'
 
-    def invoke(self, context, event):
-        print("Invoking " + self.bl_idname)
-        if (event.oskey and event.type == 'C'):
-            return self.execute(context)
-        else:
-            return context.window_manager.invoke_props_dialog(self)
-
-    def execute(self, context):
-        print("Executing " + self.bl_idname)
-
-        screenshot = Screenshot(context)
-        ret = screenshot(self.capture_mode)
-
-        if not ret:
-            self.report({'ERROR'}, "Save Screenshot Custom: No other capture modes supported")
-            return {'CANCELLED'}
-
-        #self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
-
-        return {'FINISHED'}
-
-    def __del__(self):
-        print("Destructing " + self.bl_idname)
+    def delegated_execute(self, context):
+        return Screenshot(context)(self.capture_mode)
 
 
-class ScreencastCustom(bpy.types.Operator):
+class ScreencastCustom(bpy.types.Operator, ScreenCaptureBase):
     """Create and save screencasts"""
     bl_idname = "screen.screencast_custom"
     bl_label = "Save Screencast Custom"
-    bl_options = {'REGISTER'}
 
     capture_mode = bpy.props.EnumProperty(items=Screencast.modes, name="Capture mode", default='SCREEN')
 
-    def __init__(self):
-        print("Initializing " + self.bl_idname)
-
-    def invoke(self, context, event):
-        print("Invoking " + self.bl_idname)
-        if (event.oskey and event.type == 'X'):
-            return self.execute(context)
-        else:
-            return context.window_manager.invoke_props_dialog(self)
-
-    def execute(self, context):
-        print("Executing " + self.bl_idname)
-
-        screencast = Screencast(context)
-        ret = screencast(self.capture_mode)
-
-        if not ret:
-            self.report({'ERROR'}, "Save Screencast Custom: No other capture modes supported")
-            return {'CANCELLED'}
-
-        #self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
-
-        return {'FINISHED'}
-
-    def __del__(self):
-        print("Destructing " + self.bl_idname)
+    def configuredKeys(self, event):
+        return event.oskey and event.type == 'X'
+    
+    def delegated_execute(self, context):
+        return Screencast(context)(self.capture_mode)
 
 
 def keymap_items_add(keymap_items, capture_mode_mapping, operator, key):
