@@ -91,7 +91,9 @@ class ScreenCapture(object):
             if before:
                 print("Before: ", task.kwargs['filepath'])
                 before(task)
-
+                print(self.context.scene.render.filepath)
+                print(self.context.scene.render.image_settings.file_format)
+            
             self.execute(task.context, **task.kwargs)
 
             after = getattr(task, 'after', None)
@@ -99,6 +101,8 @@ class ScreenCapture(object):
             if after:
                 print("After: ", task.kwargs['filepath'])
                 after(task)
+                print(self.context.scene.render.filepath)
+                print(self.context.scene.render.image_settings.file_format)
 
     @staticmethod
     def _prepare_context(context, area=None):
@@ -132,7 +136,7 @@ class ScreenCapture(object):
         output = self.getOutput()
         self.dirname = output.dirname
 
-        self.createTask(context, False, output)
+        self.createTask(context, True, output)
 
     def screen_active_area(self):
         area = self.context.area
@@ -178,11 +182,30 @@ class Screenshot(ScreenCapture):
 
 
 def before_screencast(self):
-    print("Before screencast")
+    scene = self.context['scene']
+    render = scene.render
+    imgs = render.image_settings
+    
+    self.overrides = {}
+
+    self.overrides['filepath'] = render.filepath
+    render.filepath = self.kwargs['filepath']
+
+    self.overrides['file_format'] = imgs.file_format
+    imgs.file_format = 'H264'
+
+    scene.update()
 
 
 def after_screencast(self):
-    print("After screencast")
+    scene = self.context['scene']
+    render = scene.render
+    imgs = render.image_settings
+    
+    render.filepath = self.overrides['filepath']
+    imgs.file_format = self.overrides['file_format']
+
+    scene.update()
 
 
 class Screencast(ScreenCapture):
