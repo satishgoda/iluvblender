@@ -76,6 +76,15 @@ class ScreenCapture(object):
         self.context = context
         self.tasks = []
 
+    def __call__(self, mode):
+        if mode in map(lambda mode: mode[0], self.modes):
+            getattr(self, mode.lower())()
+        else:
+            return False
+
+        self.run()
+        return True
+
     def run(self):
         for task in self.tasks:
             self.execute(task.context, **task.kwargs)
@@ -127,15 +136,6 @@ class Screenshot(ScreenCapture):
 
     def __init__(self, context):
         super(Screenshot, self).__init__(context)
-
-    def __call__(self, mode):
-        if mode in map(lambda mode: mode[0], self.modes):
-            getattr(self, mode.lower())()
-        else:
-            return False
-
-        self.run()
-        return True
 
     def screen_all_areas(self):
         from itertools import groupby
