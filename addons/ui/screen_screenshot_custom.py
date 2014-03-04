@@ -21,20 +21,20 @@ class OutputFilename(object):
     suffix = None
     suffix_char = '_'
     dirname = os.getcwd()
-    
+
     def __init__(self, filepath, ext=''):
         import bpy
         import os
-        
+
         self.filename = bpy.path.display_name_from_filepath(filepath)
         self.dirname = os.path.dirname(filepath)
-        
+
         if self.ext:
             self.ext = ext
 
     def getSuffix(self):
         return self.suffix_char + self.suffix
-    
+
     @property
     def filepath(self):
         import os
@@ -47,31 +47,46 @@ class OutputFilename(object):
 
 class OutputImageFilename(OutputFilename):
     suffix_index = 0
-    
+
     def __init__(self, filepath, suffix='', suffix_index=0):
         super(OutputImageFilename, self).__init__(filepath, ext='png')
         if suffix:
             self.suffix=suffix
         if suffix_index:
             self.suffix_index = suffix_index
-    
+
     def getSuffix(self):
         suffix_base = super(OutputImageFilename, self).getSuffix()
         return '.'.join([suffix_base, "{0:02}".format(self.suffix_index)])
-        
 
-class Screenshot(object):
-    full = False    
 
-    def __init__(self, context, full=False):
+class ScreenshotTask(object):
+    def __init__(self, context, full=True, filepath=''):
         self.context = context
-
-        if full:
-            self.full = True
+        self.full = full
+        self.filepath = filepath
 
     @property
     def kwargs(self):
-        return {'full': self.full, 'filepath': self.output.filepath}
+        return {'full': self.full, 'filepath': self.filepath}
+
+
+class ScreenCapture(object):
+    def __init__(self, context):
+        self.context = context
+        self.tasks = []
+
+    def run(self):
+        for task in self.tasks:
+            self.execute(task.context, **task.kwargs)
+
+
+class Screenshot(ScreenCapture):
+    execute = bpy.ops.screen.screenshot
+    
+    def __init__(self, context):
+        self.context = context
+        self.tasks = []
 
 
 def _observer_file_browser(subject):
@@ -79,14 +94,14 @@ def _observer_file_browser(subject):
 
     window_manager = subject.context['window_manager']
     screen = subject.context['screen']
-    
+
     FILE_BROWSER = lambda area: area.spaces.active.type == 'FILE_BROWSER'
     SCREENSHOT_DIRECTORY = lambda params: window_manager.clipboard in params.directory
     to_update_filebrowser = lambda area: FILE_BROWSER(area) and SCREENSHOT_DIRECTORY(area.spaces.active.params)
     use_filter_props = lambda prop: prop.identifier.startswith('use_filter')
 
     overrides = subject.context.copy()
-    
+
     file_browser_areas = filter(to_update_filebrowser, screen.areas)
 
     for file_browser in file_browser_areas:
@@ -111,9 +126,8 @@ def _observer_clipboard(subject):
 
 
 def _capture(screenshot):
-    print(screenshot.kwargs)
     bpy.ops.screen.screenshot(screenshot.context, **screenshot.kwargs)
-    
+
     _observer_clipboard(screenshot)
     _observer_file_browser(screenshot)
 
@@ -127,26 +141,30 @@ def _prepare_context(context, area=None):
                             ('region', area.regions[1]),
                             ('space_data', area.spaces.active)
                         ))
-    
+
     return overrides
 
 
 def _screen(context):
     context = _prepare_context(context)
 
-    screenshot = Screenshot(context, True)
-    screenshot.output = OutputFilename(context['blend_data'].filepath, 'png')
+    screenshot = Screenshot(context)
+    filepath = OutputFilename(context['blend_data'].filepath, 'png').filepath
+    task = ScreenshotTask(context, True, filepath)
 
-    _capture(screenshot)
+    screenshot.tasks.append(task)
+
+    screenshot.run()
+
 
 
 def _handle_area(context, area, index=0):
     context = _prepare_context(context, area)
-    
+
     screenshot = Screenshot(context, False)
     screenshot.output = OutputImageFilename(context['blend_data'].filepath, area.type, index)
-    
-    _capture(screenshot)   
+
+    _capture(screenshot)
 
 
 def _screen_area(context):
@@ -160,10 +178,10 @@ def _screen_all_areas(context):
     area_map = {}
 
     criterion = lambda area: area.type
-    
+
     for key, group in groupby(sorted(context.screen.areas, key=criterion), criterion):
         area_map[key] = tuple(group)
-    
+
     for area_type, areas in area_map.items():
         for index, area in enumerate(areas):
             _handle_area(context, area, index)
@@ -187,9 +205,9 @@ class ScreenshotsCustom(bpy.types.Operator):
               ]
 
     capture_mode = bpy.props.EnumProperty(items=_items, name="Capture mode", default='SCREEN_AND_ALL_AREAS')
-    
+
     def __init__(self):
-        print("Initializing " + self.bl_idname)        
+        print("Initializing " + self.bl_idname)
 
     def invoke(self, context, event):
         print("Invoking " + self.bl_idname)
@@ -197,10 +215,10 @@ class ScreenshotsCustom(bpy.types.Operator):
             return self.execute(context)
         else:
             return context.window_manager.invoke_props_dialog(self)
-    
+
     def execute(self, context):
         print("Executing " + self.bl_idname)
-        
+
         if self.capture_mode == 'SCREEN':
             _screen(context)
         elif self.capture_mode == 'SCREEN_ACTIVE_AREA':
@@ -213,24 +231,24 @@ class ScreenshotsCustom(bpy.types.Operator):
             self.report({'ERROR'}, "Save Screenshot Custom: No other capture modes supported")
             return {'CANCELLED'}
 
-        self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
-        
+        #self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
+
         return {'FINISHED'}
-    
+
     def __del__(self):
         print("Destructing " + self.bl_idname)
 
 
 def register():
     bpy.utils.register_class(ScreenshotsCustom)
-    
+
     addonKeyConfig = bpy.context.window_manager.keyconfigs.addon
 
     if 'Screen' not in addonKeyConfig.keymaps:
         addonKeyConfig.keymaps.new('Screen')
 
     keymap_items = addonKeyConfig.keymaps['Screen'].keymap_items
-    
+
     capture_mode_mapping = (('SCREEN', {}),
                             ('SCREEN_ACTIVE_AREA', {'alt': True}),
                             ('SCREEN_ALL_AREAS', {'shift': True}),
