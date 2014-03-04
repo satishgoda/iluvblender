@@ -49,29 +49,16 @@ class OutputFilename(object):
         return os.path.join(self.dirname, filename)
 
 
-class OutputImageFilename(OutputFilename):
+class OutputIndexedFilename(OutputFilename):
     suffix_index = 0
 
     def __init__(self, filepath, suffix='', suffix_index=0, ext='png'):
-        super(OutputImageFilename, self).__init__(filepath, suffix, ext)
+        super(OutputIndexedFilename, self).__init__(filepath, suffix, ext)
         if suffix_index:
             self.suffix_index = suffix_index
 
     def getSuffix(self):
-        suffix_base = super(OutputImageFilename, self).getSuffix()
-        return '.'.join([suffix_base, "{0:02}".format(self.suffix_index)])
-
-
-class OutputVideoFilename(OutputFilename):
-    suffix_index = 0
-    
-    def __init__(self, filepath, suffix='', suffix_index=0, ext='mp4'):
-        super(OutputVideoFilename, self).__init__(filepath, suffix, ext)
-        if suffix_index:
-            self.suffix_index = suffix_index
-
-    def getSuffix(self):
-        suffix_base = super(OutputVideoFilename, self).getSuffix()
+        suffix_base = super(OutputIndexedFilename, self).getSuffix()
         return '.'.join([suffix_base, "{0:02}".format(self.suffix_index)])
 
 
@@ -155,7 +142,7 @@ class Screenshot(ScreenCapture):
 
     def getOutput(self, area=None, index=-1):
         if area:
-            return OutputImageFilename(self.context.blend_data.filepath, area.type, index)
+            return OutputIndexedFilename(self.context.blend_data.filepath, area.type, index)
         else:
             return OutputFilename(self.context.blend_data.filepath, '', 'png')
 
@@ -189,9 +176,8 @@ class Screencast(ScreenCapture):
         super(Screencast, self).__init__(context)
 
     def getOutput(self, area=None, index=-1):
-        print("INDEX:", index)
         if area:
-            return OutputVideoFilename(self.context.blend_data.filepath, area.type, index)
+            return OutputIndexedFilename(self.context.blend_data.filepath, area.type, index)
         else:
             return OutputFilename(self.context.blend_data.filepath, '' ,'mp4')
 
