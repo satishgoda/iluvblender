@@ -93,7 +93,6 @@ class ScreenCapture(object):
 
         return overridden_context
 
-
     def screen(self):
         context = self.__class__._prepare_context(self.context)
 
@@ -104,6 +103,22 @@ class ScreenCapture(object):
         self.tasks.append(task)
 
         self.run()
+
+    def _handle_area(self, area, index=0):
+        context = self.__class__._prepare_context(self.context, area)
+
+        output = OutputImageFilename(context['blend_data'].filepath, area.type, index)
+        self.dirname = output.dirname
+
+        task = ScreenshotTask(context, False, output.filepath)
+        self.tasks.append(task)
+
+        self.run()
+
+
+    def area(self):
+        area = self.context.area
+        self._handle_area(area)
 
 
 class Screenshot(ScreenCapture):
@@ -156,20 +171,6 @@ def _capture(screenshot):
     _observer_file_browser(screenshot)
 
 
-def _handle_area(context, area, index=0):
-    context = _prepare_context(context, area)
-
-    screenshot = Screenshot(context, False)
-    screenshot.output = OutputImageFilename(context['blend_data'].filepath, area.type, index)
-
-    _capture(screenshot)
-
-
-def _screen_area(context):
-    area = context.area
-    _handle_area(context, area)
-
-
 def _screen_all_areas(context):
     from itertools import groupby
 
@@ -217,11 +218,12 @@ class ScreenshotsCustom(bpy.types.Operator):
     def execute(self, context):
         print("Executing " + self.bl_idname)
 
+        screenshot = Screenshot(context)
+
         if self.capture_mode == 'SCREEN':
-            screenshot = Screenshot(context)
             screenshot.screen()
         elif self.capture_mode == 'SCREEN_ACTIVE_AREA':
-            _screen_area(context)
+            screenshot.area()
         elif self.capture_mode == 'SCREEN_ALL_AREAS':
             _screen_all_areas(context)
         elif self.capture_mode == 'SCREEN_AND_ALL_AREAS':
