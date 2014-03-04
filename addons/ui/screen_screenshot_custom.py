@@ -22,12 +22,15 @@ class OutputFilename(object):
     suffix_char = '_'
     dirname = os.getcwd()
 
-    def __init__(self, filepath, ext=''):
+    def __init__(self, filepath, suffix='', ext=''):
         import bpy
         import os
 
         self.filename = bpy.path.display_name_from_filepath(filepath)
         self.dirname = os.path.dirname(filepath)
+
+        if suffix:
+            self.suffix=suffix
 
         if self.ext:
             self.ext = ext
@@ -48,10 +51,8 @@ class OutputFilename(object):
 class OutputImageFilename(OutputFilename):
     suffix_index = 0
 
-    def __init__(self, filepath, suffix='', suffix_index=0):
-        super(OutputImageFilename, self).__init__(filepath, ext='png')
-        if suffix:
-            self.suffix=suffix
+    def __init__(self, filepath, suffix='', suffix_index=0, ext='png'):
+        super(OutputImageFilename, self).__init__(filepath, suffix, ext)
         if suffix_index:
             self.suffix_index = suffix_index
 
@@ -105,7 +106,7 @@ class ScreenCapture(object):
     def _handle_area(self, area, index=0):
         context = self.__class__._prepare_context(self.context, area)
 
-        output = OutputImageFilename(context['blend_data'].filepath, area.type, index)
+        output = self.getOutput(area, index)
         self.dirname = output.dirname
 
         task = ScreenshotTask(context, False, output.filepath)
@@ -114,7 +115,7 @@ class ScreenCapture(object):
     def screen(self):
         context = self.__class__._prepare_context(self.context)
 
-        output = OutputFilename(context['blend_data'].filepath, 'png')
+        output = self.getOutput()
         self.dirname = output.dirname
 
         task = ScreenshotTask(context, True, output.filepath)
@@ -136,6 +137,12 @@ class Screenshot(ScreenCapture):
 
     def __init__(self, context):
         super(Screenshot, self).__init__(context)
+
+    def getOutput(self, area=None, index=-1):
+        if area:
+            return OutputImageFilename(self.context.blend_data.filepath, area.type, index)
+        else:
+            return OutputFilename(self.context.blend_data.filepath, '', 'png')
 
     def screen_all_areas(self):
         from itertools import groupby
