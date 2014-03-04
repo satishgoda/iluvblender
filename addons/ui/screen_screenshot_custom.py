@@ -117,6 +117,12 @@ class ScreenCapture(object):
 
         return overridden_context
 
+    def getOutput(self, area=None, index=0):
+        if area:
+            return OutputIndexedFilename(self.context.blend_data.filepath, self.ext, area.type, index)
+        else:
+            return OutputFilename(self.context.blend_data.filepath, self.ext)
+
     def createTask(self, context, full, output):
         task = ScreenCaptureTask(context, full, output.filepath)
         self.tasks.append(task)
@@ -155,12 +161,6 @@ class Screenshot(ScreenCapture):
 
     def __init__(self, context):
         super(Screenshot, self).__init__(context)
-
-    def getOutput(self, area=None, index=0):
-        if area:
-            return OutputIndexedFilename(self.context.blend_data.filepath, self.ext, area.type, index)
-        else:
-            return OutputFilename(self.context.blend_data.filepath, self.ext)
 
     def screen_all_areas(self):
         from itertools import groupby
@@ -218,12 +218,6 @@ class Screencast(ScreenCapture):
 
     def __init__(self, context):
         super(Screencast, self).__init__(context)
-
-    def getOutput(self, area=None, index=0):
-        if area:
-            return OutputIndexedFilename(self.context.blend_data.filepath, self.ext, area.type, index)
-        else:
-            return OutputFilename(self.context.blend_data.filepath, self.ext)
 
     def createTask(self, context, full, output):
         task = super(Screencast, self).createTask(context, full, output)
@@ -371,8 +365,8 @@ def register():
 
     keymap_items_add(keymap_items, capture_mode_mapping, ScreenshotCustom, 'C')
 
-    capture_mode_mapping = (('SCREEN', {}),
-                            ('SCREEN_ACTIVE_AREA', {'alt': True}),
+    capture_mode_mapping = (('SCREEN', {'ctrl': True}),
+                            ('SCREEN_ACTIVE_AREA', {'alt': True, 'ctrl':True}),
                             )
 
     keymap_items_add(keymap_items, capture_mode_mapping, ScreencastCustom, 'X')
