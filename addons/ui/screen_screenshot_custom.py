@@ -63,6 +63,8 @@ class OutputImageFilename(OutputFilename):
 
 
 class OutputVideoFilename(OutputFilename):
+    suffix_index = 0
+    
     def __init__(self, filepath, suffix='', suffix_index=0, ext='mp4'):
         super(OutputVideoFilename, self).__init__(filepath, suffix, ext)
         if suffix_index:
@@ -187,6 +189,7 @@ class Screencast(ScreenCapture):
         super(Screencast, self).__init__(context)
 
     def getOutput(self, area=None, index=-1):
+        print("INDEX:", index)
         if area:
             return OutputVideoFilename(self.context.blend_data.filepath, area.type, index)
         else:
