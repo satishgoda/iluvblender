@@ -80,13 +80,37 @@ class ScreenCapture(object):
         for task in self.tasks:
             self.execute(task.context, **task.kwargs)
 
+    @staticmethod
+    def _prepare_context(context, area=None):
+        overridden_context = context.copy()
+
+        if area:
+            overridden_context.update((
+                                ('area', area),
+                                ('region', area.regions[1]),
+                                ('space_data', area.spaces.active)
+                            ))
+
+        return overridden_context
+
+
+    def screen(self):
+        context = _prepare_context(self.context)
+
+        output = OutputFilename(context['blend_data'].filepath, 'png')
+        self.dirname = output.dirname
+
+        task = ScreenshotTask(context, True, output.filepath)
+        self.tasks.append(task)
+
+        self.run()
+
 
 class Screenshot(ScreenCapture):
     execute = bpy.ops.screen.screenshot
-    
+
     def __init__(self, context):
-        self.context = context
-        self.tasks = []
+        super(Screenshot, self).__init__(context)
 
 
 def _observer_file_browser(subject):
@@ -130,32 +154,6 @@ def _capture(screenshot):
 
     _observer_clipboard(screenshot)
     _observer_file_browser(screenshot)
-
-
-def _prepare_context(context, area=None):
-    overrides = context.copy()
-
-    if area:
-        overrides.update((
-                            ('area', area),
-                            ('region', area.regions[1]),
-                            ('space_data', area.spaces.active)
-                        ))
-
-    return overrides
-
-
-def _screen(context):
-    context = _prepare_context(context)
-
-    screenshot = Screenshot(context)
-    filepath = OutputFilename(context['blend_data'].filepath, 'png').filepath
-    task = ScreenshotTask(context, True, filepath)
-
-    screenshot.tasks.append(task)
-
-    screenshot.run()
-
 
 
 def _handle_area(context, area, index=0):
