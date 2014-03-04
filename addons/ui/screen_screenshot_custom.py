@@ -17,23 +17,20 @@ import os
 
 class OutputFilename(object):
     filename = 'untitled'
-    ext = 'blend'
     suffix = None
     suffix_char = '_'
     dirname = os.getcwd()
 
-    def __init__(self, filepath, suffix='', ext=''):
+    def __init__(self, filepath, ext, suffix=''):
         import bpy
         import os
 
         self.filename = bpy.path.display_name_from_filepath(filepath)
         self.dirname = os.path.dirname(filepath)
+        self.ext = ext
 
         if suffix:
             self.suffix=suffix
-
-        if self.ext:
-            self.ext = ext
 
     def getSuffix(self):
         return self.suffix_char + self.suffix
@@ -52,8 +49,8 @@ class OutputFilename(object):
 class OutputIndexedFilename(OutputFilename):
     suffix_index = 0
 
-    def __init__(self, filepath, suffix='', suffix_index=0, ext='png'):
-        super(OutputIndexedFilename, self).__init__(filepath, suffix, ext)
+    def __init__(self, filepath, ext, suffix='', suffix_index=0):
+        super(OutputIndexedFilename, self).__init__(filepath, ext, suffix)
         if suffix_index:
             self.suffix_index = suffix_index
 
@@ -130,6 +127,7 @@ class ScreenCapture(object):
 
 class Screenshot(ScreenCapture):
     execute = bpy.ops.screen.screenshot
+    ext = 'png'
 
     modes = [('SCREEN', 'Current Screen', 'Capture the current screen'),
               ('SCREEN_ACTIVE_AREA', 'Active Screen Area', 'Capture the active screen area'),
@@ -140,11 +138,11 @@ class Screenshot(ScreenCapture):
     def __init__(self, context):
         super(Screenshot, self).__init__(context)
 
-    def getOutput(self, area=None, index=-1):
+    def getOutput(self, area=None, index=0):
         if area:
-            return OutputIndexedFilename(self.context.blend_data.filepath, area.type, index)
+            return OutputIndexedFilename(self.context.blend_data.filepath, self.ext, area.type, index)
         else:
-            return OutputFilename(self.context.blend_data.filepath, '', 'png')
+            return OutputFilename(self.context.blend_data.filepath, self.ext)
 
     def screen_all_areas(self):
         from itertools import groupby
@@ -167,6 +165,7 @@ class Screenshot(ScreenCapture):
 
 class Screencast(ScreenCapture):
     execute = bpy.ops.screen.screencast
+    ext = 'mp4'
 
     modes = [('SCREEN', 'Current Screen', 'Capture the current screen'),
               ('SCREEN_ACTIVE_AREA', 'Active Screen Area', 'Capture the active screen area')
@@ -175,11 +174,11 @@ class Screencast(ScreenCapture):
     def __init__(self, context):
         super(Screencast, self).__init__(context)
 
-    def getOutput(self, area=None, index=-1):
+    def getOutput(self, area=None, index=0):
         if area:
-            return OutputIndexedFilename(self.context.blend_data.filepath, area.type, index)
+            return OutputIndexedFilename(self.context.blend_data.filepath, self.ext, area.type, index)
         else:
-            return OutputFilename(self.context.blend_data.filepath, '' ,'mp4')
+            return OutputFilename(self.context.blend_data.filepath, self.ext)
 
 
 def _observer_file_browser(subject):
