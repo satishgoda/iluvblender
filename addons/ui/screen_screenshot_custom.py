@@ -93,17 +93,6 @@ class ScreenCapture(object):
 
         return overridden_context
 
-    def screen(self):
-        context = self.__class__._prepare_context(self.context)
-
-        output = OutputFilename(context['blend_data'].filepath, 'png')
-        self.dirname = output.dirname
-
-        task = ScreenshotTask(context, True, output.filepath)
-        self.tasks.append(task)
-
-        self.run()
-
     def _handle_area(self, area, index=0):
         context = self.__class__._prepare_context(self.context, area)
 
@@ -115,6 +104,16 @@ class ScreenCapture(object):
 
         self.run()
 
+    def screen(self):
+        context = self.__class__._prepare_context(self.context)
+
+        output = OutputFilename(context['blend_data'].filepath, 'png')
+        self.dirname = output.dirname
+
+        task = ScreenshotTask(context, True, output.filepath)
+        self.tasks.append(task)
+
+        self.run()
 
     def area(self):
         area = self.context.area
