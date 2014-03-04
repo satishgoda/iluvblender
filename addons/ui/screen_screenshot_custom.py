@@ -102,8 +102,6 @@ class ScreenCapture(object):
         task = ScreenshotTask(context, False, output.filepath)
         self.tasks.append(task)
 
-        self.run()
-
     def screen(self):
         context = self.__class__._prepare_context(self.context)
 
@@ -118,6 +116,7 @@ class ScreenCapture(object):
     def area(self):
         area = self.context.area
         self._handle_area(area)
+        self.run()
 
 
 class Screenshot(ScreenCapture):
@@ -125,6 +124,26 @@ class Screenshot(ScreenCapture):
 
     def __init__(self, context):
         super(Screenshot, self).__init__(context)
+
+    def screen_all_areas(self):
+        from itertools import groupby
+
+        area_map = {}
+
+        criterion = lambda area: area.type
+
+        for key, group in groupby(sorted(self.context.screen.areas, key=criterion), criterion):
+            area_map[key] = tuple(group)
+
+        for area_type, areas in area_map.items():
+            for index, area in enumerate(areas):
+                self._handle_area(area, index)
+
+        self.run()
+
+    def screen_and_all_areas(self):
+        self.screen()
+        self.screen_all_areas()
 
 
 def _observer_file_browser(subject):
@@ -170,26 +189,6 @@ def _capture(screenshot):
     _observer_file_browser(screenshot)
 
 
-def _screen_all_areas(context):
-    from itertools import groupby
-
-    area_map = {}
-
-    criterion = lambda area: area.type
-
-    for key, group in groupby(sorted(context.screen.areas, key=criterion), criterion):
-        area_map[key] = tuple(group)
-
-    for area_type, areas in area_map.items():
-        for index, area in enumerate(areas):
-            _handle_area(context, area, index)
-
-
-def _screen_and_all_areas(context):
-    _screen(context)
-    _screen_all_areas(context)
-
-
 class ScreenshotsCustom(bpy.types.Operator):
     """Create and save screenshots of different areas"""
     bl_idname = "screen.screenshot_custom"
@@ -224,9 +223,9 @@ class ScreenshotsCustom(bpy.types.Operator):
         elif self.capture_mode == 'SCREEN_ACTIVE_AREA':
             screenshot.area()
         elif self.capture_mode == 'SCREEN_ALL_AREAS':
-            _screen_all_areas(context)
+            screenshot.screen_all_areas()
         elif self.capture_mode == 'SCREEN_AND_ALL_AREAS':
-            _screen_and_all_areas(context)
+            screenshot.screen_and_all_areas()
         else:
             self.report({'ERROR'}, "Save Screenshot Custom: No other capture modes supported")
             return {'CANCELLED'}
