@@ -129,14 +129,8 @@ class Screenshot(ScreenCapture):
         super(Screenshot, self).__init__(context)
 
     def __call__(self, mode):
-        if mode == 'SCREEN':
-            self.screen()
-        elif mode == 'SCREEN_ACTIVE_AREA':
-            self.screen_active_area()
-        elif mode == 'SCREEN_ALL_AREAS':
-            self.screen_all_areas()
-        elif mode == 'SCREEN_AND_ALL_AREAS':
-            self.screen_and_all_areas()
+        if mode in map(lambda mode: mode[0], self.modes):
+            getattr(self, mode.lower())()
         else:
             return False
 
