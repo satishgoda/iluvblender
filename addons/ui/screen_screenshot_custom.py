@@ -41,7 +41,7 @@ class OutputFilename(object):
         filename = self.filename
         if self.suffix:
             filename += self.getSuffix()
-        print("WTFWTF: ", self.ext)
+
         filename += '.' + self.ext
         return os.path.join(self.dirname, filename)
 
@@ -86,8 +86,19 @@ class ScreenCapture(object):
 
     def run(self):
         for task in self.tasks:
-            print(task.context, task.kwargs)
+            before = getattr(task, 'before', None)
+
+            if before:
+                print("Before: ", task.kwargs['filepath'])
+                before(task)
+
             self.execute(task.context, **task.kwargs)
+
+            after = getattr(task, 'after', None)
+
+            if after:
+                print("After: ", task.kwargs['filepath'])
+                after(task)
 
     @staticmethod
     def _prepare_context(context, area=None):
@@ -102,14 +113,18 @@ class ScreenCapture(object):
 
         return overridden_context
 
+    def createTask(self, context, full, output):
+        task = ScreenCaptureTask(context, full, output.filepath)
+        self.tasks.append(task)
+        return task
+
     def _handle_area(self, area, index=0):
         context = self.__class__._prepare_context(self.context, area)
 
         output = self.getOutput(area, index)
         self.dirname = output.dirname
 
-        task = ScreenCaptureTask(context, False, output.filepath)
-        self.tasks.append(task)
+        self.createTask(context, False, output)
 
     def screen(self):
         context = self.__class__._prepare_context(self.context)
@@ -117,8 +132,7 @@ class ScreenCapture(object):
         output = self.getOutput()
         self.dirname = output.dirname
 
-        task = ScreenCaptureTask(context, True, output.filepath)
-        self.tasks.append(task)
+        self.createTask(context, False, output)
 
     def screen_active_area(self):
         area = self.context.area
@@ -163,6 +177,14 @@ class Screenshot(ScreenCapture):
         self.screen_all_areas()
 
 
+def before_screencast(self):
+    print("Before screencast")
+
+
+def after_screencast(self):
+    print("After screencast")
+
+
 class Screencast(ScreenCapture):
     execute = bpy.ops.screen.screencast
     ext = 'mp4'
@@ -179,6 +201,12 @@ class Screencast(ScreenCapture):
             return OutputIndexedFilename(self.context.blend_data.filepath, self.ext, area.type, index)
         else:
             return OutputFilename(self.context.blend_data.filepath, self.ext)
+
+    def createTask(self, context, full, output):
+        task = super(Screencast, self).createTask(context, full, output)
+        setattr(task, 'before', before_screencast)
+        setattr(task, 'after', after_screencast)
+        return task
 
 
 def _observer_file_browser(subject):
