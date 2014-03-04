@@ -111,19 +111,37 @@ class ScreenCapture(object):
         task = ScreenshotTask(context, True, output.filepath)
         self.tasks.append(task)
 
-        self.run()
-
-    def area(self):
+    def screen_active_area(self):
         area = self.context.area
         self._handle_area(area)
-        self.run()
 
 
 class Screenshot(ScreenCapture):
     execute = bpy.ops.screen.screenshot
 
+    modes = [('SCREEN', 'Current Screen', 'Capture the current screen'),
+              ('SCREEN_ACTIVE_AREA', 'Active Screen Area', 'Capture the active screen area'),
+              ('SCREEN_ALL_AREAS', 'All Screen Areas', 'Capture all the areas of the current screen'),
+              ('SCREEN_AND_ALL_AREAS', 'Current Screen and all Areas', 'Capture screen and also all its areas'),
+            ]
+
     def __init__(self, context):
         super(Screenshot, self).__init__(context)
+
+    def __call__(self, mode):
+        if mode == 'SCREEN':
+            self.screen()
+        elif mode == 'SCREEN_ACTIVE_AREA':
+            self.screen_active_area()
+        elif mode == 'SCREEN_ALL_AREAS':
+            self.screen_all_areas()
+        elif mode == 'SCREEN_AND_ALL_AREAS':
+            self.screen_and_all_areas()
+        else:
+            return False
+
+        self.run()
+        return True
 
     def screen_all_areas(self):
         from itertools import groupby
@@ -138,8 +156,6 @@ class Screenshot(ScreenCapture):
         for area_type, areas in area_map.items():
             for index, area in enumerate(areas):
                 self._handle_area(area, index)
-
-        self.run()
 
     def screen_and_all_areas(self):
         self.screen()
@@ -182,26 +198,13 @@ def _observer_clipboard(subject):
     window_manager.clipboard = subject.output.dirname
 
 
-def _capture(screenshot):
-    bpy.ops.screen.screenshot(screenshot.context, **screenshot.kwargs)
-
-    _observer_clipboard(screenshot)
-    _observer_file_browser(screenshot)
-
-
 class ScreenshotsCustom(bpy.types.Operator):
     """Create and save screenshots of different areas"""
     bl_idname = "screen.screenshot_custom"
     bl_label = "Save Screenshot Custom"
     bl_options = {'REGISTER'}
 
-    _items = [('SCREEN', 'Current Screen', 'Capture the current screen'),
-              ('SCREEN_ACTIVE_AREA', 'Active Screen Area', 'Capture the active screen area'),
-              ('SCREEN_ALL_AREAS', 'All Screen Areas', 'Capture all the areas of the current screen'),
-              ('SCREEN_AND_ALL_AREAS', 'Current Screen and all Areas', 'Capture screen and also all its areas'),
-              ]
-
-    capture_mode = bpy.props.EnumProperty(items=_items, name="Capture mode", default='SCREEN_AND_ALL_AREAS')
+    capture_mode = bpy.props.EnumProperty(items=Screenshot.modes, name="Capture mode", default='SCREEN_AND_ALL_AREAS')
 
     def __init__(self):
         print("Initializing " + self.bl_idname)
@@ -217,16 +220,9 @@ class ScreenshotsCustom(bpy.types.Operator):
         print("Executing " + self.bl_idname)
 
         screenshot = Screenshot(context)
+        ret = screenshot(self.capture_mode)
 
-        if self.capture_mode == 'SCREEN':
-            screenshot.screen()
-        elif self.capture_mode == 'SCREEN_ACTIVE_AREA':
-            screenshot.area()
-        elif self.capture_mode == 'SCREEN_ALL_AREAS':
-            screenshot.screen_all_areas()
-        elif self.capture_mode == 'SCREEN_AND_ALL_AREAS':
-            screenshot.screen_and_all_areas()
-        else:
+        if not ret:
             self.report({'ERROR'}, "Save Screenshot Custom: No other capture modes supported")
             return {'CANCELLED'}
 
@@ -264,7 +260,7 @@ def unregister():
 
     keymap = keyconfigs.addon.keymaps['Screen']
 
-    for i in ScreenshotsCustom._items:
+    for i in Screenshot.modes:
         kmi = keymap.keymap_items[ScreenshotsCustom.bl_idname]
         keymap.keymap_items.remove(kmi)
 
