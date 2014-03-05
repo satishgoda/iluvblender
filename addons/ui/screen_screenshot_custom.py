@@ -93,7 +93,7 @@ class ScreenCapture(object):
                 before(task)
                 print(self.context.scene.render.filepath)
                 print(self.context.scene.render.image_settings.file_format)
-            
+
             self.execute(task.context, **task.kwargs)
 
             after = getattr(task, 'after', None)
@@ -185,7 +185,7 @@ def before_screencast(self):
     scene = self.context['scene']
     render = scene.render
     imgs = render.image_settings
-    
+
     self.overrides = {}
 
     self.overrides['filepath'] = render.filepath
@@ -201,7 +201,7 @@ def after_screencast(self):
     scene = self.context['scene']
     render = scene.render
     imgs = render.image_settings
-    
+
     render.filepath = self.overrides['filepath']
     imgs.file_format = self.overrides['file_format']
 
@@ -263,8 +263,8 @@ def _observer_clipboard(subject):
 
 
 class ScreenCaptureBase(object):
-    bl_options = {'REGISTER'}
-    
+    bl_options = {'REGISTER', 'MACRO', 'UNDO'}
+
     def __init__(self):
         print("Initializing " + self.bl_idname)
 
@@ -287,10 +287,10 @@ class ScreenCaptureBase(object):
         #self.report({'INFO'}, "Screenshot saved in {0}".format(context.window_manager.clipboard))
 
         return {'FINISHED'}
-            
+
     def __del__(self):
         print("Destructing " + self.bl_idname)
-    
+
 
 class ScreenshotCustom(bpy.types.Operator, ScreenCaptureBase):
     """Create and save screenshots of different areas"""
@@ -315,7 +315,7 @@ class ScreencastCustom(bpy.types.Operator, ScreenCaptureBase):
 
     def configuredKeys(self, event):
         return event.oskey and event.type == 'X'
-    
+
     def delegated_execute(self, context):
         return Screencast(context)(self.capture_mode)
 
@@ -361,8 +361,8 @@ def unregister():
     keyconfigs = bpy.context.window_manager.keyconfigs
     keymap_items = keyconfigs.addon.keymaps['Screen'].keymap_items
 
-    keymap_items_remove(keymap, Screenshot.modes, ScreenshotCustom)
-    keymap_items_remove(keymap, Screencast.modes, ScreencastCustom)
+    keymap_items_remove(keymap_items, Screenshot.modes, ScreenshotCustom)
+    keymap_items_remove(keymap_items, Screencast.modes, ScreencastCustom)
 
     bpy.utils.unregister_class(ScreenshotCustom)
     bpy.utils.unregister_class(ScreencastCustom)
