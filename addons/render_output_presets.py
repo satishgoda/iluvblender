@@ -36,7 +36,7 @@ from bl_operators import presets
 
 class RENDER_MT_output(bpy.types.Menu):
     bl_label = "Output Presets"
-    preset_subdir = "output"
+    preset_subdir = "render/output"
     preset_operator = "script.execute_preset"
     draw = bpy.types.Menu.draw_preset
 
@@ -66,6 +66,21 @@ class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
     ]
 
     preset_subdir = "output"
+
+    def post_cb(self, context):
+        print("post_cb")
+        render = context.scene.render
+        preset_filepath = render.filepath
+        if preset_filepath.startswith('{'):
+            blend_filepath = context.blend_data.filepath
+            if blend_filepath:
+                filename = bpy.path.display_name_from_filepath(blend_filepath)
+                render.filepath = '//' + preset_filepath.format(filename=filename)
+            else:
+                render.filepath = '/tmp/' + preset_filepath.format(filename='untitled')
+        else:
+            print("Unsupported markup")
+
 
 
 def RENDER_PT_output_draw_presets(self, context):
