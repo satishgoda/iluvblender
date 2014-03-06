@@ -44,6 +44,7 @@ class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
         "image_settings.compression",
         "ffmpeg.format",
         "ffmpeg.codec",
+        "ffmpeg.use_lossless_output",
     ]
 
     preset_subdir = "output"
@@ -56,10 +57,11 @@ class RENDER_MT_output(bpy.types.Menu):
     draw = bpy.types.Menu.draw_preset
 
 
-def odraw(self, context):
+def RENDER_PT_output_draw_presets(self, context):
     layout = self.layout
-
+    
     row = layout.row(align=True)
+    
     row.menu("RENDER_MT_output", text=bpy.types.RENDER_MT_output.bl_label)
     row.operator("render.preset_add", text="", icon='ZOOMIN')
     opprops = row.operator("render.preset_add", text="", icon='ZOOMOUT')
@@ -69,11 +71,11 @@ def odraw(self, context):
 def register():
     bpy.utils.register_class(AddPresetOutput)
     bpy.utils.register_class(RENDER_MT_output)
-    bpy.types.RENDER_PT_output.prepend(odraw)
+    bpy.types.RENDER_PT_output.prepend(RENDER_PT_output_draw_presets)
 
 
 def unregister():
-    bpy.types.RENDER_PT_output.remove(odraw)
+    bpy.types.RENDER_PT_output.remove(RENDER_PT_output_draw_presets)
     bpy.utils.unregister_class(AddPresetOutput)
     bpy.utils.unregister_class(RENDER_MT_output)
 
