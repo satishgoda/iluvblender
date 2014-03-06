@@ -23,10 +23,17 @@ import bpy
 from bl_operators import presets
 
 
+class RENDER_MT_output(bpy.types.Menu):
+    bl_label = "Output Presets"
+    preset_subdir = "output"
+    preset_operator = "script.execute_preset"
+    draw = bpy.types.Menu.draw_preset
+
+
 class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
     """Add or remove a Output Preset"""
-    bl_idname = "render.preset_add"
-    bl_label = "Add Render Preset"
+    bl_idname = "render.output_preset_add"
+    bl_label = "Add Render Output Preset"
     preset_menu = "RENDER_MT_output"
 
     preset_defines = [
@@ -50,21 +57,14 @@ class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
     preset_subdir = "output"
 
 
-class RENDER_MT_output(bpy.types.Menu):
-    bl_label = "Output Presets"
-    preset_subdir = "output"
-    preset_operator = "script.execute_preset"
-    draw = bpy.types.Menu.draw_preset
-
-
 def RENDER_PT_output_draw_presets(self, context):
     layout = self.layout
     
     row = layout.row(align=True)
     
     row.menu("RENDER_MT_output", text=bpy.types.RENDER_MT_output.bl_label)
-    row.operator("render.preset_add", text="", icon='ZOOMIN')
-    opprops = row.operator("render.preset_add", text="", icon='ZOOMOUT')
+    row.operator("render.output_preset_add", text="", icon='ZOOMIN')
+    opprops = row.operator("render.output_preset_add", text="", icon='ZOOMOUT')
     opprops.remove_active = True
 
 
