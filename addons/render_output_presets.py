@@ -1,53 +1,58 @@
-# scripts/startup/bl_operators/presets.py
+import bpy
 
-class AddPresetRender(AddPresetBase, Operator):
-    """Add or remove a Render Preset"""
+from bl_operators import presets
+
+
+class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
+    """Add or remove a Output Preset"""
     bl_idname = "render.preset_add"
     bl_label = "Add Render Preset"
-    preset_menu = "RENDER_MT_presets"
+    preset_menu = "RENDER_MT_output"
 
     preset_defines = [
-        "scene = bpy.context.scene"
+        "scene = bpy.context.scene",
+        "render = scene.render",
+        "image_settings = render.image_settings"
     ]
 
     preset_values = [
-        "scene.render.field_order",
-        "scene.render.fps",
-        "scene.render.fps_base",
-        "scene.render.pixel_aspect_x",
-        "scene.render.pixel_aspect_y",
-        "scene.render.resolution_percentage",
-        "scene.render.resolution_x",
-        "scene.render.resolution_y",
-        "scene.render.use_fields",
-        "scene.render.use_fields_still",
+        "render.filepath",
+        "image_settings.file_format"
     ]
 
-    preset_subdir = "render"
+    preset_subdir = "output"
 
 
-# scripts/startup/bl_ui/properties_render.py
-
-class RENDER_MT_presets(Menu):
-    bl_label = "Render Presets"
-    preset_subdir = "render"
+class RENDER_MT_output(bpy.types.Menu):
+    bl_label = "Output Presets"
+    preset_subdir = "output"
     preset_operator = "script.execute_preset"
-    draw = Menu.draw_preset
+    draw = bpy.types.Menu.draw_preset
 
 
-# scripts/startup/bl_ui/properties_render.py
+def odraw(self, context):
+    layout = self.layout
 
-class RENDER_PT_dimensions(RenderButtonsPanel, Panel):
-    bl_label = "Dimensions"
-    COMPAT_ENGINES = {'BLENDER_RENDER'}
+    scene = context.scene
+    rd = scene.render
 
-    def draw(self, context):
-        layout = self.layout
+    row = layout.row(align=True)
+    row.menu("RENDER_MT_output", text=bpy.types.RENDER_MT_output.bl_label)
+    row.operator("render.preset_add", text="", icon='ZOOMIN')
+    row.operator("render.preset_add", text="", icon='ZOOMOUT').remove_active = True
 
-        scene = context.scene
-        rd = scene.render
+    
+def register():
+    bpy.utils.register_class(AddPresetOutput)
+    bpy.utils.register_class(RENDER_MT_output)
+    bpy.types.RENDER_PT_output.prepend(odraw)
 
-        row = layout.row(align=True)
-        row.menu("RENDER_MT_presets", text=bpy.types.RENDER_MT_presets.bl_label)
-        row.operator("render.preset_add", text="", icon='ZOOMIN')
-        row.operator("render.preset_add", text="", icon='ZOOMOUT').remove_active = True
+    
+def unregister():
+    bpy.types.RENDER_PT_output.remove(odraw)
+    bpy.utils.unregister_class(AddPresetOutput)
+    bpy.utils.unregister_class(RENDER_MT_output)
+
+
+if __name__ == '__main__':
+    register()
