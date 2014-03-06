@@ -32,12 +32,18 @@ class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
     preset_defines = [
         "scene = bpy.context.scene",
         "render = scene.render",
-        "image_settings = render.image_settings"
+        "image_settings = render.image_settings",
+        "ffmpeg = render.ffmpeg",
     ]
 
     preset_values = [
         "render.filepath",
-        "image_settings.file_format"
+        "image_settings.file_format",
+        "image_settings.color_mode",
+        "image_settings.color_depth",
+        "image_settings.compression",
+        "ffmpeg.format",
+        "ffmpeg.codec",
     ]
 
     preset_subdir = "output"
