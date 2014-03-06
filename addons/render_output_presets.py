@@ -67,6 +67,10 @@ class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
 
     preset_subdir = "output"
 
+    def add(self, context, filepath):
+        print("I has total control now")
+        print(filepath)
+
     def post_cb(self, context):
         print("post_cb")
         render = context.scene.render
