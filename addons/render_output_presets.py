@@ -18,6 +18,17 @@
 
 # <pep8 compliant>
 
+bl_info = {
+    "name": "Render Output Presets",
+    "author": "Satish Goda (iluvblender on BA, satishgoda@gmail.com)",
+    "version": (0, 1),
+    "blender": (2, 7, 0),
+    "location": "Properties Editor : Render Context : Output Panel",
+    "description": "Save preset consisting of properties from RenderSettings, ImageFormatSettings and FFmpegSettings",
+    "warning": "",
+    "category": "Render"
+}
+
 import bpy
 
 from bl_operators import presets
