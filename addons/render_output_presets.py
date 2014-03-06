@@ -33,11 +33,65 @@ import bpy
 
 from bl_operators import presets
 
+from bpy.props import StringProperty
+
+
+class ExecuteRenderOutputPreset(bpy.types.Operator):
+    """Execute the render output preset and perform post updates"""
+    bl_idname = "script.execute_render_output_preset"
+    bl_label = "Execute a render output preset"
+
+    filepath = StringProperty(
+                 subtype='FILE_PATH',
+                 options={'SKIP_SAVE'},
+                )
+
+    menu_idname = StringProperty(
+                    name="Menu ID Name",
+                    description="ID name of the menu this was called from",
+                     options={'SKIP_SAVE'},
+                    )
+
+    def execute(self, context):
+        from os.path import basename, splitext
+        filepath = self.filepath
+        
+        # change the menu title to the most recently chosen option
+        preset_class = getattr(bpy.types, 'RENDER_MT_output')
+        preset_class.bl_label = bpy.path.display_name(basename(filepath))
+
+        ext = splitext(filepath)[1].lower()
+
+        # execute the preset using script.python_file_run
+        if ext == ".py":
+            bpy.ops.script.python_file_run(filepath=filepath)
+            render = context.scene.render
+            preset_filepath = render.filepath
+            if preset_filepath.startswith('{'):
+                blend_filepath = context.blend_data.filepath
+                if blend_filepath:
+                    filename = bpy.path.display_name_from_filepath(blend_filepath)
+                    render.filepath = '//' + preset_filepath.format(filename=filename)
+                else:
+                    render.filepath = '/tmp/' + preset_filepath.format(filename='untitled')
+            else:
+                print("Unsupported markup")
+        elif ext == ".xml":
+            import rna_xml
+            rna_xml.xml_file_run(context,
+                                 filepath,
+                                 preset_class.preset_xml_map)
+        else:
+            self.report({'ERROR'}, "unknown filetype: %r" % ext)
+            return {'CANCELLED'}
+
+        return {'FINISHED'}
+
 
 class RENDER_MT_output(bpy.types.Menu):
     bl_label = "Output Presets"
     preset_subdir = "render/output"
-    preset_operator = "script.execute_preset"
+    preset_operator = "script.execute_render_output_preset"
     draw = bpy.types.Menu.draw_preset
 
 
@@ -65,26 +119,7 @@ class AddPresetOutput(presets.AddPresetBase, bpy.types.Operator):
         "ffmpeg.use_lossless_output",
     ]
 
-    preset_subdir = "output"
-
-    def add(self, context, filepath):
-        print("I has total control now")
-        print(filepath)
-
-    def post_cb(self, context):
-        print("post_cb")
-        render = context.scene.render
-        preset_filepath = render.filepath
-        if preset_filepath.startswith('{'):
-            blend_filepath = context.blend_data.filepath
-            if blend_filepath:
-                filename = bpy.path.display_name_from_filepath(blend_filepath)
-                render.filepath = '//' + preset_filepath.format(filename=filename)
-            else:
-                render.filepath = '/tmp/' + preset_filepath.format(filename='untitled')
-        else:
-            print("Unsupported markup")
-
+    preset_subdir = "render/output"
 
 
 def RENDER_PT_output_draw_presets(self, context):
@@ -99,8 +134,9 @@ def RENDER_PT_output_draw_presets(self, context):
 
 
 def register():
-    bpy.utils.register_class(AddPresetOutput)
+    bpy.utils.register_class(ExecuteRenderOutputPreset)
     bpy.utils.register_class(RENDER_MT_output)
+    bpy.utils.register_class(AddPresetOutput)
     bpy.types.RENDER_PT_output.prepend(RENDER_PT_output_draw_presets)
 
 
@@ -108,6 +144,7 @@ def unregister():
     bpy.types.RENDER_PT_output.remove(RENDER_PT_output_draw_presets)
     bpy.utils.unregister_class(AddPresetOutput)
     bpy.utils.unregister_class(RENDER_MT_output)
+    bpy.utils.unregister_class(ExecuteRenderOutputPreset)
 
 
 if __name__ == '__main__':
