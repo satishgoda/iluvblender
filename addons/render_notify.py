@@ -22,7 +22,7 @@ bl_info = {
     "name": "Render Notify",
     "author": "Campbell Barton",
     "version": (0, 0, 1),
-    "blender": (2, 65, 0),
+    "blender": (2, 70, 0),
     "location": "Uses desktop notify facilities",
     "description": "Notify when a rendered completes",
     "warning": "Currently only Linux/Unix supported (using 'notify-send')",
@@ -65,7 +65,7 @@ def render_complete(scene):
     time_str = clean_float(str(timedelta(seconds=time_val)))
     file_str = os.path.basename(bpy.data.filepath)
     msg = "%s render complete in %s" % (file_str, time_str)
-    os.system("notify-send --app-name=Blender --icon=blender %s" %
+    os.system("notify-send --icon=blender %s" %
               shlex.quote(msg))
 
 
