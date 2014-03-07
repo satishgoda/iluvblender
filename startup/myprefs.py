@@ -51,7 +51,10 @@ system.author = "First Last(emailid@domain)- learningblender3dsoftware.blogspot.
 
 
 # Addons to Disable (Factory addons)
-for addon in filter(lambda addon: addon.module != 'cycles', userprefs.addons):
+
+excludes = {'cycles'}
+
+for addon in filter(lambda addon: addon.module not in excludes, userprefs.addons):
     print("{0} - {1}".format("Disabling", addon))
     bpy.ops.wm.addon_disable(module=addon.module)
 
@@ -63,6 +66,11 @@ if myaddonpath:
     for module in myaddonmodules:
         print("{0} - {1}".format("Enabling", module))
         bpy.ops.wm.addon_enable(module=module.__name__)
+
+development_addons = {'development_api_navigator', 'development_icon_get'}
+
+for module in development_addons:
+    bpy.ops.wm.addon_enable(module=module)
 
 
 # User Interface Customizations
