@@ -1,0 +1,6 @@
+scripts/startup/test1.py
+
+Warning! 'scripts/startup/test1.py' has no register function, this is now a requirement for registerable scripts
+found bundled python: /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/python
+
+Blender quit
