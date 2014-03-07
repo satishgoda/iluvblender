@@ -1,11 +1,26 @@
-connect failed: No such file or directory
+Switching to fully guarded memory allocator.                                                                                                                                                                                                
+Blender 2.70 (sub 0)                                                                                                                                                                                                                        
+Build: 2014-03-05 19:42:18 Linux:64bit Release                                                                                                                                                                                              
+argv[0] = blender270                                                                                                                                                                                                                        
+argv[1] = --python                                                                                                                                                                                                                          
+argv[2] = ./boot.py                                                                                                                                                                                                                         
+argv[3] = --debug-python                                                                                                                                                                                                                    
+argv[4] = --debug                                                                                                                                                                                                                           
+connect failed: No such file or directory                                                                                                                                                                                                   
+read file ./config/startup.blend                                                                                                                                                                                                            
+  Version 270 sub 0 date 1970-01-01 00:00 hash unknown                                                                                                                                                                                      
+
+ordered
+ OBCube
+ OBLamp
+ OBCamera
 found bundled python: /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/python
 SRNA Subclassed: 'Context'                                                                                  
 SRNA Subclassed: 'Operator'                                                                                 
 SRNA Subclassed: 'Menu'                                                                                     
 SRNA Subclassed: 'Panel'                                                                                    
 SRNA Subclassed: 'PropertyGroup'                                                                            
-time bl_operators 0.0312                                                                                    
+time bl_operators 0.0474                                                                                    
 SRNA Subclassed: 'Bone'                                                                                     
 SRNA Subclassed: 'EditBone'                                                                                 
 SRNA Subclassed: 'PoseBone'                                                                                 
@@ -14,10 +29,10 @@ SRNA Subclassed: 'Mesh'
 SRNA Subclassed: 'Object'                                                                                   
 SRNA Subclassed: 'Texture'                                                                                  
 SRNA Subclassed: 'Header'                                                                                   
-time bl_ui 0.0768                                                                                           
+time bl_ui 0.1074                                                                                           
 SRNA Subclassed: 'KeyingSetInfo'                                                                            
-time keyingsets_builtins 0.0020                                                                             
-time nodeitems_builtins 0.0010                                                                              
+time keyingsets_builtins 0.0031                                                                             
+time nodeitems_builtins 0.0016                                                                              
 SRNA Subclassed: 'WindowManager'                                                                            
 SRNA Subclassed: 'Menu'                                                                                     
 SRNA Subclassed: 'Panel'                                                                                    
@@ -92,6 +107,7 @@ SRNA Subclassed: 'Panel'
 SRNA Subclassed: 'Menu'                                                                                     
 SRNA Subclassed: 'Panel'                                                                                    
 time bapp 0.0003                                                                                            
+Registering application specific types                                                                      
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons/add_curve_extra_objects/__init__.py add_curve_extra_objects
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons/add_curve_ivygen.py add_curve_ivygen                       
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons/add_curve_sapling/__init__.py add_curve_sapling            
@@ -241,22 +257,22 @@ fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/render_auto_save.py render_auto_save                              
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/render_clay.py render_clay                                        
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/render_notify.py render_notify                                    
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/render_time.py render_time
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/render_to_print.py render_to_print
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/scene_amaranth_toolset.py scene_amaranth_toolset
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/sequencer_extra_actions/__init__.py sequencer_extra_actions
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/sequencer_jumptocut.py sequencer_jumptocut
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/sequencer_tools/__init__.py sequencer_tools
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/render_time.py render_time                                        
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/render_to_print.py render_to_print                                
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/scene_amaranth_toolset.py scene_amaranth_toolset                  
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/sequencer_extra_actions/__init__.py sequencer_extra_actions       
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/sequencer_jumptocut.py sequencer_jumptocut                        
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/sequencer_tools/__init__.py sequencer_tools                       
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_add_surround_cameras.py space_view3d_add_surround_cameras
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_enhanced_3d_cursor.py space_view3d_enhanced_3d_cursor
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_enhanced_3d_cursor.py space_view3d_enhanced_3d_cursor    
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_game_props_visualiser.py space_view3d_game_props_visualiser
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_library_hide.py space_view3d_library_hide
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_manipulator_Menu.py space_view3d_manipulator_Menu
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_objects_panel.py space_view3d_objects_panel
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_paint_bprojection.py space_view3d_paint_bprojection
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_quickPrefs.py space_view3d_quickPrefs
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_simple_align.py space_view3d_simple_align
-fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/system_keyboard_svg.py system_keyboard_svg
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_library_hide.py space_view3d_library_hide                  
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_manipulator_Menu.py space_view3d_manipulator_Menu          
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_objects_panel.py space_view3d_objects_panel                
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_paint_bprojection.py space_view3d_paint_bprojection        
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_quickPrefs.py space_view3d_quickPrefs                      
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/space_view3d_simple_align.py space_view3d_simple_align                  
+fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/system_keyboard_svg.py system_keyboard_svg                              
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/system_project_folder.py system_project_folder
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/text_editor_pasteall.py text_editor_pasteall
 fake_module /home/satishg/bin/blenderinstalldir/blender-2.70-RC1-linux-glibc211-x86_64/2.70/scripts/addons_contrib/text_intellisense.py text_intellisense
@@ -269,7 +285,7 @@ SRNA Subclassed: 'Menu'
 SRNA Subclassed: 'Operator'
 SRNA Subclassed: 'PropertyGroup'
         addon_utils.enable cycles
-Python Script Load Time 0.2471
+Python Script Load Time 0.3844
 SRNA Subclassed: 'PropertyGroup'
 SRNA Subclassed: 'Library'
 SRNA Subclassed: 'KeyingSetInfo'
@@ -296,3 +312,18 @@ SRNA Subclassed: 'Menu'
 SRNA Subclassed: 'AddonPreferences'
 SRNA Subclassed: 'Operator'
 SRNA Subclassed: 'Macro'
+read file
+  Version 262 sub 3 date 1970-01-01 00:00 hash
+read file
+  Version 268 sub 5 date 1970-01-01 00:00 hash
+<module 'bapp' from 'scripts/startup/bapp.py'>  imported at launch
+read file ./config/startup.blend
+  Version 270 sub 0 date 1970-01-01 00:00 hash unknown
+
+ordered
+ OBCube
+ OBLamp
+ OBCamera
+Setting application UI
+
+Blender quit
