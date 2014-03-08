@@ -1,0 +1,42 @@
+Switching to fully guarded memory allocator.
+Blender 2.70 (sub 0)
+Build: 2014-03-05 20:24:52 Windows:64bit Release
+argv[0] = D:\satishg\software\BLENDER\apps\blender-2.70-RC1-windows64\blender.exe
+argv[1] = --debug
+argv[2] = --python
+argv[3] = C:\Users\lenovo\Desktop\Blender\apps\testing\bapp\boot.py
+read file C:\Users\lenovo\Desktop\Blender\apps\testing\bapp\config\startup.blend
+  Version 270 sub 0 date 1970-01-01 00:00 hash unknown
+
+ordered
+ OBEmpty
+found bundled python: D:\satishg\software\BLENDER\apps\blender-2.70-RC1-windows64\2.70\python
+Registering application specific types
+read file
+  Version 262 sub 3 date 1970-01-01 00:00 hash
+read file
+  Version 268 sub 5 date 1970-01-01 00:00 hash
+read file C:\Users\lenovo\Desktop\Blender\apps\testing\bapp\config\startup.blend
+  Version 270 sub 0 date 1970-01-01 00:00 hash unknown
+
+ordered
+ OBEmpty
+Enabling 'bapp_glue' located @ C:\Users\lenovo\Desktop\Blender\apps\testing\bapp\scripts\addons\bapp_glue.py
+Unregistering application specific types
+Reloading: <module 'bl_operators' from 'D:\\satishg\\software\\BLENDER\\apps\\blender-2.70-RC1-windows64\\2.70\\scripts\\startup\\bl_operators\\__init
+__.py'>
+Reloading: <module 'bl_ui' from 'D:\\satishg\\software\\BLENDER\\apps\\blender-2.70-RC1-windows64\\2.70\\scripts\\startup\\bl_ui\\__init__.py'>
+Reloading: <module 'keyingsets_builtins' from 'D:\\satishg\\software\\BLENDER\\apps\\blender-2.70-RC1-windows64\\2.70\\scripts\\startup\\keyingsets_bu
+iltins.py'>
+Reloading: <module 'nodeitems_builtins' from 'D:\\satishg\\software\\BLENDER\\apps\\blender-2.70-RC1-windows64\\2.70\\scripts\\startup\\nodeitems_buil
+tins.py'>
+Reloading: <module 'bapp' from 'C:\\Users\\lenovo\\Desktop\\Blender\\apps\\testing\\bapp\\scripts\\startup\\bapp.py'>
+Registering application specific types
+gc.collect() -> 15044
+read file C:\Users\lenovo\Desktop\Blender\apps\testing\bapp\config\startup.blend
+  Version 270 sub 0 date 1970-01-01 00:00 hash unknown
+
+ordered
+ OBEmpty
+        addon_utils.reset_all unloading bapp_glue
+Enabling 'bapp_glue' located @ C:\Users\lenovo\Desktop\Blender\apps\testing\bapp\scripts\addons\bapp_glue.py
