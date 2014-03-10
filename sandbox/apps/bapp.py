@@ -6,31 +6,65 @@ class Debug(object):
             print("{0}: {1}".format(__name__, message))
 
 
+class AppAddonModule(object):
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def name(self):
+        return self._data[0]
+
+    @property
+    def path(self):
+        return self._data[1]
+
+    def enable(self):
+        bpy.ops.wm.addon_enable(module=self.name)
+
+    def disable(self):
+        bpy.ops.wm.addon_disable(module=self.name)
+
+
+class AppAddonModules(object):
+    def __init__(self):
+        location = bpy.utils.user_resource('SCRIPTS', path='addons')
+        self._data = [AppAddonModule(data) for data in bpy.path.module_names(location)]
+
+    def enable(self):
+        for module in self._data:
+            module.enable()
+
+    def disable(self):
+        for module in self._data:
+            module.disable()
+
+
 def ui_settings():
-    bpy.ops.wm.window_fullscreen_toggle()
+    #bpy.ops.wm.window_fullscreen_toggle()
     bpy.ops.screen.area_headers_consistent()
     bpy.ops.screen.mode_zen()
 
 
-def boot():
+def createConfig():
     bpy.context.user_preferences.view.show_splash = False
     ui_settings()
+    AppAddonModules().disable()
+    bpy.ops.wm.save_homefile()
+
+
+def boot():
+    print("Booting app")
 
 
 @bpy.app.handlers.persistent
 def render_settings(incoming):
     bpy.context.scene.render.engine = 'CYCLES'
+    #print(bpy.context.screen.name)
 
 
 @bpy.app.handlers.persistent
 def load_modules(incoming):
-    addons_module_location = bpy.utils.user_resource('SCRIPTS', path='addons')
-
-    app_addon_modules = bpy.path.module_names(addons_module_location)
-
-    for addon_module in app_addon_modules:
-        Debug()("Enabling {0} located @ {1}".format(*addon_module))
-        bpy.ops.wm.addon_enable(module=addon_module[0])
+    AppAddonModules().enable()
 
 
 def VIEW3D_HT_header_operator(self, context):
