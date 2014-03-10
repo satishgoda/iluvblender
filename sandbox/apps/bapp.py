@@ -1,43 +1,6 @@
 import bpy
 
-class Debug(object):
-    def __call__(self, message):
-        if bpy.app.debug:
-            print("{0}: {1}".format(__name__, message))
-
-
-class AppAddonModule(object):
-    def __init__(self, data):
-        self._data = data
-
-    @property
-    def name(self):
-        return self._data[0]
-
-    @property
-    def path(self):
-        return self._data[1]
-
-    def enable(self):
-        bpy.ops.wm.addon_enable(module=self.name)
-
-    def disable(self):
-        bpy.ops.wm.addon_disable(module=self.name)
-
-
-class AppAddonModules(object):
-    def __init__(self):
-        location = bpy.utils.user_resource('SCRIPTS', path='addons')
-        self._data = [AppAddonModule(data) for data in bpy.path.module_names(location)]
-
-    def enable(self):
-        for module in self._data:
-            module.enable()
-
-    def disable(self):
-        for module in self._data:
-            module.disable()
-
+from apps import Debug, AppAddonModules
 
 def ui_settings():
     #bpy.ops.wm.window_fullscreen_toggle()
