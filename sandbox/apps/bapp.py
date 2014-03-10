@@ -6,11 +6,18 @@ class Debug(object):
             print("{0}: {1}".format(__name__, message))
 
 
+def ui_settings():
+    bpy.ops.wm.window_fullscreen_toggle()
+    bpy.ops.screen.area_headers_consistent()
+    bpy.ops.screen.mode_zen()
+
+
 def boot():
     bpy.context.user_preferences.view.show_splash = False
-    bpy.ops.wm.window_fullscreen_toggle()
+    ui_settings()
 
 
+@bpy.app.handlers.persistent
 def render_settings(incoming):
     bpy.context.scene.render.engine = 'CYCLES'
 
