@@ -3,10 +3,14 @@ import bpy
 class Debug(object):
     def __call__(self, message):
         if bpy.app.debug:
-            print(message)
+            print("{0}: {1}".format(__name__, message))
 
 
-@bpy.app.handlers.persistent
+def boot():
+    bpy.context.user_preferences.view.show_splash = False
+    bpy.ops.wm.window_fullscreen_toggle()
+
+
 def render_settings(incoming):
     bpy.context.scene.render.engine = 'CYCLES'
 
@@ -32,15 +36,15 @@ def VIEW3D_HT_header_operator(self, context):
 def register():
     Debug()("Registering application specific types")
     bpy.types.VIEW3D_HT_header.append(VIEW3D_HT_header_operator)
+    bpy.app.handlers.load_post.insert(0, load_modules)
     bpy.app.handlers.load_post.append(render_settings)
-    print(type(bpy.context))
 
 
 def unregister():
     Debug()("Unegistering application specific types")
     bpy.types.VIEW3D_HT_header.remove(VIEW3D_HT_header_operator)
+    bpy.app.handlers.load_post.remove(load_modules)
     bpy.app.handlers.load_post.remove(render_settings)
-    print(type(bpy.context))
 
 
 if __name__ == '__main__':
