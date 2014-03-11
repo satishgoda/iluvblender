@@ -1,4 +1,4 @@
-Some of my recent dev work that I blogged about .
+== Some of my recent dev work that I blogged about  ==
 
 http://learningblender3dsoftware.blogspot.in/2014/03/development-workflow.html
 
@@ -7,7 +7,8 @@ http://learningblender3dsoftware.blogspot.in/2014/02/wip-screenshot-addon.html
 http://learningblender3dsoftware.blogspot.in/2014/02/ui-experiments-1.html
 
 
-Some of my WIP tools for Blender
+
+== Some of my WIP tools for Blender ==
 
 https://github.com/satishgoda/iluvblender/blob/master/addons/ui/screen_screenshot_custom.py
 
@@ -16,3 +17,9 @@ https://github.com/satishgoda/iluvblender/blob/master/sandbox/workflow/rbd/scrip
 Playblast creation workflow prototype
 
 https://www.youtube.com/watch?v=Xx6CD0uT-Uk
+
+
+
+== API Design for apps ==
+
+https://github.com/satishgoda/iluvblender/wiki/Abstracting-Addon-Operators-and-Utilities
