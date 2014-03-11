@@ -35,10 +35,6 @@ import bpy
 from bl_operators.presets import AddPresetBase
 from bpy.types import Operator, Menu
 
-#Traceback (most recent call last):
-#  File "/fs/isi6001x2/ifs/jobs/rhu/rd/satishg/bin/blender-2.65a-linux-glibc27-x86_64/2.65/scripts/modules/bpy_types.py", line 718, in draw_preset
-#    self.preset_operator,
-#AttributeError: 'RENDER_MT_stamp_presets' object has no attribute 'preset_operator'
 
 class RENDER_MT_stamp_presets(Menu):
     bl_label = "Render Stamp Presets"
@@ -57,13 +53,7 @@ class AddPresetRenderStamp(AddPresetBase, Operator):
     bl_label = "Add Render Stamp Preset"
     preset_menu = "RENDER_MT_stamp_presets"
 
-    #preset_defines = [
-    #    "render = bpy.context.window.screen.scene.render"
-    #]
 
-    #for p in filter(lambda property: property.identifier.find('stamp') >=0 , bpy.types.RenderSettings.bl_rna.properties):
-    #    print("'{0}.{1}',".format('render', p.identifier))
-    
     preset_values = [
         'bpy.context.window.screen.scene.render.use_stamp_time',
         'bpy.context.window.screen.scene.render.use_stamp_date',
@@ -88,8 +78,10 @@ class AddPresetRenderStamp(AddPresetBase, Operator):
     def pre_cb(self, context):
         self.preset_defines = []
 
+
 presets = []
 presets.append(AddPresetRenderStamp)
+
 
 def _draw(self, context, menu, op_preset):
     layout = self.layout
@@ -106,8 +98,10 @@ def render_stamp_prepend_draw(self, context):
             "render.stamp_preset_add"
         )
 
+
 panels = {}
 panels[bpy.types.RENDER_PT_stamp] = render_stamp_prepend_draw
+
 
 def register():
     for menu in menus:
