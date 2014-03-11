@@ -12,3 +12,7 @@ Some of my WIP tools for Blender
 https://github.com/satishgoda/iluvblender/blob/master/addons/ui/screen_screenshot_custom.py
 
 https://github.com/satishgoda/iluvblender/blob/master/sandbox/workflow/rbd/scripts/addons/rbd_workflow_tools.py
+
+Playblast creation workflow prototype
+
+https://www.youtube.com/watch?v=Xx6CD0uT-Uk
