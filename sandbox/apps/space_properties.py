@@ -26,18 +26,23 @@ class PROPERTIES_HT_header(Header):
 
     def draw(self, context):
         layout = self.layout
-        view = ocntext.space_data
+        view = context.space_data
         row = layout.row(align=True)
-        #row.template_header(menus=True)
+        row.prop_enum(context.area, 'type', 'OUTLINER')
         if not view.use_pin_id:
             row.prop_menu_enum(context.area, 'type', text='#', icon='TRIA_DOWN')
-            #row.prop_menu_enum(context.area, 'type', text='#', icon=self.layout.icon(context.area))
-            #row.props_enum(context.area, 'type')
-        row.prop(view, "context", text='', expand=False, icon_only=False, emboss=True)
-        if view.use_pin_id:
-            row.prop(view, "context", text='', expand=True, icon_only=True, emboss=False)
+            row.prop(view, "context", text='', expand=False, icon_only=False, emboss=True)
         else:
-            row.prop_enum(context.area, 'type', 'OUTLINER')
+            row.prop(view, "context", text='', expand=True, icon_only=True, emboss=False)
+
+
+class OUTLINER_HT_header(Header):
+    bl_space_type = 'OUTLINER'
+
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row(align=True)
+        row.prop_enum(context.area, 'type', 'PROPERTIES')
 
 
 def register():
