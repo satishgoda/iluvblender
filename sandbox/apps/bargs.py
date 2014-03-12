@@ -1,21 +1,22 @@
+
 class ProgramDetails:
     def __init__(self):
         import sys
-        import os
-        from os import path
+        from os import readlink, getcwd
+        from os.path import isabs, abspath, exists, islink, basename
+        import shutil
 
-        arg0 = sys.argv[0]
+        self.launcher = arg0 = sys.argv[0]
 
-        launched_program_name =  arg0 if path.isabs(arg0) else path.abspath(arg0)
+        program_path =  arg0 if isabs(arg0) else abspath(arg0)
 
-        self.arg0 = arg0
+        self.cwd = getcwd()
 
-        if path.exists(launched_program_name):
-            if path.islink(launched_program_name):
-                self.actual_program_name = os.readlink(shutil.which(basename))
+        if exists(program_path):
+            if islink(program_path):
+                self.path = readlink(shutil.which(program_path))
             else:
-                self.actual_program_name = launched_program_name
+                self.path = program_path
         else:
-            import shutil
-            basename = path.basename(launched_program_name)
-            self.actual_program_name = os.readlink(shutil.which(basename))
+            basename = basename(program_path)
+            self.path = readlink(shutil.which(basename))
