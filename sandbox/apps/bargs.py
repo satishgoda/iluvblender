@@ -10,8 +10,11 @@ class ProgramDetails:
 
         self.arg0 = arg0
 
-        if path.isfile(launched_program_name) and not path.islink(launched_program_name):
-            self.actual_program_name = launched_program_name
+        if path.exists(launched_program_name):
+            if path.islink(launched_program_name):
+                self.actual_program_name = os.readlink(shutil.which(basename))
+            else:
+                self.actual_program_name = launched_program_name
         else:
             import shutil
             basename = path.basename(launched_program_name)
