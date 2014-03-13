@@ -1,6 +1,5 @@
 # <pep8 compliant>
 
-import bpy
 
 bl_info = {
     "name": "Control positioning of Area Headers",
@@ -12,7 +11,12 @@ bl_info = {
     "warning": "",
     "category": "System"}
 
+
 """Display Area Spaces in Header"""
+
+
+import bpy
+
 
 def main(self, context):
     window = context.window
@@ -46,6 +50,7 @@ class AreaHeadersConsistentOperator(bpy.types.Operator):
     header_to = bpy.props.EnumProperty(items=items, default='TOP', name="Header Location")
 
     def invoke(self, context, event):
+        main(self, context)
         return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
