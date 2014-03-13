@@ -5,7 +5,6 @@ import shutil
 
 
 class ProgramLauncher(object):
-
     cwd = os.getcwd()
 
     def __init__(self, name, path):
@@ -18,9 +17,7 @@ class ProgramLauncher(object):
 
     def __str__(self):
         l = self.format_string.format(*self.args)
-        l += '\n    located at {0}'.format(self.path)
-        l += '\n    CWD: {0}'.format(self.cwd)
-        l += '\n'
+        l += '\n\tCWD: {0}'.format(self.cwd)
         return l
 
     @staticmethod
@@ -46,12 +43,17 @@ class _ProgramLauncherBinary(ProgramLauncher):
 
 
 class _ProgramLauncherSymlink(ProgramLauncher):
-    format_string = "Launched via a symlink {0}"
+    format_string = "Launched via a symlink {0} at {1} \n\tResolving to {2}"
+
     def __init__(self, name, path):
         super(_ProgramLauncherSymlink, self).__init__(name, os.readlink(path))
+        self.linkpath = path
+
+    @property
+    def args(self):
+        return (self.name, self.linkpath, self.path)
 
 
 class ProgramDetails:
     def __init__(self):
         self.launcher = ProgramLauncher.create(sys.argv[0])
-
