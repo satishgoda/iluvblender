@@ -13,16 +13,20 @@ bl_info = {
 
 """Display Area Spaces in Header"""
 
+
 import bpy
 
 
 def draw(self, context):
-     row = self.layout.row(align=True)
-     for space in filter(lambda space: space.type != context.area.type, context.area.spaces):
-         row.alert = True
-         op_props = row.operator('wm.context_set_enum', text=space.bl_rna.name.replace('Space', '').strip())
-         op_props.data_path = "area.type"
-         op_props.value = space.type
+    spaces = tuple(filter(lambda space: space.type != context.area.type, context.area.spaces))
+    if spaces:
+        row = self.layout.row(align=True)
+        row.alert = True
+        for space in spaces:
+            op_props = row.operator('wm.context_set_enum', text=space.bl_rna.name.replace('Space', '').strip())
+            op_props.data_path = "area.type"
+            op_props.value = space.type
+        row.operator('screen.spacedata_cleanup', text='X', emboss=False)
 
 
 def _doIt(process):
@@ -39,7 +43,7 @@ def register():
 
 def unregister():
     _doIt(0)
-   
-    
+
+
 if __name__ == '__main__':
     register()
