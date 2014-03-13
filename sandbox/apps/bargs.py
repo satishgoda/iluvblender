@@ -12,8 +12,12 @@ class ProgramLauncher(object):
         self.name = name
         self.path = path
 
+    @property
+    def args(self):
+        return (self.name,)
+
     def __str__(self):
-        l = self._print()
+        l = self.format_string.format(*self.args)
         l += '\n    located at {0}'.format(self.path)
         l += '\n    CWD: {0}'.format(self.cwd)
         l += '\n'
@@ -38,18 +42,16 @@ class ProgramLauncher(object):
 
 
 class _ProgramLauncherBinary(ProgramLauncher):
-    def _print(self):
-        return "Launched as binary {0}".format(self.name)
+    format_string = "Launched as binary {0}"
 
 
 class _ProgramLauncherSymlink(ProgramLauncher):
+    format_string = "Launched via a symlink {0}"
     def __init__(self, name, path):
         super(_ProgramLauncherSymlink, self).__init__(name, os.readlink(path))
-
-    def _print(self):
-        return "Launched via a symlink {0}".format(self.name)
 
 
 class ProgramDetails:
     def __init__(self):
         self.launcher = ProgramLauncher.create(sys.argv[0])
+
