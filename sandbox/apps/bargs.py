@@ -1,5 +1,5 @@
 class ProgramLauncher(object):
-    import os
+
     cwd = os.getcwd()
 
     def __init__(self, name, path):
@@ -13,6 +13,23 @@ class ProgramLauncher(object):
         l += '\n'
         return l
 
+    @staticmethod
+    def create(arg0):
+        launcher = None
+
+        program_path =  arg0 if isabs(arg0) else abspath(arg0)
+
+        if exists(program_path):
+            if islink(program_path):
+                launcher = ProgramLauncherSymlink(arg0, program_path)
+            else:
+                launcher = ProgramLauncherBinary(arg0, program_path)
+        else:
+            prog_name = basename(program_path)
+            launcher = ProgramLauncherSymlink(arg0, shutil.which(prog_name))
+
+        return launcher
+
 
 class ProgramLauncherBinary(ProgramLauncher):
     def _print(self):
@@ -21,7 +38,6 @@ class ProgramLauncherBinary(ProgramLauncher):
 
 class ProgramLauncherSymlink(ProgramLauncher):
     def __init__(self, name, path):
-        import os
         super(ProgramLauncherSymlink, self).__init__(name, os.readlink(path))
 
     def _print(self):
@@ -30,19 +46,4 @@ class ProgramLauncherSymlink(ProgramLauncher):
 
 class ProgramDetails:
     def __init__(self):
-        import sys
-        from os.path import isabs, abspath, exists, islink, basename
-
-        arg0 = sys.argv[0]
-
-        program_path =  arg0 if isabs(arg0) else abspath(arg0)
-
-        if exists(program_path):
-            if islink(program_path):
-                self.launcher = ProgramLauncherSymlink(arg0, program_path)
-            else:
-                self.launcher = ProgramLauncherBinary(arg0, program_path)
-        else:
-            basename = basename(program_path)
-            import shutil
-            self.launcher = ProgramLauncherSymlink(arg0, shutil.which(basename))
+        self.launcher = ProgramLauncher.create(sys.argv[0])
