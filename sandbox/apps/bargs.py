@@ -1,7 +1,8 @@
 import sys
-from os.path import isabs, abspath, exists, islink, basename
 import os
+from os import path
 import shutil
+
 
 class ProgramLauncher(object):
 
@@ -22,15 +23,15 @@ class ProgramLauncher(object):
     def create(arg0):
         launcher = None
 
-        program_path =  arg0 if isabs(arg0) else abspath(arg0)
+        program_path =  arg0 if path.isabs(arg0) else path.abspath(arg0)
 
-        if exists(program_path):
-            if islink(program_path):
+        if path.exists(program_path):
+            if path.islink(program_path):
                 launcher = _ProgramLauncherSymlink(arg0, program_path)
             else:
                 launcher = _ProgramLauncherBinary(arg0, program_path)
         else:
-            prog_name = basename(program_path)
+            prog_name = path.basename(program_path)
             launcher = _ProgramLauncherSymlink(arg0, shutil.which(prog_name))
 
         return launcher
