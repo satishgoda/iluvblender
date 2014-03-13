@@ -21,24 +21,24 @@ class ProgramLauncher(object):
 
         if exists(program_path):
             if islink(program_path):
-                launcher = ProgramLauncherSymlink(arg0, program_path)
+                launcher = _ProgramLauncherSymlink(arg0, program_path)
             else:
-                launcher = ProgramLauncherBinary(arg0, program_path)
+                launcher = _ProgramLauncherBinary(arg0, program_path)
         else:
             prog_name = basename(program_path)
-            launcher = ProgramLauncherSymlink(arg0, shutil.which(prog_name))
+            launcher = _ProgramLauncherSymlink(arg0, shutil.which(prog_name))
 
         return launcher
 
 
-class ProgramLauncherBinary(ProgramLauncher):
+class _ProgramLauncherBinary(ProgramLauncher):
     def _print(self):
         return "Launched as binary {0}".format(self.name)
 
 
-class ProgramLauncherSymlink(ProgramLauncher):
+class _ProgramLauncherSymlink(ProgramLauncher):
     def __init__(self, name, path):
-        super(ProgramLauncherSymlink, self).__init__(name, os.readlink(path))
+        super(_ProgramLauncherSymlink, self).__init__(name, os.readlink(path))
 
     def _print(self):
         return "Launched via a symlink {0}".format(self.name)
