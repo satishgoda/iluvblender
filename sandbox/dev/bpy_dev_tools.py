@@ -8,6 +8,8 @@ bl_info = {
 
 import bpy
 
+import bpy.props
+
 from rna_info import get_direct_properties
 
 
@@ -35,17 +37,34 @@ class ContextSpaceData(bpy.types.Operator):
     bl_description = 'View the properties of the active space data'
     bl_options = {'REGISTER'}
 
+    _items = (
+        ('BOOLEAN', 'Boolean', ''),
+        ('ENUM', 'Enumeration', ''),
+        ('INT', 'Integer', ''),
+        ('FLOAT', 'Real', ''),
+        ('STRING', 'String', ''),
+        ('POINTER', 'Group', ''),
+        ('COLLECTION', 'Collection', ''),        
+    )
+
+    prop_type = bpy.props.EnumProperty(items= _items, default='BOOLEAN')
+
     def draw(self, context):
         layout = self.layout
+        layout.prop(self, 'prop_type')
         #props = get_direct_properties(context.space_data.bl_rna)
         props = context.space_data.bl_rna.properties
         #layout.label(context.space_data.type)
         flow = layout.column_flow()
         for prop in props:
-            flow.prop(context.space_data, prop.identifier)
+            if prop.type == self.prop_type:
+                flow.prop(context.space_data, prop.identifier)
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=500)
+    
+    def check(self, context):
+        self.prop_type = self.prop_type
     
     def execute(self, context):
         return {'FINISHED'}
