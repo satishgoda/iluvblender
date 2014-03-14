@@ -37,21 +37,11 @@ class ContextSpaceData(bpy.types.Operator):
     bl_description = 'View the properties of the active space data'
     bl_options = {'REGISTER'}
 
-    _items = (
-        ('BOOLEAN', 'Boolean', ''),
-        ('ENUM', 'Enumeration', ''),
-        ('INT', 'Integer', ''),
-        ('FLOAT', 'Real', ''),
-        ('STRING', 'String', ''),
-        ('POINTER', 'Group', ''),
-        ('COLLECTION', 'Collection', ''),        
-    )
-
-    prop_type = bpy.props.EnumProperty(items= _items, default='BOOLEAN')
+    prop_type = bpy.props.StringProperty(default='BOOLEAN')
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(self, 'prop_type')
+        layout.prop(context.window_manager, 'prop_type')
         #props = get_direct_properties(context.space_data.bl_rna)
         props = context.space_data.bl_rna.properties
         #layout.label(context.space_data.type)
@@ -64,7 +54,7 @@ class ContextSpaceData(bpy.types.Operator):
         return context.window_manager.invoke_props_dialog(self, width=500)
     
     def check(self, context):
-        self.prop_type = self.prop_type
+        self.prop_type = context.window_manager.prop_type
     
     def execute(self, context):
         return {'FINISHED'}
@@ -92,6 +82,18 @@ def register():
     for header in BlenderTypes.headers():
         header.append(ALL_HT_debug_context_draw)
 
+    _items = (
+        ('BOOLEAN', 'Boolean', ''),
+        ('ENUM', 'Enumeration', ''),
+        ('INT', 'Integer', ''),
+        ('FLOAT', 'Real', ''),
+        ('STRING', 'String', ''),
+        ('POINTER', 'Group', ''),
+        ('COLLECTION', 'Collection', ''),        
+    )
+
+    bpy.types.WindowManager.prop_type =  bpy.props.EnumProperty(items=_items, default='BOOLEAN')
+
 
 def unregister():
     for operator in _operators:
@@ -99,6 +101,8 @@ def unregister():
 
     for header in BlenderTypes.headers():
         header.remove(ALL_HT_debug_context_draw)
+
+    del bpy.types.WindowManager.prop_type
 
 
 if __name__ == '__main__':
