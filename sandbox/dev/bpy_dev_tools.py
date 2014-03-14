@@ -11,13 +11,22 @@ import bpy
 from rna_info import get_direct_properties
 
 
-def isType(parent):
-    types = []
-    for typestr in dir(bpy.types):
-        typ = eval('bpy.types.'+typestr)
-        if (issubclass(typ, parent) and not (typ is parent)):
-            types.append(typ)
-    return types
+class BlenderTypes(object):
+    base = bpy.types
+    
+    @classmethod
+    def _get(cls, bclass):
+        classes = []
+        for typestr in dir(cls.base):
+            typ = eval('bpy.types.'+typestr)
+            if (issubclass(typ, bclass) and typ is not bclass):
+                classes.append(typ)
+        return classes
+  
+    @classmethod
+    def headers(cls):
+        base = bpy.types.Header
+        return cls._get(base)
 
 
 class ContextProperties(bpy.types.Operator):
@@ -56,7 +65,7 @@ def register():
     for operator in _operators:
         bpy.utils.register_class(operator)
 
-    for header in isType(bpy.types.Header):
+    for header in BlenderTypes.headers():
         header.append(ALL_HT_debug_context_draw)
 
 
@@ -64,7 +73,7 @@ def unregister():
     for operator in _operators:
         bpy.utils.unregister_class(operator)
 
-    for header in isType(bpy.types.Header):
+    for header in BlenderTypes.headers():
         header.remove(ALL_HT_debug_context_draw)
 
 
