@@ -29,16 +29,17 @@ class BlenderTypes(object):
         return cls._get(base)
 
 
-class ContextProperties(bpy.types.Operator):
-    bl_idname = 'debug.context'
-    bl_label = 'Debug Context Properties'
-    bl_description = 'View the properties of the current context'
+class ContextSpaceData(bpy.types.Operator):
+    bl_idname = 'debug.context_space_data'
+    bl_label = 'Debug Context Space Data Properties'
+    bl_description = 'View the properties of the active space data'
     bl_options = {'REGISTER'}
 
     def draw(self, context):
         layout = self.layout
-        props = get_direct_properties(context.space_data.bl_rna)
-        layout.label(context.space_data.type)
+        #props = get_direct_properties(context.space_data.bl_rna)
+        props = context.space_data.bl_rna.properties
+        #layout.label(context.space_data.type)
         flow = layout.column_flow()
         for prop in props:
             flow.prop(context.space_data, prop.identifier)
@@ -51,13 +52,17 @@ class ContextProperties(bpy.types.Operator):
 
 
 def ALL_HT_debug_context_draw(self, context):
+    space_data = context.space_data
+    space_type = space_data.type
+    space_icon = space_data.bl_rna.properties['type'].enum_items[space_type].icon
+    
     layout = self.layout
     row = layout.row()
-    row.operator('debug.context')
+    row.operator('debug.context_space_data', text='Debug', icon=space_icon)
 
 
 _operators = (
-    ContextProperties,
+    ContextSpaceData,
 )
 
 
