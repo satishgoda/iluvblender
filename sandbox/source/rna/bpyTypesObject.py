@@ -1,16 +1,17 @@
 import bpy
 
-import itertools
+from itertools import groupby
+from pprint import pprint
+
 
 order = lambda prop: prop.type
 
-iterable = bpy.types.Object.bl_rna.properties
 
-propmap = {}
+iterable = sorted(bpy.types.Object.bl_rna.properties, key=order)
 
-for key, group in itertools.groupby(sorted(iterable, key=order), order):
-    propmap[key] = tuple(group)
 
-import pprint
+propmap = { key: tuple(group) for key, group in groupby(iterable, order) }
 
-pprint.pprint(propmap)
+
+pprint(propmap)
+
