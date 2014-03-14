@@ -8,9 +8,16 @@ bl_info = {
 
 import bpy
 
-import rna_info
+from rna_info import get_direct_properties
 
-HEADER_TYPES = filter(lambda identifier: identifier.endswith('_HT_header'), dir(bpy.types))
+
+def isType(parent):
+    types = []
+    for typestr in dir(bpy.types):
+        typ = eval('bpy.types.'+typestr)
+        if (issubclass(typ, parent) and not (typ is parent)):
+            types.append(typ)
+    return types
 
 
 class ContextProperties(bpy.types.Operator):
@@ -19,7 +26,10 @@ class ContextProperties(bpy.types.Operator):
     bl_description = 'View the properties of the current context'
     
     def execute(self, context):
-        print(rna_info.get_direct_properties(context.space_data.bl_rna))
+        props = get_direct_properties(context.space_data.bl_rna)
+        print(context.space_data.type)
+        for prop in props:
+            print("\t{}".format(prop.identifier))
         return {'FINISHED'}
 
 
@@ -38,16 +48,18 @@ def register():
     for operator in _operators:
         bpy.utils.register_class(operator)
 
-    for header_identifier in HEADER_TYPES:
-        eval('.'.join(('bpy.types', header_identifier))).append(ALL_HT_debug_context_draw)
+    for header in isType(bpy.types.Header):
+        print(header)
+        header.append(ALL_HT_debug_context_draw)
 
 
 def unregister():
     for operator in _operators:
         bpy.utils.unregister_class(operator)
 
-    for header_identifier in HEADER_TYPES:
-        eval('.'.join(('bpy.types', header_identifier))).remove(ALL_HT_debug_context_draw)
+    for header in isType(bpy.types.Header):
+        header.remove(ALL_HT_debug_context_draw)
+
 
 if __name__ == '__main__':
     register()
