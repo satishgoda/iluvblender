@@ -24,12 +24,20 @@ class ContextProperties(bpy.types.Operator):
     bl_idname = 'debug.context'
     bl_label = 'Debug Context Properties'
     bl_description = 'View the properties of the current context'
+    bl_options = {'REGISTER'}
+
+    def draw(self, context):
+        layout = self.layout
+        props = get_direct_properties(context.space_data.bl_rna)
+        layout.label(context.space_data.type)
+        flow = layout.column_flow()
+        for prop in props:
+            flow.prop(context.space_data, prop.identifier)
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, width=500)
     
     def execute(self, context):
-        props = get_direct_properties(context.space_data.bl_rna)
-        print(context.space_data.type)
-        for prop in props:
-            print("\t{}".format(prop.identifier))
         return {'FINISHED'}
 
 
@@ -49,7 +57,6 @@ def register():
         bpy.utils.register_class(operator)
 
     for header in isType(bpy.types.Header):
-        print(header)
         header.append(ALL_HT_debug_context_draw)
 
 
