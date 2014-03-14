@@ -1,15 +1,17 @@
 import bpy
 
+from rna_info import get_direct_properties
+
 from itertools import groupby
 from pprint import pprint
 
 
-order = lambda prop: prop.type
+property_type = lambda prop: prop.type
 
-iterable = sorted(bpy.types.Object.bl_rna.properties, key=order)
+theType = bpy.types.Object
 
-propmap = { key: tuple(group) for key, group in groupby(iterable, order) }
+iterable = sorted(get_direct_properties(theType.bl_rna), key=property_type)
 
+propmap = { key: tuple(group) for key, group in groupby(iterable, property_type) }
 
 pprint(propmap)
-
