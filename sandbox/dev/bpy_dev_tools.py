@@ -20,7 +20,7 @@ class BlenderTypes(object):
     def _get(cls, bclass):
         classes = []
         for typestr in dir(cls.base):
-            typ = eval('bpy.types.'+typestr)
+            typ = getattr(cls.base, typestr)
             if (issubclass(typ, bclass) and typ is not bclass):
                 classes.append(typ)
         return classes
@@ -30,10 +30,15 @@ class BlenderTypes(object):
         base = bpy.types.Header
         return cls._get(base)
 
+    @classmethod
+    def panels(cls):
+        base = bpy.types.Panel
+        return cls._get(base)
+
 
 class ContextSpaceData(bpy.types.Operator):
     bl_idname = 'debug.context_space_data'
-    bl_label = 'Debug Context Space Data Properties'
+    bl_label = 'Context Space Data Properties'
     bl_description = 'View the properties of the active space data'
     bl_options = {'REGISTER'}
 
@@ -52,14 +57,26 @@ class ContextSpaceData(bpy.types.Operator):
 
     def draw(self, context):
         layout = self.layout
-        #props = get_direct_properties(context.space_data.bl_rna)
-        props = context.space_data.bl_rna.properties
+        props = filter(lambda prop: prop.identifier != 'rna_type', context.space_data.bl_rna.properties)
+        
         if self.prop_type != 'ALL':
             props = filter(lambda prop: prop.type == self.prop_type, props)
-        #layout.label(context.space_data.type)
+        
         flow = layout.column_flow()
-        for prop in props:
-            flow.prop(context.space_data, prop.identifier)
+        flow.box().prop(context.space_data, 'rna_type')
+        
+        prop_map = {}
+        criterion = lambda prop: prop.type
+        
+        import itertools
+        for key, group in itertools.groupby(sorted(props, key=criterion), criterion):
+            prop_map[key] = tuple(group)
+        
+        for key in prop_map:
+            flow.box().label(key)
+            if prop_map[key]:
+                for prop in prop_map[key]:
+                    flow.prop(context.space_data, prop.identifier)
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=500)
@@ -78,6 +95,12 @@ def ALL_HT_debug_context_draw(self, context):
     row.operator_menu_enum('debug.context_space_data', 'prop_type', text="Properties", icon=space_icon)
 
 
+def ALL_PT_debug_identifier_draw(self, context):
+    layout = self.layout
+    row = layout.row()
+    row.label(self.__class__.__name__)
+
+
 _operators = (
     ContextSpaceData,
 )
@@ -89,6 +112,9 @@ def register():
 
     for header in BlenderTypes.headers():
         header.append(ALL_HT_debug_context_draw)
+        
+    for panel in BlenderTypes.panels():
+        panel.append(ALL_PT_debug_identifier_draw)
 
 
 def unregister():
@@ -97,6 +123,9 @@ def unregister():
 
     for header in BlenderTypes.headers():
         header.remove(ALL_HT_debug_context_draw)
+
+    for panel in BlenderTypes.panels():
+        panel.remove(ALL_PT_debug_identifier_draw)
 
 
 if __name__ == '__main__':
