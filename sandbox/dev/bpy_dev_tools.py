@@ -95,12 +95,14 @@ class ContextSpaceData(bpy.types.Operator):
             row.alert = True
             row.operator('debug.prop_type', text=key)
             if prop_map[key]:
-                split = column.split(percentage=0.3)
-                col1 = split.column()
-                col2 = split.column()
                 for prop in prop_map[key]:
+                    split = column.split(percentage=0.3)
+                    col1 = split.column()
+                    col2 = split.column()
                     opprops = col1.operator('debug.panel_id_copy', text=prop.identifier)
                     opprops.idname = prop.identifier
+                    col2.label(prop.description)
+                    col1.label('')
                     col2.prop(context.space_data, prop.identifier)
 
     def invoke(self, context, event):
