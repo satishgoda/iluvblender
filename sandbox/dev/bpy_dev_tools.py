@@ -46,24 +46,27 @@ class DebugPropTypeNoOp(bpy.types.Operator):
         return {'FINISHED'}
 
 
+def property_types_enum(self, context):
+    enum_items = []
+    enum_items.append(('ALL', 'All Property Definitions', ''))
+
+    for property_type in bpy.types.Property.__subclasses__():
+        bl_rna = property_type.bl_rna
+        name = bl_rna.name+'s'
+        identifier = name.split()[0].upper()
+        description = ''
+        enum_items.append((identifier, name, description))
+
+    return enum_items
+
+
 class ContextSpaceData(bpy.types.Operator):
     bl_idname = 'debug.context_space_data'
     bl_label = 'Context Space Data Properties'
     bl_description = 'View the properties of the active space data'
     bl_options = {'REGISTER'}
 
-    _items = (
-        ('ALL', 'All', ''),
-        ('BOOLEAN', 'Boolean', ''),
-        ('ENUM', 'Enumeration', ''),
-        ('INT', 'Integer', ''),
-        ('FLOAT', 'Real', ''),
-        ('STRING', 'String', ''),
-        ('POINTER', 'Group', ''),
-        ('COLLECTION', 'Collection', ''),        
-    )
-
-    prop_type = bpy.props.EnumProperty(items=_items, default='ALL')
+    prop_type = bpy.props.EnumProperty(items=property_types_enum)
 
     def draw(self, context):
         layout = self.layout
