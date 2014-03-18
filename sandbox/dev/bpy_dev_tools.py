@@ -75,8 +75,13 @@ class ContextSpaceData(bpy.types.Operator):
         if self.prop_type != 'ALL':
             props = filter(lambda prop: prop.type == self.prop_type, props)
         
-        flow = layout.column_flow()
-        flow.box().prop(context.space_data, 'rna_type')
+        split = layout.split(percentage=0.3)
+        col1 = split.column()
+        col2 = split.column()
+        col1.label("rna_type")
+        col2.prop(context.space_data, 'rna_type')
+        
+        column = layout.column()
         
         prop_map = {}
         criterion = lambda prop: prop.type
@@ -86,12 +91,17 @@ class ContextSpaceData(bpy.types.Operator):
             prop_map[key] = tuple(group)
         
         for key in prop_map:
-            row = flow.row()
+            row = column.row()
             row.alert = True
             row.operator('debug.prop_type', text=key)
             if prop_map[key]:
+                split = column.split(percentage=0.3)
+                col1 = split.column()
+                col2 = split.column()
                 for prop in prop_map[key]:
-                    flow.prop(context.space_data, prop.identifier)
+                    opprops = col1.operator('debug.panel_id_copy', text=prop.identifier)
+                    opprops.idname = prop.identifier
+                    col2.prop(context.space_data, prop.identifier)
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=500)
