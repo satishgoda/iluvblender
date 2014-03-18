@@ -13,7 +13,6 @@ bl_info = {
 
 """Display Area Spaces in Header"""
 
-
 import bpy
 
 
@@ -23,7 +22,11 @@ def draw(self, context):
         row = self.layout.row(align=True)
         row.alert = True
         for space in spaces:
-            op_props = row.operator('wm.context_set_enum', text=space.bl_rna.name.replace('Space', '').strip())
+            kwargs = {}
+            spaceTypeRNA = space.bl_rna.properties['type'].enum_items[space.type]
+            kwargs['text'] = spaceTypeRNA.name
+            kwargs['icon'] = spaceTypeRNA.icon
+            op_props = row.operator('wm.context_set_enum', **kwargs)
             op_props.data_path = "area.type"
             op_props.value = space.type
         row.operator('screen.spacedata_cleanup', text='X', emboss=False)
