@@ -15,7 +15,7 @@ from rna_info import get_direct_properties
 
 class BlenderTypes(object):
     base = bpy.types
-    
+
     @classmethod
     def _get(cls, bclass):
         classes = []
@@ -24,7 +24,7 @@ class BlenderTypes(object):
             if (issubclass(typ, bclass) and typ is not bclass):
                 classes.append(typ)
         return classes
-  
+
     @classmethod
     def headers(cls):
         base = bpy.types.Header
@@ -34,11 +34,16 @@ class BlenderTypes(object):
     def panels(cls):
         base = bpy.types.Panel
         return cls._get(base)
-    
-    @classmethod
-    def properties(cls):
+
+    @staticmethod
+    def properties():
         base = bpy.types.Property
-        return base.__subclasses__()
+        return base.__subclasses__()    
+
+    @staticmethod
+    def property_tags():
+        properties = BlenderTypes.properties()
+        return tuple([property.bl_rna.name.split()[0].upper() for property in properties])
 
 
 class DebugPropTypeNoOp(bpy.types.Operator):
@@ -100,6 +105,14 @@ class ContextSpaceData(bpy.types.Operator):
             for key, group in itertools.groupby(sorted(props, key=criterion), criterion):
                 prop_map[key] = tuple(group)
             
+            default_prop_tags = set(BlenderTypes.property_tags())
+            avail_prop_tags = set(prop_map.keys())
+            missing_prop_tags = default_prop_tags - avail_prop_tags
+            if missing_prop_tags:
+                column.operator('debug.prop_type', text='Missing Property Types')
+                missing_prop_tags_string = ' '.join(missing_prop_tags)
+                column.label(missing_prop_tags_string)
+
         for key in prop_map:
             row = column.row()
             row.alert = True
@@ -131,6 +144,8 @@ def ALL_HT_debug_context_draw(self, context):
     
     layout = self.layout
     row = layout.row()
+    row.alert = True
+    row.operator("wm.search_menu")
     row.operator_menu_enum('debug.context_space_data', 'prop_type', text="Properties", icon=space_icon)
 
 
