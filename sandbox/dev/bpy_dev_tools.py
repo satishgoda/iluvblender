@@ -39,7 +39,7 @@ class BlenderTypes(object):
 class DebugPropTypeNoOp(bpy.types.Operator):
     bl_idname = 'debug.prop_type'
     bl_label = ''
-    bl_description = 'View the properties of the active space data'
+    bl_description = ''
     bl_options = {'INTERNAL'}
     
     def execute(self, context):
