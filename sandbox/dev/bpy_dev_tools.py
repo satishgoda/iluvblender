@@ -93,23 +93,25 @@ class ContextSpaceData(bpy.types.Operator):
         
         space_data_properties = context.space_data.bl_rna.properties
         
+        PropertyIdentifier = lambda prop: prop.identifier
+        
         props = filter(lambda prop: prop.identifier != 'rna_type', space_data_properties)
         
         if self.prop_type != 'ALL':
             props = filter(lambda prop: prop.type == self.prop_type, props)
-            prop_map[self.prop_type] = tuple(props)
+            prop_map[self.prop_type] = sorted(props, key=PropertyIdentifier)
         else:
             criterion = lambda prop: prop.type
         
             import itertools
             for key, group in itertools.groupby(sorted(props, key=criterion), criterion):
-                prop_map[key] = tuple(group)
+                prop_map[key] = sorted(group, key=PropertyIdentifier)
             
             default_prop_tags = set(BlenderTypes.property_tags())
             avail_prop_tags = set(prop_map.keys())
             missing_prop_tags = default_prop_tags - avail_prop_tags
             if missing_prop_tags:
-                column.operator('debug.prop_type', text='Missing Property Types')
+                column.operator('debug.prop_type', text='Unavailable Property Types')
                 missing_prop_tags_string = ' '.join(missing_prop_tags)
                 column.label(missing_prop_tags_string)
 
