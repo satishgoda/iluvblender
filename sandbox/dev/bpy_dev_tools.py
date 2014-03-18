@@ -36,6 +36,16 @@ class BlenderTypes(object):
         return cls._get(base)
 
 
+class DebugPropTypeNoOp(bpy.types.Operator):
+    bl_idname = 'debug.prop_type'
+    bl_label = ''
+    bl_description = 'View the properties of the active space data'
+    bl_options = {'INTERNAL'}
+    
+    def execute(self, context):
+        return {'FINISHED'}
+
+
 class ContextSpaceData(bpy.types.Operator):
     bl_idname = 'debug.context_space_data'
     bl_label = 'Context Space Data Properties'
@@ -73,7 +83,9 @@ class ContextSpaceData(bpy.types.Operator):
             prop_map[key] = tuple(group)
         
         for key in prop_map:
-            flow.box().label(key)
+            row = flow.row()
+            row.alert = True
+            row.operator('debug.prop_type', text=key)
             if prop_map[key]:
                 for prop in prop_map[key]:
                     flow.prop(context.space_data, prop.identifier)
@@ -99,6 +111,7 @@ class PanelDebugIDCopy(bpy.types.Operator):
     bl_idname = 'debug.panel_id_copy'
     bl_description = 'Copy the idname of panel to clipboard'
     bl_label = 'Copy idname'
+    bl_options = {'INTERNAL'}
     
     idname = bpy.props.StringProperty(name='idname')
     
@@ -119,6 +132,7 @@ def ALL_PT_debug_identifier_draw(self, context):
 _operators = (
     ContextSpaceData,
     PanelDebugIDCopy,
+    DebugPropTypeNoOp
 )
 
 
