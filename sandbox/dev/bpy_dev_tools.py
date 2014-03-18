@@ -95,14 +95,30 @@ def ALL_HT_debug_context_draw(self, context):
     row.operator_menu_enum('debug.context_space_data', 'prop_type', text="Properties", icon=space_icon)
 
 
+class PanelDebugIDCopy(bpy.types.Operator):
+    bl_idname = 'debug.panel_id_copy'
+    bl_description = 'Copy the idname of panel to clipboard'
+    bl_label = 'Copy idname'
+    
+    idname = bpy.props.StringProperty(name='idname')
+    
+    def execute(self, context):
+        context.window_manager.clipboard = self.idname
+        return {'FINISHED'}
+
+
 def ALL_PT_debug_identifier_draw(self, context):
     layout = self.layout
-    row = layout.row()
-    row.label(self.__class__.__name__)
+    box = layout.box()
+    box.alert = True
+    idname = self.bl_idname
+    props = box.operator('debug.panel_id_copy', text=idname)
+    props.idname = 'bpy.types.' + self.bl_idname
 
 
 _operators = (
     ContextSpaceData,
+    PanelDebugIDCopy,
 )
 
 
@@ -114,7 +130,7 @@ def register():
         header.append(ALL_HT_debug_context_draw)
         
     for panel in BlenderTypes.panels():
-        panel.append(ALL_PT_debug_identifier_draw)
+        panel.prepend(ALL_PT_debug_identifier_draw)
 
 
 def unregister():
