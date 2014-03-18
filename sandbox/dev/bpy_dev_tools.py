@@ -34,6 +34,11 @@ class BlenderTypes(object):
     def panels(cls):
         base = bpy.types.Panel
         return cls._get(base)
+    
+    @classmethod
+    def properties(cls):
+        base = bpy.types.Property
+        return base.__subclasses__()
 
 
 class DebugPropTypeNoOp(bpy.types.Operator):
@@ -50,7 +55,7 @@ def property_types_enum(self, context):
     enum_items = []
     enum_items.append(('ALL', 'All Property Definitions', ''))
 
-    for property_type in bpy.types.Property.__subclasses__():
+    for property_type in BlenderTypes.properties():
         bl_rna = property_type.bl_rna
         name = bl_rna.name+'s'
         identifier = name.split()[0].upper()
@@ -94,16 +99,15 @@ class ContextSpaceData(bpy.types.Operator):
             row = column.row()
             row.alert = True
             row.operator('debug.prop_type', text=key)
-            if prop_map[key]:
-                for prop in prop_map[key]:
-                    split = column.split(percentage=0.3)
-                    col1 = split.column()
-                    col2 = split.column()
-                    opprops = col1.operator('debug.panel_id_copy', text=prop.identifier)
-                    opprops.idname = prop.identifier
-                    col2.label(prop.description)
-                    col1.label('')
-                    col2.prop(context.space_data, prop.identifier)
+            for prop in prop_map[key]:
+                split = column.split(percentage=0.3)
+                col1 = split.column()
+                col2 = split.column()
+                opprops = col1.operator('debug.panel_id_copy', text=prop.identifier)
+                opprops.idname = prop.identifier
+                col2.label(prop.description)
+                col1.label('')
+                col2.prop(context.space_data, prop.identifier)
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=500)
