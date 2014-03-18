@@ -75,10 +75,6 @@ class ContextSpaceData(bpy.types.Operator):
 
     def draw(self, context):
         layout = self.layout
-        props = filter(lambda prop: prop.identifier != 'rna_type', context.space_data.bl_rna.properties)
-        
-        if self.prop_type != 'ALL':
-            props = filter(lambda prop: prop.type == self.prop_type, props)
         
         split = layout.split(percentage=0.3)
         col1 = split.column()
@@ -89,16 +85,28 @@ class ContextSpaceData(bpy.types.Operator):
         column = layout.column()
         
         prop_map = {}
-        criterion = lambda prop: prop.type
         
-        import itertools
-        for key, group in itertools.groupby(sorted(props, key=criterion), criterion):
-            prop_map[key] = tuple(group)
+        space_data_properties = context.space_data.bl_rna.properties
         
+        props = filter(lambda prop: prop.identifier != 'rna_type', space_data_properties)
+        
+        if self.prop_type != 'ALL':
+            props = filter(lambda prop: prop.type == self.prop_type, props)
+            prop_map[self.prop_type] = tuple(props)
+        else:
+            criterion = lambda prop: prop.type
+        
+            import itertools
+            for key, group in itertools.groupby(sorted(props, key=criterion), criterion):
+                prop_map[key] = tuple(group)
+            
         for key in prop_map:
             row = column.row()
             row.alert = True
             row.operator('debug.prop_type', text=key)
+            if not prop_map[key]:
+                column.label("No definitions available of this type")
+                continue
             for prop in prop_map[key]:
                 split = column.split(percentage=0.3)
                 col1 = split.column()
