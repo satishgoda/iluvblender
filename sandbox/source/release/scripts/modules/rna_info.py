@@ -689,9 +689,7 @@ def BuildRNAInfo():
     return InfoStructRNA.global_lookup, InfoFunctionRNA.global_lookup, InfoOperatorRNA.global_lookup, InfoPropertyRNA.global_lookup
 
 
-if __name__ == "__main__":
-    import rna_info
-    struct = rna_info.BuildRNAInfo()[0]
+def generateInfo(struct=BuildRNAInfo()[0]):
     data = []
     for struct_id, v in sorted(struct.items()):
         struct_id_str = v.identifier  #~ "".join(sid for sid in struct_id if struct_id)
@@ -716,4 +714,10 @@ if __name__ == "__main__":
         sys.stderr.write("\n\nEOF\n")
     else:
         text = bpy.data.texts.new(name="api.py")
-        text.from_string(data)
+        text.from_string("\n".join(data))
+
+
+if __name__ == "__main__":
+    import rna_info
+    struct = rna_info.BuildRNAInfo()[0]
+    rna_info.generateInfo(struct)
