@@ -21,7 +21,14 @@ class RunCommandOperator(bpy.types.Operator):
 
         try:
             input = context.window_manager.prompt.strip()
-            data_path = eval(input)
+            if input.startswith('context.'):
+                data_path = eval(input)
+            elif input in context.rna_type.properties:
+                data_path = getattr(context, input)
+            else:
+                data_path = context.path_resolve(input)
+            #else:
+            #    data_path = eval(input)
             message = str(data_path)
         except builtins.Exception as e:
             message = '{}'.format(e.__class__.__name__) + ': '
@@ -31,7 +38,7 @@ class RunCommandOperator(bpy.types.Operator):
         layout.label("{}".format(message))
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_confirm(self, event)
+        return context.window_manager.invoke_popup(self, width=640, height=480)
 
     def execute(self, context):
         return {'FINISHED'}
@@ -46,7 +53,7 @@ def debug_run_command_prompt_draw(self, context):
 
 
 def execute_run_command_prompt(self, context):
-    bpy.ops.debug.area_run_command('INVOKE_DEFAULT')
+    bpy.ops.debug.run_command('INVOKE_DEFAULT')
 
 
 def register():
