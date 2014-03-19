@@ -1,0 +1,73 @@
+# Blender 2.70 (sub 0), Commit date: 2014-03-12 17:57, Hash 2525f9c
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data()  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data()  # Operator
+bpy.ops.debug.context_space_data()  # Operator
+bpy.ops.debug.context_space_data()  # Operator
+bpy.ops.debug.context_space_data()  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='FLOAT')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='POINTER')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='ENUM')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='POINTER')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='STRING')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='COLLECTION')  # Operator
+bpy.ops.debug.context_space_data()  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='ENUM')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='ENUM')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='STRING')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='INT')  # Operator
+bpy.ops.debug.context_space_data(prop_type='BOOLEAN')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='ENUM')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='POINTER')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.context.space_data.use_live_edit = True  # Property
+bpy.context.space_data.use_live_edit = False  # Property
+bpy.ops.debug.context_space_data(prop_type='STRING')  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.context_space_data(prop_type='ENUM')  # Operator
+
+# backtrace
+blender270() [0xfbe804]
+blender270() [0xfbea5a]
+/lib64/libc.so.6() [0x3548c32920]
+blender270(WM_operator_last_redo+0x2d) [0xfd36dd]
+blender270() [0xfd37b2]
+blender270(ui_popup_block_create+0xf6) [0x12eae66]
+blender270(uiPupBlockEx+0x4e) [0x12ec8de]
+blender270() [0xfd3b83]
+blender270(WindowManager_invoke_props_popup_call+0x10) [0x1507760]
+blender270(RNA_function_call+0x12) [0x1414f32]
+blender270() [0x1852e99]
+blender270(PyObject_Call+0x5a) [0x2ba639a]
+blender270(PyEval_EvalFrameEx+0x17c0) [0x2c4edc0]
+blender270(PyEval_EvalCodeEx+0x83b) [0x2c4d52b]
+blender270() [0x2bcbfcf]
+blender270(PyObject_Call+0x5a) [0x2ba639a]
+blender270() [0x1853b14]
+blender270() [0x150655b]
+blender270() [0xfda0c5]
+blender270() [0xfda660]
+blender270() [0x129cb5a]
+blender270() [0x12ac24b]
+blender270() [0xfdb9c5]
+blender270() [0xfdbcd6]
+blender270(wm_event_do_handlers+0x19a) [0xfdbfca]
+blender270(WM_main+0x18) [0xfc60c8]
+blender270(main+0x506) [0xfc108f]
+/lib64/libc.so.6(__libc_start_main+0xfd) [0x3548c1ecdd]
+blender270() [0xedade5]
