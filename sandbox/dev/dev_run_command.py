@@ -21,19 +21,24 @@ class RunCommandOperator(bpy.types.Operator):
 
         try:
             input = context.window_manager.prompt.strip()
+            
             if input.startswith('context.'):
                 data_path = eval(input)
             elif input in context.rna_type.properties:
                 data_path = getattr(context, input)
             else:
                 data_path = context.path_resolve(input)
-            #else:
-            #    data_path = eval(input)
             message = str(data_path)
         except builtins.Exception as e:
             message = '{}'.format(e.__class__.__name__) + ': '
             message += str(e).replace('\n', ': ')
-
+            try:
+                data_path = eval(input)
+                message = data_path
+            except builtins.Exception as e:
+                message = '{}'.format(e.__class__.__name__) + ': '
+                message += str(e).replace('\n', ': ')
+   
         layout.label(">>> {}".format(input if input else "<empty command>"))
         layout.label("{}".format(message))
 
