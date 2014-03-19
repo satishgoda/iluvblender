@@ -12,24 +12,14 @@ import bpy
 class AreaRunCommand(bpy.types.Operator):
     bl_idname = 'debug.area_run_command'
     bl_label = 'Debug Area Run Command'
-    bl_options = {'INTERNAL'}
-    bl_property = 'prompt'
-    
-    prompt = bpy.props.StringProperty(name='prompt', default='')
+    bl_options = {'INTERNAL', 'REGISTER'}
     
     def draw(self, context):
         layout = self.layout
-        layout.label(context.area.type)
-        layout.prop(self, 'prompt')
-    
-    def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, width=500)
-    
-    def execute(self, context):
         import builtins
         
         try:
-            input = self.prompt.strip()
+            input = context.window_manager.prompt.strip()
             data_path = eval(input)
             message = str(data_path)
         except builtins.SyntaxError as se:
@@ -38,24 +28,40 @@ class AreaRunCommand(bpy.types.Operator):
         except builtins.AttributeError as ae:
             message = 'ERROR: >>> {0}'.format(input if input else "<empty command>") + '\n\t'
             message += str(ae)
-        
-        self.report({'WARNING'}, str(message))
+            
+        layout.label(">>> {}".format(input))
+        layout.label("{}".format(message))
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_popup(self, event)
+    
+    def execute(self, context):
         return {'FINISHED'}
 
 
 def debug_area_run_command_draw(self, context):
     layout = self.layout
-    layout.operator('debug.area_run_command')
+    col = layout.column()
+    col.alert = True
+    col.scale_x = 3.0
+    col.prop(context.window_manager, 'prompt', text='')
+
+
+def execute_prompt(self, context):
+    bpy.ops.debug.area_run_command('INVOKE_DEFAULT')
 
 
 def register():
     bpy.utils.register_class(AreaRunCommand)
+    bpy.types.WindowManager.prompt = bpy.props.StringProperty(name='prompt', default='', update=execute_prompt)
     bpy.types.TEXT_HT_header.append(debug_area_run_command_draw)
 
 
 def unregister():
     bpy.utils.unregister_class(AreaRunCommand)
     bpy.types.TEXT_HT_header.remove(debug_area_run_command_draw)
+    del bpy.types.WindowManager.prompt
+
 
 if __name__ == '__main__':
     register()
