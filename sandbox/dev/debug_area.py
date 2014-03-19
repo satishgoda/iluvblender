@@ -13,6 +13,7 @@ class AreaRunCommand(bpy.types.Operator):
     bl_idname = 'debug.area_run_command'
     bl_label = 'Debug Area Run Command'
     bl_options = {'INTERNAL'}
+    bl_property = 'prompt'
     
     prompt = bpy.props.StringProperty(name='prompt', default='')
     
@@ -55,7 +56,6 @@ def register():
 def unregister():
     bpy.utils.unregister_class(AreaRunCommand)
     bpy.types.TEXT_HT_header.remove(debug_area_run_command_draw)
-
 
 if __name__ == '__main__':
     register()
