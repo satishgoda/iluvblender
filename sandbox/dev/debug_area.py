@@ -42,15 +42,22 @@ class AreaRunCommand(bpy.types.Operator):
         return {'FINISHED'}
 
 
+def debug_area_run_command_draw(self, context):
+    layout = self.layout
+    layout.operator('debug.area_run_command')
+
+
 def register():
     bpy.utils.register_class(AreaRunCommand)
+    bpy.types.TEXT_HT_header.append(debug_area_run_command_draw)
 
 
 def unregister():
     bpy.utils.unregister_class(AreaRunCommand)
+    bpy.types.TEXT_HT_header.remove(debug_area_run_command_draw)
 
 
 if __name__ == '__main__':
     register()
-    bpy.ops.debug.area_run_command('INVOKE_DEFAULT')
+    #bpy.ops.debug.area_run_command('INVOKE_DEFAULT')
 
