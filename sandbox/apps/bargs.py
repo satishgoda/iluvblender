@@ -57,3 +57,8 @@ class _ProgramLauncherSymlink(ProgramLauncher):
 class ProgramDetails:
     def __init__(self):
         self.launcher = ProgramLauncher.create(sys.argv[0])
+
+
+if __name__ == '__main__':
+    program = ProgramDetails()
+    print(program.launcher)
