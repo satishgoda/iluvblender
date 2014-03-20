@@ -1,0 +1,15 @@
+/home/satishg/.config/blender/2.70/scripts/addons
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/addons
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/startup
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/modules
+/usr/local/prod/python/rh-config
+/usr/local/prod/python
+/muse/so/p-Centos-6.4-x86_64-gcc461/python
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/python/lib/python33.zip
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/python/lib/python3.3
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/python/lib/python3.3/plat-linux
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/python/lib/python3.3/lib-dynload
+/home/satishg/.local/lib/python3.3/site-packages
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/python/lib/python3.3/site-packages
+/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/addons/modules
+/home/satishg/.config/blender/2.70/scripts/addons/modules
