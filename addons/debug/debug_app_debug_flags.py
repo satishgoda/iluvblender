@@ -60,10 +60,13 @@ class BAppRuntimeDebugOperator(bpy.types.Operator):
     bl_idname = 'debug.app_debug'
     bl_label = 'bpy.app.debug[_*]'
     bl_description = bpy.app.__doc__
-    bl_options = {'INTERNAL'}
+    bl_options = {'REGISTER'}
     
     flag = bpy.props.EnumProperty(items=getAppDebugEnumeration, 
                                     name='App Debug Toggles')
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_popup(self)
 
     def execute(self, context):
         flag = BAppRuntimeDebug.getflag(self.flag)
