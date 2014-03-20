@@ -4,9 +4,7 @@ bl_info = {
     'category': 'Debugging',
 }
 
-
 import bpy
-
 
 class BAppRuntime(object):
     bclass = bpy.app
@@ -31,13 +29,14 @@ class BAppRuntimeDebug(BAppRuntime):
     def getenumeration(cls):
         enum_items = []
         for attr in cls.getattrs():
-            enum = attr.split('_')[1] if attr.count('_') else attr
-            enum = enum.upper()
-            name = enum.capitalize()
-            description = cls.getattrdoc(attr)
             attr_value = getattr(bpy.app, attr)
-            icon = 'CHECKBOX_HLT' if attr_value else 'CHECKBOX_DEHLT'
-            enum_items.append((enum, name, description, icon))
+            if isinstance(attr_value, bool):
+                enum = attr.split('_')[1] if attr.count('_') else attr
+                enum = enum.upper()
+                name = enum.capitalize()
+                description = cls.getattrdoc(attr)
+                icon = 'CHECKBOX_HLT' if attr_value else 'CHECKBOX_DEHLT'
+                enum_items.append((enum, name, description, icon))
         return enum_items
 
 
