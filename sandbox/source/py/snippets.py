@@ -70,3 +70,14 @@ version
 version_char
 version_cycle
 version_string
+
+
+setdir = lambda bclass: set(dir(bclass))
+
+
+sorted(filter(lambda attr: attr.startswith('debug'), set.difference(*map(setdir, type(bpy.app).mro()[:2]))))
+['debug', 'debug_events', 'debug_ffmpeg', 'debug_freestyle', 'debug_handlers', 'debug_python', 'debug_value', 'debug_wm']
+
+
+>>> sorted(filter(lambda attr: attr.startswith('debug'), set.difference(*map(setdir, inspect.getmro(bpy.app.__class__)[:2]))))
+['debug', 'debug_events', 'debug_ffmpeg', 'debug_freestyle', 'debug_handlers', 'debug_python', 'debug_value', 'debug_wm']
