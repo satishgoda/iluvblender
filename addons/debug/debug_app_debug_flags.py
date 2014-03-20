@@ -65,8 +65,12 @@ class BAppRuntimeDebugOperator(bpy.types.Operator):
     flag = bpy.props.EnumProperty(items=getAppDebugEnumeration, 
                                     name='App Debug Toggles')
 
+    def draw(self, context):
+        layout = self.layout
+        layout.operator_enum(self, 'flag')
+
     def invoke(self, context, event):
-        return context.window_manager.invoke_popup(self)
+        return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
         flag = BAppRuntimeDebug.getflag(self.flag)
