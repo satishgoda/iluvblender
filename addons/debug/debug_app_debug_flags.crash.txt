@@ -1,0 +1,39 @@
+# Blender 2.70 (sub 0), Commit date: 2014-03-19 05:02, Hash 19e627c
+bpy.ops.text.run_script()  # Operator
+Traceback (most recent call last):
+  File "/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/addons/development_api_navigator.py", line 349, in execute
+    self.generate_global_values()
+  File "/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/addons/development_api_navigator.py", line 239, in generate_global_values
+    text = bpy.context.space_data.text
+AttributeError: 'SpaceInfo' object has no attribute 'text'
+
+location: <unknown location>:-1
+  # Error
+bpy.data.window_managers["WinMan"].(null) = 'PYTHON'  # Property
+bpy.ops.text.run_script()  # Operator
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.app_debug(flag='FFMPEG')  # Operator
+Enabled bpy.app.debug_ffmpeg  # Info
+bpy.ops.text.run_script()  # Operator
+bpy.ops.debug.app_debug(flag='FFMPEG')  # Operator
+Disabled bpy.app.debug_ffmpeg  # Info
+bpy.data.window_managers["WinMan"].(null) = 'FFMPEG'  # Property
+bpy.ops.debug.app_debug(flag='FFMPEG')  # Operator
+Enabled bpy.app.debug_ffmpeg  # Info
+
+# backtrace
+blender() [0xfbe804]
+blender() [0xfbea5a]
+/lib64/libc.so.6() [0x3548c32920]
+blender() [0x15054e8]
+blender(RNA_pointer_create+0x4a) [0x140ac8a]
+blender() [0xfd83de]
+blender() [0xfd9f1c]
+blender() [0xfdb3c2]
+blender() [0xfdb799]
+blender() [0xfdbbf6]
+blender(wm_event_do_handlers+0x672) [0xfdc3c2]
+blender(WM_main+0x18) [0xfc60c8]
+blender(main+0x506) [0xfc108f]
+/lib64/libc.so.6(__libc_start_main+0xfd) [0x3548c1ecdd]
+blender() [0xedade5]
