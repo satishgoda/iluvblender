@@ -1,25 +1,8 @@
 # Blender 2.70 (sub 0), Commit date: 2014-03-19 05:02, Hash 19e627c
 bpy.ops.text.run_script()  # Operator
-Traceback (most recent call last):
-  File "/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/addons/development_api_navigator.py", line 349, in execute
-    self.generate_global_values()
-  File "/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/addons/development_api_navigator.py", line 239, in generate_global_values
-    text = bpy.context.space_data.text
-AttributeError: 'SpaceInfo' object has no attribute 'text'
-
-location: <unknown location>:-1
-  # Error
-bpy.data.window_managers["WinMan"].(null) = 'PYTHON'  # Property
 bpy.ops.text.run_script()  # Operator
-bpy.ops.text.run_script()  # Operator
-bpy.ops.debug.app_debug(flag='FFMPEG')  # Operator
-Enabled bpy.app.debug_ffmpeg  # Info
-bpy.ops.text.run_script()  # Operator
-bpy.ops.debug.app_debug(flag='FFMPEG')  # Operator
-Disabled bpy.app.debug_ffmpeg  # Info
-bpy.data.window_managers["WinMan"].(null) = 'FFMPEG'  # Property
-bpy.ops.debug.app_debug(flag='FFMPEG')  # Operator
-Enabled bpy.app.debug_ffmpeg  # Info
+bpy.ops.debug.app_debug()  # Operator
+Enabled bpy.app.debug  # Info
 
 # backtrace
 blender() [0xfbe804]
