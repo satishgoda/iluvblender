@@ -85,6 +85,7 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(BAppRuntimeDebugOperator)
+    bpy.types.INFO_MT_help.remove(INFO_MT_help_item_debug)
 
 
 if __name__ == '__main__':
