@@ -2,6 +2,7 @@
 /home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/addons
 /home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/startup
 /home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/modules
+/local/a/muse/satishg/blender/270
 /muse/satishg/blender/apps/modules
 /home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/python/lib/python33.zip
 /home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/python/lib/python3.3
