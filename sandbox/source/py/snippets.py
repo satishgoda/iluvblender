@@ -81,3 +81,11 @@ sorted(filter(lambda attr: attr.startswith('debug'), set.difference(*map(setdir,
 
 >>> sorted(filter(lambda attr: attr.startswith('debug'), set.difference(*map(setdir, inspect.getmro(bpy.app.__class__)[:2]))))
 ['debug', 'debug_events', 'debug_ffmpeg', 'debug_freestyle', 'debug_handlers', 'debug_python', 'debug_value', 'debug_wm']
+
+
+>>> print(inspect.getdoc(bpy.app.__class__.__dict__['debug']))
+Boolean, for debug info (started with --debug / --debug_* matching this attribute name)
+
+
+>>> print(inspect.getdoc(bpy.app.__class__.__dict__['binary_path']))
+The location of blenders executable, useful for utilities that spawn new instances
