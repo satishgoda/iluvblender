@@ -60,17 +60,10 @@ class BAppRuntimeDebugOperator(bpy.types.Operator):
     bl_idname = 'debug.app_debug'
     bl_label = 'bpy.app.debug[_*]'
     bl_description = bpy.app.__doc__
-    bl_options = {'REGISTER'}
+    bl_options = {'INTERNAL'}
     
     flag = bpy.props.EnumProperty(items=getAppDebugEnumeration, 
                                     name='App Debug Toggles')
-
-    def draw(self, context):
-        layout = self.layout
-        layout.operator_enum(self, 'flag')
-
-    def invoke(self, context, event):
-        return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
         flag = BAppRuntimeDebug.getflag(self.flag)
@@ -80,13 +73,14 @@ class BAppRuntimeDebugOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 
-def bpy_app_debug_items_draw(self, context):
+def INFO_MT_help_item_debug(self, context):
     layout = self.layout
-    layout.operator_enum('debug.app_debug', 'flag')
-
+    layout.operator_menu_enum('debug.app_debug', 'flag', icon='GHOST_ENABLED')
+    layout.separator()
 
 def register():
     bpy.utils.register_class(BAppRuntimeDebugOperator)
+    bpy.types.INFO_MT_help.prepend(INFO_MT_help_item_debug)
 
 
 def unregister():
@@ -95,6 +89,11 @@ def unregister():
 
 if __name__ == '__main__':
     register()
+    
+    def bpy_app_debug_items_draw(self, context):
+        layout = self.layout
+        layout.operator_enum('debug.app_debug', 'flag')
+    
     bpy.context.window_manager.popup_menu(bpy_app_debug_items_draw, 
                                           title=BAppRuntimeDebugOperator.bl_label,
                                           icon='BLENDER')
