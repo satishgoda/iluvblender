@@ -4,9 +4,12 @@ bl_info = {
     'category': 'Debugging',
 }
 
+
 import bpy
 
+
 class BAppRuntime(object):
+    __slots__ = ()
     bclass = bpy.app
     _filter = lambda attr: attr
         
@@ -26,6 +29,10 @@ class BAppRuntimeDebug(BAppRuntime):
     _filter = lambda attr: attr.startswith('debug')
 
     @classmethod
+    def getflag(cls, flag_enum):
+        return cls.flag_map[flag_enum]
+
+    @classmethod
     def getenumeration(cls, self, context):
         enum_items = []
         index = 10000
@@ -39,6 +46,9 @@ class BAppRuntimeDebug(BAppRuntime):
                 icon = 'CHECKBOX_HLT' if attr_value else 'CHECKBOX_DEHLT'
                 index += 1
                 enum_items.append((enum, name, description, icon, index))
+                if not hasattr(cls, 'flag_map'):
+                    cls.flag_map = {}
+                cls.flag_map[enum] = attr
         return enum_items
 
 
@@ -52,18 +62,19 @@ class BAppRuntimeDebugOperator(bpy.types.Operator):
     bl_description = bpy.app.__doc__
     bl_options = {'INTERNAL'}
     
-    items = bpy.props.EnumProperty(items=getAppDebugEnumeration, 
+    flag = bpy.props.EnumProperty(items=getAppDebugEnumeration, 
                                     name='App Debug Toggles')
 
     def execute(self, context):
-        print(self.items)
-        self.report({'WARNING'}, self.items)
+        flag = BAppRuntimeDebug.getflag(self.flag)
+        value = getattr(bpy.app, flag)
+        setattr(bpy.app, flag, not value)
         return {'FINISHED'}
 
 
 def bpy_app_debug_items_draw(self, context):
     layout = self.layout
-    layout.operator_enum('debug.app_debug', 'items')
+    layout.operator_enum('debug.app_debug', 'flag')
 
 
 def register():
