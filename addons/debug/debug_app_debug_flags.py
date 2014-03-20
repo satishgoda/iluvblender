@@ -69,6 +69,7 @@ class BAppRuntimeDebugOperator(bpy.types.Operator):
         flag = BAppRuntimeDebug.getflag(self.flag)
         value = getattr(bpy.app, flag)
         setattr(bpy.app, flag, not value)
+        self.report({'INFO'}, "{} bpy.app.{}".format("Disabled" if value else "Enabled", flag))
         return {'FINISHED'}
 
 
@@ -79,9 +80,6 @@ def bpy_app_debug_items_draw(self, context):
 
 def register():
     bpy.utils.register_class(BAppRuntimeDebugOperator)
-    bpy.context.window_manager.popup_menu(bpy_app_debug_items_draw, 
-                                            title=BAppRuntimeDebugOperator.bl_label,
-                                            icon='BLENDER')
 
 
 def unregister():
@@ -90,3 +88,7 @@ def unregister():
 
 if __name__ == '__main__':
     register()
+    bpy.context.window_manager.popup_menu(bpy_app_debug_items_draw, 
+                                          title=BAppRuntimeDebugOperator.bl_label,
+                                          icon='BLENDER')
+
