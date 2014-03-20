@@ -26,27 +26,55 @@ class BAppRuntimeDebug(BAppRuntime):
     _filter = lambda attr: attr.startswith('debug')
 
     @classmethod
-    def getenumeration(cls):
+    def getenumeration(cls, self, context):
         enum_items = []
+        index = 10000
         for attr in cls.getattrs():
-            attr_value = getattr(bpy.app, attr)
+            attr_value = getattr(cls.bclass, attr)
             if isinstance(attr_value, bool):
                 enum = attr.split('_')[1] if attr.count('_') else attr
                 enum = enum.upper()
                 name = enum.capitalize()
                 description = cls.getattrdoc(attr)
                 icon = 'CHECKBOX_HLT' if attr_value else 'CHECKBOX_DEHLT'
-                enum_items.append((enum, name, description, icon))
+                index += 1
+                enum_items.append((enum, name, description, icon, index))
         return enum_items
 
 
+def getAppDebugEnumeration(self, context):
+    return BAppRuntimeDebug.getenumeration(self, context)
+
+
+class BAppRuntimeDebugOperator(bpy.types.Operator):
+    bl_idname = 'debug.app_debug'
+    bl_label = 'bpy.app.debug[_*]'
+    bl_description = bpy.app.__doc__
+    bl_options = {'INTERNAL'}
+    
+    items = bpy.props.EnumProperty(items=getAppDebugEnumeration, 
+                                    name='App Debug Toggles')
+
+    def execute(self, context):
+        print(self.items)
+        self.report({'WARNING'}, self.items)
+        return {'FINISHED'}
+
+
+def bpy_app_debug_items_draw(self, context):
+    layout = self.layout
+    layout.operator_enum('debug.app_debug', 'items')
+
+
 def register():
-    import pprint
-    pprint.pprint(BAppRuntimeDebug.getenumeration())
+    bpy.utils.register_class(BAppRuntimeDebugOperator)
+    bpy.context.window_manager.popup_menu(bpy_app_debug_items_draw, 
+                                            title=BAppRuntimeDebugOperator.bl_label,
+                                            icon='BLENDER')
 
 
 def unregister():
-    pass
+    bpy.utils.unregister_class(BAppRuntimeDebugOperator)
 
 
 if __name__ == '__main__':
