@@ -1,6 +1,6 @@
->>> for x, y in inspect.getmembers(bpy.app.__class__, inspect.ismemberdescriptor):
-...     print(x)
-...     
+for x, y in inspect.getmembers(bpy.app.__class__, inspect.ismemberdescriptor):
+    print(x)
+
 background
 binary_path
 build_branch
@@ -28,9 +28,9 @@ version_cycle
 version_string
 
 
->>> for x, y in inspect.getmembers(bpy.app.__class__, inspect.isdatadescriptor):
-...     print(x)
-...     
+for x, y in inspect.getmembers(bpy.app.__class__, inspect.isdatadescriptor):
+    print(x)
+
 __class__
 autoexec_fail
 autoexec_fail_message
@@ -70,4 +70,3 @@ version
 version_char
 version_cycle
 version_string
-
