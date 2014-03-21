@@ -29,11 +29,11 @@ class DebugPythonPathOperator(bpy.types.Operator):
     bl_label = 'Open Python Path'
     bl_options = {'INTERNAL'}
     
-    filepath = bpy.props.StringProperty(
-        name="File Path",
-        description="Filepath used for exporting the file",
+    directory = bpy.props.StringProperty(
+        name="Python directory path",
+        description="Python directory path",
         maxlen=1024,
-        subtype='FILE_PATH',
+        subtype='DIR_PATH',
         )
         
     def invoke(self, context, event):
@@ -41,8 +41,11 @@ class DebugPythonPathOperator(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     def execute(self, context):
-        self.report({'INFO'}, self.filepath)
+        self.report({'INFO'}, self.directory)
         return {'FINISHED'}
+
+    def cancel(self, context):
+        pass
 
 
 class DebugPythonPathsMenu(bpy.types.Menu):
@@ -69,7 +72,7 @@ class DebugPythonPathsMenu(bpy.types.Menu):
             
             if os.path.exists(path):
                 if os.path.isdir(path):
-                    column.operator('debug.python_path_open', text=text, icon='FILE_FOLDER').filepath = path
+                    column.operator('debug.python_path_open', text=text, icon='FILE_FOLDER').directory = path
                 else:
                     column.label(text, icon='FILE_BLANK')
             else:
