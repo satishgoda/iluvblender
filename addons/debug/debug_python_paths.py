@@ -49,12 +49,17 @@ class DebugPythonPathOperator(bpy.types.Operator):
 
     def execute(self, context):
         if self.filepath == self.directory:
-            self.report({'WARNING', 'INFO'}, "You have not chosen a filepath")
-            return {'CANCELLED'}
+            self.report({'WARNING'}, "You have not chosen a filepath")
         else:
+            filepath = self.filepath
+            basename = os.path.basename(filepath)
             context.area.type = 'TEXT_EDITOR'
-            bpy.ops.text.open(filepath=self.filepath)
-            return {'FINISHED'}
+            if basename in context.blend_data.texts:
+                self.report({'WARNING'}, "This file is already open")
+            else:
+                bpy.ops.text.open(filepath=filepath)
+        
+        return {'FINISHED'}
 
     def cancel(self, context):
         pass
