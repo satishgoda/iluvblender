@@ -44,20 +44,17 @@ class DebugPythonPathOperator(bpy.types.Operator):
     )
     
     def invoke(self, context, event):
-        self.report({'INFO'}, self.directory)
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
     def execute(self, context):
-        self.report({'INFO'}, self.directory)
-        self.report({'INFO'}, self.filepath)
-        if self.filepath:
-            bpy.ops.text.open(filepath=self.filepath)
-            print(dir(context))
+        if self.filepath == self.directory:
+            self.report({'WARNING', 'INFO'}, "You have not chosen a filepath")
+            return {'CANCELLED'}
+        else:
             context.area.type = 'TEXT_EDITOR'
-            context.edit_text = context.blend_data.texts[os.path.basename(self.filepath)]
-            print(dir(context))
-        return {'FINISHED'}
+            bpy.ops.text.open(filepath=self.filepath)
+            return {'FINISHED'}
 
     def cancel(self, context):
         pass
