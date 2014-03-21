@@ -50,10 +50,15 @@ class DebugPythonPathOperator(bpy.types.Operator):
     def execute(self, context):
         if self.filepath == self.directory:
             self.report({'WARNING'}, "You have not chosen a filepath")
+        elif not os.path.exists(self.filepath):
+            self.report({'WARNING'}, "The path you have choosen does not exist")
+            self.report({'WARNING'}, self.filepath)
         else:
             filepath = self.filepath
             basename = os.path.basename(filepath)
+            
             context.area.type = 'TEXT_EDITOR'
+            
             if basename in context.blend_data.texts:
                 self.report({'WARNING'}, "This file was already opened. Switched to it :)")
                 bpy.ops.wm.context_set_id(data_path='space_data.text', value=basename)
