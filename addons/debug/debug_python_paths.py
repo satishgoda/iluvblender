@@ -35,13 +35,28 @@ class DebugPythonPathOperator(bpy.types.Operator):
         maxlen=1024,
         subtype='DIR_PATH',
         )
-        
+    
+    filepath = bpy.props.StringProperty(
+        name="Python file in the directory path",
+        description="Python file in directory path",
+        maxlen=1024,
+        subtype='FILE_PATH',
+    )
+    
     def invoke(self, context, event):
+        self.report({'INFO'}, self.directory)
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
     def execute(self, context):
         self.report({'INFO'}, self.directory)
+        self.report({'INFO'}, self.filepath)
+        if self.filepath:
+            bpy.ops.text.open(filepath=self.filepath)
+            print(dir(context))
+            context.area.type = 'TEXT_EDITOR'
+            context.edit_text = context.blend_data.texts[os.path.basename(self.filepath)]
+            print(dir(context))
         return {'FINISHED'}
 
     def cancel(self, context):
@@ -72,7 +87,8 @@ class DebugPythonPathsMenu(bpy.types.Menu):
             
             if os.path.exists(path):
                 if os.path.isdir(path):
-                    column.operator('debug.python_path_open', text=text, icon='FILE_FOLDER').directory = path
+                    oper_props = column.operator('debug.python_path_open', text=text, icon='FILE_FOLDER')
+                    oper_props.filepath = path+os.path.sep
                 else:
                     column.label(text, icon='FILE_BLANK')
             else:
