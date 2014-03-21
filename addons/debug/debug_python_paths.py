@@ -21,6 +21,7 @@
 # URL: http://learningblender3dsoftware.blogspot.in
 
 import bpy
+import os
 
 
 class DebugPythonPathsMenu(bpy.types.Menu):
@@ -37,12 +38,21 @@ class DebugPythonPathsMenu(bpy.types.Menu):
         display_paths = reversed(paths) if header_at_bottom else paths
         
         layout = self.layout
-        column = layout.column(align=True)
-        column.scale_y = 1.4
         
         for index, path in enumerate(display_paths, start=1):
             index = (len(paths) - index + 1) if header_at_bottom else index
-            column.label("{0:02}) {1}".format(index, path))
+            text = "{0:02})   {1}".format(index, path)
+            
+            column = layout.column()
+            column.scale_y = 1.1
+            
+            if os.path.exists(path):
+                if os.path.isdir(path):
+                    column.operator('wm.path_open', text=text, icon='FILE_FOLDER').filepath = path
+                else:
+                    column.label(text, icon='FILE_BLANK')
+            else:
+                column.label(text, icon='CANCEL')
 
 
 def CONSOLE_HT_header_debug_paths_menu(self, context):
