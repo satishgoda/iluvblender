@@ -1,4 +1,4 @@
-# ##### BEGIN GPL LICENSE BLOCK #####
+##### BEGIN GPL LICENSE BLOCK #####
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -22,27 +22,28 @@
 
 import bpy
 import os
+import sys
 
 
 class DebugPythonPathOperator(bpy.types.Operator):
     bl_idname = 'debug.python_path_open'
     bl_label = 'Open Python Path'
     bl_options = {'INTERNAL'}
-    
+
     directory = bpy.props.StringProperty(
         name="Python directory path",
         description="Python directory path",
         maxlen=1024,
         subtype='DIR_PATH',
         )
-    
+
     filepath = bpy.props.StringProperty(
         name="Python file in the directory path",
         description="Python file in directory path",
         maxlen=1024,
         subtype='FILE_PATH',
     )
-    
+
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
@@ -56,15 +57,19 @@ class DebugPythonPathOperator(bpy.types.Operator):
         else:
             filepath = self.filepath
             basename = os.path.basename(filepath)
-            
+
             context.area.type = 'TEXT_EDITOR'
-            
+
+            space_data = context.space_data
+            for attr in ('line_numbers', 'word_wrap', 'syntax_highlight', 'margin', 'line_highlight', 'margin'):
+                setattr(space_data, 'show_'+attr, True)
+
             if basename in context.blend_data.texts:
                 self.report({'WARNING'}, "This file was already opened. Switched to it :)")
                 bpy.ops.wm.context_set_id(data_path='space_data.text', value=basename)
             else:
                 bpy.ops.text.open(filepath=filepath)
-        
+
         return {'FINISHED'}
 
     def cancel(self, context):
@@ -74,25 +79,24 @@ class DebugPythonPathOperator(bpy.types.Operator):
 class DebugPythonPathsMenu(bpy.types.Menu):
     bl_idname = 'WM_MT_debug_python_paths'
     bl_label = 'Python Path'
-    
+
     def draw(self, context):
-        from mydebug import getPythonPaths
         area = context.area
         header = area.regions[0]
         header_at_bottom = area.y == header.y
-        
-        paths = getPythonPaths()
+
+        paths = sys.path
         display_paths = reversed(paths) if header_at_bottom else paths
-        
+
         layout = self.layout
-        
+
         for index, path in enumerate(display_paths, start=1):
             index = (len(paths) - index + 1) if header_at_bottom else index
             text = "{0:02})   {1}".format(index, path)
-            
+
             column = layout.column()
             column.scale_y = 1.1
-            
+
             if os.path.exists(path):
                 if os.path.isdir(path):
                     oper_props = column.operator('debug.python_path_open', text=text, icon='FILE_FOLDER')
