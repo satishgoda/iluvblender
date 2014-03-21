@@ -55,7 +55,8 @@ class DebugPythonPathOperator(bpy.types.Operator):
             basename = os.path.basename(filepath)
             context.area.type = 'TEXT_EDITOR'
             if basename in context.blend_data.texts:
-                self.report({'WARNING'}, "This file is already open")
+                self.report({'WARNING'}, "This file was already opened. Switched to it :)")
+                bpy.ops.wm.context_set_id(data_path='space_data.text', value=basename)
             else:
                 bpy.ops.text.open(filepath=filepath)
         
