@@ -31,16 +31,21 @@ class DebugPythonPathsMenu(bpy.types.Menu):
         from mydebug import getPythonPaths
         area = context.area
         header = area.regions[0]
+        header_at_bottom = area.y == header.y
+        
         paths = getPythonPaths()
+        display_paths = reversed(paths) if header_at_bottom else paths
         
-        display_paths = reversed(paths) if area.y == header.y else paths
+        column = self.layout.column()
         
-        layout = self.layout
+        split = column.split()
+        column1 = split.column()
+        column2 = split.column()
         
         for index, path in enumerate(display_paths, start=1):
-            if area.y == header.y:
-                index = len(paths) - index + 1
-            layout.label("{0:02} {1}".format(index, path))
+            index = (len(paths) - index + 1) if header_at_bottom else index
+            column1.label("{0:02}".format(index))
+            column2.label(path)
 
 
 def CONSOLE_HT_header_debug_paths_menu(self, context):
