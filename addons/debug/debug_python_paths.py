@@ -36,16 +36,13 @@ class DebugPythonPathsMenu(bpy.types.Menu):
         paths = getPythonPaths()
         display_paths = reversed(paths) if header_at_bottom else paths
         
-        column = self.layout.column()
-        
-        split = column.split()
-        column1 = split.column()
-        column2 = split.column()
+        layout = self.layout
+        column = layout.column(align=True)
+        column.scale_y = 1.4
         
         for index, path in enumerate(display_paths, start=1):
             index = (len(paths) - index + 1) if header_at_bottom else index
-            column1.label("{0:02}".format(index))
-            column2.label(path)
+            column.label("{0:02}) {1}".format(index, path))
 
 
 def CONSOLE_HT_header_debug_paths_menu(self, context):
