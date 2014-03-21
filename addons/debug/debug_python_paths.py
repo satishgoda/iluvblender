@@ -91,6 +91,7 @@ class DebugPythonPathsMenu(bpy.types.Menu):
         layout = self.layout
 
         for index, path in enumerate(display_paths, start=1):
+            path = os.path.abspath(path) if not os.path.isabs(path) else path
             index = (len(paths) - index + 1) if header_at_bottom else index
             text = "{0:02})   {1}".format(index, path)
 
