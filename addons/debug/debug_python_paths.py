@@ -20,8 +20,6 @@
 # E-mail: satishgoda@gmail.com
 # URL: http://learningblender3dsoftware.blogspot.in
 
-
-import mydebug
 import bpy
 
 
@@ -30,16 +28,19 @@ class DebugPythonPathsMenu(bpy.types.Menu):
     bl_label = 'Python Path'
     
     def draw(self, context):
+        from mydebug import getPythonPaths
         area = context.area
         header = area.regions[0]
-        paths = mydebug.getPythonPaths()
+        paths = getPythonPaths()
         
         display_paths = reversed(paths) if area.y == header.y else paths
         
         layout = self.layout
         
-        for path in display_paths:
-            layout.label(path)
+        for index, path in enumerate(display_paths, start=1):
+            if area.y == header.y:
+                index = len(paths) - index + 1
+            layout.label("{0:02} {1}".format(index, path))
 
 
 def CONSOLE_HT_header_debug_paths_menu(self, context):
