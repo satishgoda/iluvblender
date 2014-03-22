@@ -91,7 +91,7 @@ class ContextSpaceData(bpy.types.Operator):
         
         prop_map = {}
         
-        space_data_properties = context.space_data.bl_rna.properties
+        space_data_properties = context.space_data.rna_type.properties
         
         PropertyIdentifier = lambda prop: prop.identifier
         
