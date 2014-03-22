@@ -131,7 +131,7 @@ class ContextSpaceData(bpy.types.Operator):
                 opprops.idname = prop.identifier
                 col2.label(prop.description)
                 col1.label('')
-                col2.prop(context.space_data, prop.identifier)
+                col2.box().prop(context.space_data, prop.identifier)
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=500)
