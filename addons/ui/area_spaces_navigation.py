@@ -23,18 +23,18 @@ def draw(self, context):
         row.alert = True
         for space in spaces:
             kwargs = {}
-            spaceTypeRNA = space.bl_rna.properties['type'].enum_items[space.type]
-            kwargs['text'] = spaceTypeRNA.name
-            kwargs['icon'] = spaceTypeRNA.icon
+            space_rna = space.rna_type.properties['type'].enum_items[space.type]
+            kwargs['text'] = '' #space_rna.name
+            kwargs['icon'] = space_rna.icon
             op_props = row.operator('wm.context_set_enum', **kwargs)
             op_props.data_path = "area.type"
             op_props.value = space.type
-        row.operator('screen.spacedata_cleanup', text='X', emboss=False)
+        row.operator('screen.spacedata_cleanup', text='', emboss=not False, icon='CANCEL')
 
 
 def _doIt(process):
     only_headers = lambda typestr: typestr.find('HT_header') != -1
-    processstr = ('remove', 'append')
+    processstr = ('remove', 'prepend')
     for headerstr in filter(only_headers, dir(bpy.types)):
         headertype = eval('bpy.types.' + headerstr)
         getattr(headertype, processstr[process])(draw)
