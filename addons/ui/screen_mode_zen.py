@@ -31,10 +31,17 @@ class ScreenModeZenOperator(bpy.types.Operator):
     bl_label = "Screen Mode Zen"
     bl_options = {'REGISTER', 'UNDO'}
 
-    enable = bpy.props.BoolProperty(name='Enable', description="Enable/Disable Zen Mode", default=False)
+    enable = bpy.props.BoolProperty(name='Enable', description="Enable/Disable Zen Mode", default=True)
     show_menus = bpy.props.BoolProperty(name='Show Menus?', description="Should the menus be shown", default=False)
 
+    def draw(self, context):
+        layout = self.layout
+        column = layout.column()
+        column.prop(self, 'enable')
+        column.prop(self, 'show_menus')
+
     def invoke(self, context, event):
+        screen_areas_zen(context, self.as_keywords())
         return context.window_manager.invoke_props_popup(self, event)
 
     def execute(self, context):
