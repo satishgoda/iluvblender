@@ -85,6 +85,7 @@ class ContextSpaceData(bpy.types.Operator):
         col1 = split.column()
         col2 = split.column()
         col1.label("rna_type")
+        col2.label(context.space_data.rna_type.description)
         col2.prop(context.space_data, 'rna_type')
         
         column = layout.column()
