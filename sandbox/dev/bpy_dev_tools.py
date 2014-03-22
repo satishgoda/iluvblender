@@ -165,6 +165,9 @@ class PanelDebugIDCopy(bpy.types.Operator):
 
 
 def ALL_PT_debug_identifier_draw(self, context):
+    if not bpy.app.debug:
+        return
+
     layout = self.layout
     box = layout.box()
     box.alert = True
