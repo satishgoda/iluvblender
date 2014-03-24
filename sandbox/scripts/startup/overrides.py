@@ -1,9 +1,3 @@
-bl_info = {
-        'name': 'Switch Area Header Drawing',
-        'description': 'Switch area header draw method. Press CTRL+ALT+D and choose a value other than 1 to disable',
-        'category': 'System',
-}
-
 import bpy
 
 
@@ -42,7 +36,13 @@ class ContextExplorer(bpy.types.Operator):
         for name in sorted(attributes - ignored_attributes):
             if (not name.startswith('__')) and getattr(context, name):
                 column1.row().label('context.'+name)
-                column1.box().label(str(eval('context.'+name)))
+                box = column1.box()
+                value = eval('context.'+name)
+                if isinstance(value, list):
+                    for item in value:
+                        box.label(str(item))
+                else:
+                    box.label(str(value))
 
         for prop in sorted(rna_properties, key=lambda prop: prop.type):
             column2.prop(context, prop.identifier)
