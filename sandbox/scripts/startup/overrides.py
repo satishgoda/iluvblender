@@ -10,16 +10,11 @@ header_map = {header.bl_space_type: header.draw for header in bl_ui_headers }
 def ALL_HT_header_draw_override(self, context):
     layout = self.layout
     
-    area = context.area
-    area_type_enum_item = area.bl_rna.properties['type'].enum_items[area.type]
-    icon_identifier = layout.enum_item_icon(area, 'type', area.type)
-    icon = bpy.types.EnumPropertyItem.bl_rna.properties['icon'].enum_items[icon_identifier].identifier
-    
-    text = "{} ({})".format(area.type, layout.enum_item_description(area, 'type', area.type))
-    
-    row = layout.row()
-    
     if bpy.app.debug_value == 1:
+        area = context.area
+        text = "{} ({})".format(area.type, layout.enum_item_description(area, 'type', area.type))
+        icon = area.bl_rna.properties['type'].enum_items[area.type].icon
+        row = layout.row()
         row.label(text, icon=icon)
     else:
         header_map[context.area.type](self, context)
