@@ -40,9 +40,15 @@ class ContextExplorer(bpy.types.Operator):
                 value = eval('context.'+name)
                 if isinstance(value, list):
                     for item in value:
-                        box.label(str(item))
+                        if isinstance(item, bpy.types.ID):
+                            box.prop(item, 'name')
+                        else:
+                            box.label(str(item))
                 else:
-                    box.label(str(value))
+                    if isinstance(value, bpy.types.ID):
+                        box.prop(value, 'name')
+                    else:
+                        box.label(str(value))
 
         for prop in sorted(rna_properties, key=lambda prop: prop.type):
             column2.prop(context, prop.identifier)
