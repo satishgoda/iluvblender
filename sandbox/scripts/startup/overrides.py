@@ -8,7 +8,7 @@ header_map = {header.bl_space_type: header.draw for header in bl_ui_headers }
 
 
 def ALL_HT_header_draw_override(self, context):
-    if bpy.app.debug:
+    if bpy.app.debug_value == 1:
         self.layout.label(context.area.type)
     else:
         header_map[context.area.type](self, context)
