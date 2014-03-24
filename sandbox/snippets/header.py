@@ -1,4 +1,3 @@
-
 bpy.types.Header.__subclasses__
 #~ <built-in method __subclasses__ of RNAMeta object at 0x2aaab10fa920>
 #~ 
@@ -78,3 +77,6 @@ header.__name__
 header.bl_space_type
 #~ 'VIEW_3D'
 #~ 
+
+>>> header.__name__
+'VIEW3D_HT_header'
