@@ -7,13 +7,16 @@ bl_ui_headers = tuple(filter(bl_ui_headers_only, bpy.types.Header.__subclasses__
 header_map = {header.bl_space_type: header.draw for header in bl_ui_headers }
 
 
-def ALL_HT_header_draw_override(self, context):  
+def ALL_HT_header_draw_override(self, context):
+    layout = self.layout
+    
     area = context.area
     area_type_enum_item = area.bl_rna.properties['type'].enum_items[area.type]
-    icon = area_type_enum_item.icon
-    text = "{} ({})".format(area.type, area_type_enum_item.description)
+    icon_identifier = layout.enum_item_icon(area, 'type', area.type)
+    icon = bpy.types.EnumPropertyItem.bl_rna.properties['icon'].enum_items[icon_identifier].identifier
     
-    layout = self.layout
+    text = "{} ({})".format(area.type, layout.enum_item_description(area, 'type', area.type))
+    
     row = layout.row()
     
     if bpy.app.debug_value == 1:
