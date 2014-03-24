@@ -1,0 +1,18 @@
+# Blender 2.70 (sub 0), Commit date: 2014-03-19 05:02, Hash 19e627c
+
+# backtrace
+blender() [0xfbe804]
+blender() [0xfbea5a]
+/lib64/libc.so.6() [0x3548c32920]
+blender(BKE_movieclip_remap_scene_to_clip_frame+0) [0x1587770]
+blender(ED_space_clip_get_clip_frame_number+0x16) [0x11f0776]
+blender() [0x11f4aa1]
+blender() [0xfd9fe5]
+blender() [0xfdb3c2]
+blender() [0xfdb799]
+blender() [0xfdbbf6]
+blender(wm_event_do_handlers+0x31b) [0xfdc06b]
+blender(WM_main+0x18) [0xfc60c8]
+blender(main+0x506) [0xfc108f]
+/lib64/libc.so.6(__libc_start_main+0xfd) [0x3548c1ecdd]
+blender() [0xedade5]
