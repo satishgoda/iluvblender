@@ -97,3 +97,8 @@ header.bl_space_type
 >>> bpy.types.INFO_HT_header.draw._draw_funcs
 [<function ALL_HT_header_draw_override at 0x2aaab6e4d5f0>]
 
+>>> bpy.types.INFO_HT_header.draw.__dict__
+{'_draw_funcs': [<function ALL_HT_header_draw_override at 0x2aaab6e4d5f0>]}
+
+>>> vars(bpy.types.INFO_HT_header.draw)
+{'_draw_funcs': [<function ALL_HT_header_draw_override at 0x2aaab6e4d5f0>]}
