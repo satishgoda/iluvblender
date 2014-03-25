@@ -61,7 +61,7 @@ def ALL_HT_header_draw_override(self, context):
     
     if bpy.app.debug_value == 1:
         area = context.area
-        space = context.space_data
+        space = area.spaces.active
         space_name = layout.enum_item_name(space, 'type', area.type)
         space_description = layout.enum_item_description(area, 'type', area.type)
         text = "[{}] - {}".format(space_name, space_description)
@@ -80,6 +80,18 @@ def ALL_HT_header_draw_override(self, context):
         header_map[context.area.type](self, context)
 
 
+def switch_header_menu_item(self, context):
+    layout = self.layout
+    
+    saved_operator_context = layout.operator_context
+    
+    layout.operator_context = 'EXEC_DEFAULT'
+    layout.operator('wm.debug_menu', text='Draw Custom Headers', icon='GHOST_ENABLED').debug_value = 1
+    layout.operator_context = saved_operator_context
+    
+    layout.separator()
+
+
 def register():
     bpy.utils.register_class(ContextExplorer)
     
@@ -87,6 +99,8 @@ def register():
         header.draw = ALL_HT_header_draw_override
 
     bpy.app.debug_value = 1
+    
+    bpy.types.INFO_MT_window.prepend(switch_header_menu_item)
 
 
 def unregister():
@@ -99,6 +113,8 @@ def unregister():
         area.tag_redraw()
         
     bpy.app.debug_value = 0
+    
+    bpy.types.INFO_MT_window.remove(switch_header_menu_item)
 
 
 if __name__ == '__main__':
