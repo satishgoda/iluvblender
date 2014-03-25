@@ -17,6 +17,13 @@ class Area(object):
         self.type = area.type
 
 
+class LabelOp(bpy.types.Operator):
+    bl_idname = 'debug.label'
+    bl_label = ''
+    bl_description = ''
+    bl_options = {'INTERNAL'}
+
+
 class ContextExplorer(bpy.types.Operator):
     bl_idname = 'debug.context_explorer'
     bl_label = 'Context Explorer'
@@ -44,10 +51,11 @@ class ContextExplorer(bpy.types.Operator):
 
         def draw_item(layout, item):
             if isinstance(item, bpy.types.ID):
+                args = (item, 'name')
+                kwargs = {'text': ''}
                 if isinstance(item, bpy.types.Object):
-                    layout.prop(item, 'name', icon='OBJECT_DATA')
-                else:
-                    layout.prop(item, 'name')
+                    kwargs['icon'] = 'OBJECT_DATA'
+                layout.prop(*args, **kwargs)
             else:
                 layout.label(str(item))
 
@@ -57,8 +65,9 @@ class ContextExplorer(bpy.types.Operator):
                 split_C_prop = column1.box().split(percentage=0.3)
                 split_C_prop_name = split_C_prop.column()
                 split_C_prop_description = split_C_prop.column()
-                split_C_prop_name.label('context.'+name)
-                column = column1.column()
+                split_C_prop_name.alert = True
+                split_C_prop_name.operator('debug.label', text='context.'+name)
+                column = column1.column_flow()
                 if isinstance(value, (list, tuple)):
                     first = value[0]
                     split_C_prop_description.label(first.rna_type.description)
@@ -114,6 +123,7 @@ def switch_header_menu_item(self, context):
 
 def register():
     bpy.utils.register_class(ContextExplorer)
+    bpy.utils.register_class(LabelOp)
     
     for header in bl_ui_headers:
         header.draw = ALL_HT_header_draw_override
@@ -125,6 +135,7 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(ContextExplorer)
+    bpy.utils.unregister_class(LabelOp)
     
     for header in bl_ui_headers:
         header.draw = header_map[header.bl_space_type]
