@@ -1,8 +1,11 @@
 import bpy
 from bpy_types import StructRNA as bpy_struct
+import collections
+
 
 bl_ui_headers_only = lambda header: header.__module__.startswith('bl_ui')
 bl_ui_headers = tuple(filter(bl_ui_headers_only, bpy.types.Header.__subclasses__()))
+
 
 header_map = { header.bl_space_type: header.draw for header in bl_ui_headers }
 
@@ -70,7 +73,7 @@ class ContextExplorer(bpy.types.Operator):
                 split_C_prop_name.alert = True
                 split_C_prop_name.operator('debug.label', text='context.'+name)
                 column = column1.column_flow()
-                if isinstance(value, (list, tuple)):
+                if isinstance(value, collections.Sequence):
                     first = value[0]
                     split_C_prop_description.label(first.rna_type.description)
                     for item in value:
