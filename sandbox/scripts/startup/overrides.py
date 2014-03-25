@@ -1,4 +1,5 @@
 import bpy
+from bpy_types import StructRNA as bpy_struct
 
 bl_ui_headers_only = lambda header: header.__module__.startswith('bl_ui')
 bl_ui_headers = tuple(filter(bl_ui_headers_only, bpy.types.Header.__subclasses__()))
@@ -43,16 +44,19 @@ class ContextExplorer(bpy.types.Operator):
 
         def draw_item(layout, item):
             if isinstance(item, bpy.types.ID):
-                box.prop(item, 'name')
+                if isinstance(item, bpy.types.Object):
+                    box.prop(item, 'name', icon='OBJECT_DATA')
+                else:
+                    box.prop(item, 'name')
             else:
                 box.label(str(item))
 
         for name in sorted(attributes - ignored_attributes):
-            if (not name.startswith('__')) and getattr(context, name):
+            value = getattr(context, name)
+            if (not name.startswith('__')) and value:
                 column1.row().label('context.'+name)
                 box = column1.box()
-                value = eval('context.'+name)
-                if isinstance(value, list):
+                if isinstance(value, (list, tuple)):
                     for item in value:
                         draw_item(box, item)
                 else:
