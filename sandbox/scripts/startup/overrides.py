@@ -64,6 +64,9 @@ class ContextExplorer(bpy.types.Operator):
             else:
                 layout.label(str(item))
 
+        def description(item):
+            return "{} - {}".format(item.rna_type.description, str(item.__class__))
+
         for name in sorted(attributes - ignored_attributes):
             value = getattr(context, name)
             if (not name.startswith('__')) and value:
@@ -73,19 +76,19 @@ class ContextExplorer(bpy.types.Operator):
                 split_C_prop_name.alert = True
                 split_C_prop_name.operator('debug.label', text='context.'+name)
                 column = column1.column_flow()
-                if isinstance(value, collections.Sequence):
-                    first = value[0]
-                    split_C_prop_description.label(first.rna_type.description)
+                if isinstance(value, collections.abc.Sequence):
+                    split_C_prop_description.label(description(value[0]))
                     for item in value:
                         draw_item(column, item)
                 else:
+                    split_C_prop_description.label(description(value))
                     draw_item(column, value)
 
         for prop in sorted(rna_properties, key=lambda prop: prop.type):
             column2.prop(context, prop.identifier)
     
     def invoke(self, context, value):
-        return context.window_manager.invoke_props_dialog(self, width=800)
+        return context.window_manager.invoke_props_dialog(self, width=980)
 
     def execute(self, context):
         return {'FINISHED'}
