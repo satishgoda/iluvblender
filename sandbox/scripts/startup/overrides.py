@@ -37,7 +37,7 @@ class ContextExplorer(bpy.types.Operator):
         layout = self.layout
 
         header = layout.box().row()
-        split = layout.split(percentage=0.6)
+        split = layout.split(percentage=0.65)
         column1 = split.column()
         column2 = split.column()
 
@@ -70,7 +70,7 @@ class ContextExplorer(bpy.types.Operator):
         for name in sorted(attributes - ignored_attributes):
             value = getattr(context, name)
             if (not name.startswith('__')) and value:
-                split_C_prop = column1.box().split(percentage=0.3)
+                split_C_prop = column1.box().split(percentage=0.4)
                 split_C_prop_name = split_C_prop.column()
                 split_C_prop_description = split_C_prop.column()
                 split_C_prop_name.alert = True
@@ -112,7 +112,6 @@ def ALL_HT_header_draw_override(self, context):
         icon = area.icon
         
         row.label(text, icon=icon)
-        
     else:
         header_map[context.area.type](self, context)
 
@@ -121,9 +120,12 @@ def switch_header_menu_item(self, context):
     layout = self.layout
     
     saved_operator_context = layout.operator_context
-    
     layout.operator_context = 'EXEC_DEFAULT'
-    layout.operator('wm.debug_menu', text='Draw Custom Headers', icon='GHOST_ENABLED').debug_value = 1
+    
+    args = ('wm.debug_menu',)
+    kwargs = {'text': 'Draw Custom Headers', 'icon':'GHOST_ENABLED'}
+    layout.operator(*args, **kwargs).debug_value = 1
+    
     layout.operator_context = saved_operator_context
     
     layout.separator()
