@@ -1,6 +1,5 @@
 import bpy
 
-
 bl_ui_headers_only = lambda header: header.__module__.startswith('bl_ui')
 bl_ui_headers = tuple(filter(bl_ui_headers_only, bpy.types.Header.__subclasses__()))
 
@@ -16,23 +15,26 @@ class ContextExplorer(bpy.types.Operator):
     def draw(self, context):
         layout = self.layout
 
-        header = layout.box()
-
-        row = header.row()
-        row.label(context.area.type)
-        row.label(layout.enum_item_name(context.area, 'type', context.area.type))
-        row.label(layout.enum_item_description(context.area, 'type', context.area.type))
-
+        header = layout.box().row()
         split = layout.split(percentage=0.6)
-
         column1 = split.column()
         column2 = split.column()
+
+        header.label(context.area.type)
+        header.label(layout.enum_item_name(context.area, 'type', context.area.type))
+        header.label(layout.enum_item_description(context.area, 'type', context.area.type))
 
         rna_properties = context.bl_rna.properties
         rna_property_identifiers = set(map(lambda prop: prop.identifier, rna_properties))
         attributes = set(dir(context)) - rna_property_identifiers
         ignored_attributes = {'active_operator', 'bl_rna', 'copy'}
-        
+
+        def draw_item(layout, item):
+            if isinstance(item, bpy.types.ID):
+                box.prop(item, 'name')
+            else:
+                box.label(str(item))
+
         for name in sorted(attributes - ignored_attributes):
             if (not name.startswith('__')) and getattr(context, name):
                 column1.row().label('context.'+name)
@@ -40,15 +42,9 @@ class ContextExplorer(bpy.types.Operator):
                 value = eval('context.'+name)
                 if isinstance(value, list):
                     for item in value:
-                        if isinstance(item, bpy.types.ID):
-                            box.prop(item, 'name')
-                        else:
-                            box.label(str(item))
+                        draw_item(box, item)
                 else:
-                    if isinstance(value, bpy.types.ID):
-                        box.prop(value, 'name')
-                    else:
-                        box.label(str(value))
+                    draw_item(box, value)
 
         for prop in sorted(rna_properties, key=lambda prop: prop.type):
             column2.prop(context, prop.identifier)
@@ -70,8 +66,10 @@ def ALL_HT_header_draw_override(self, context):
         space_description = layout.enum_item_description(area, 'type', area.type)
         text = "[{}] - {}".format(space_name, space_description)
         icon = area.bl_rna.properties['type'].enum_items[area.type].icon
-        row = layout.row()
+        
+        row = layout.row(align=True)
         row.alert = True
+        
         row.operator_context = 'EXEC_DEFAULT'
         row.operator('wm.debug_menu', text='', icon='LOOP_BACK').debug_value = 0
         row.operator_context = 'INVOKE_DEFAULT'
@@ -102,3 +100,6 @@ def unregister():
         
     bpy.app.debug_value = 0
 
+
+if __name__ == '__main__':
+    register()
