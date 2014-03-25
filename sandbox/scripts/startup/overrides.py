@@ -24,7 +24,7 @@ class LabelOp(bpy.types.Operator):
     bl_idname = 'debug.label'
     bl_label = ''
     bl_description = ''
-    bl_options = {'REGISTER'}
+    bl_options = {'REGISTER', 'UNDO'}
 
     data_path = bpy.props.StringProperty()
     data_path_type = bpy.props.StringProperty()
@@ -32,15 +32,16 @@ class LabelOp(bpy.types.Operator):
     def draw(self, context):
         layout = self.layout
         path_type = self.data_path_type
-        if path_type:
-            layout.label(path_type)
+        layout.box().label(self.data_path)
+        layout.label(path_type)
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self)
+        return context.window_manager.invoke_popup(self)
 
     def execute(self, context):
         context.window_manager.clipboard = self.data_path
         return {'FINISHED'}
+
 
 class ContextExplorer(bpy.types.Operator):
     bl_idname = 'debug.context_explorer'
@@ -91,6 +92,7 @@ class ContextExplorer(bpy.types.Operator):
                 split_C_prop_name.alert = True
                 column = column1.column_flow()
                 oper_props = split_C_prop_name.operator('debug.label', text='context.'+name)
+                oper_props.data_path = 'context.'+name
                 if isinstance(value, collections.abc.Sequence):
                     oper_props.data_path_type = str(value[0].__class__)
                     split_C_prop_description.label(description(value[0]))
@@ -109,6 +111,7 @@ class ContextExplorer(bpy.types.Operator):
 
     def execute(self, context):
         return {'FINISHED'}
+
 
 
 def ALL_HT_header_draw_override(self, context):
