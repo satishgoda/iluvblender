@@ -6,6 +6,16 @@ bl_ui_headers = tuple(filter(bl_ui_headers_only, bpy.types.Header.__subclasses__
 header_map = { header.bl_space_type: header.draw for header in bl_ui_headers }
 
 
+class Area(object):
+    def __init__(self, context):
+        area = context.area
+        space = area.spaces.active
+        self.name = bpy.types.UILayout.enum_item_name(space, 'type', area.type)
+        self.description = bpy.types.UILayout.enum_item_description(area, 'type', area.type)
+        self.icon = area.bl_rna.properties['type'].enum_items[area.type].icon
+        self.type = area.type
+
+
 class ContextExplorer(bpy.types.Operator):
     bl_idname = 'debug.context_explorer'
     bl_label = 'Context Explorer'
@@ -20,9 +30,11 @@ class ContextExplorer(bpy.types.Operator):
         column1 = split.column()
         column2 = split.column()
 
-        header.label(context.area.type)
-        header.label(layout.enum_item_name(context.area, 'type', context.area.type))
-        header.label(layout.enum_item_description(context.area, 'type', context.area.type))
+        area = Area(context)
+
+        header.label(area.type)
+        header.label(area.name)
+        header.label(area.description)
 
         rna_properties = context.bl_rna.properties
         rna_property_identifiers = set(map(lambda prop: prop.identifier, rna_properties))
@@ -57,23 +69,22 @@ class ContextExplorer(bpy.types.Operator):
 
 
 def ALL_HT_header_draw_override(self, context):
-    layout = self.layout
-    
     if bpy.app.debug_value == 1:
-        area = context.area
-        space = area.spaces.active
-        space_name = layout.enum_item_name(space, 'type', area.type)
-        space_description = layout.enum_item_description(area, 'type', area.type)
-        text = "[{}] - {}".format(space_name, space_description)
-        icon = area.bl_rna.properties['type'].enum_items[area.type].icon
+        layout = self.layout
         
         row = layout.row(align=True)
         row.alert = True
+        saved_operator_context = row.operator_context
         
         row.operator_context = 'EXEC_DEFAULT'
         row.operator('wm.debug_menu', text='', icon='LOOP_BACK').debug_value = 0
-        row.operator_context = 'INVOKE_DEFAULT'
+        row.operator_context = saved_operator_context
         row.operator('debug.context_explorer', text='', icon='QUESTION')
+        
+        area = Area(context)
+        text = "[{}] - {}".format(area.name, area.description)
+        icon = area.icon
+        
         row.label(text, icon=icon)
         
     else:
@@ -119,3 +130,4 @@ def unregister():
 
 if __name__ == '__main__':
     register()
+
