@@ -80,3 +80,20 @@ header.bl_space_type
 
 >>> header.__name__
 'VIEW3D_HT_header'
+
+
+>>> bpy.types.INFO_HT_header._dyn_ui_initialize()
+[<function ALL_HT_header_draw_override at 0x2aaab6e4d5f0
+
+>>> inspect.getfile(bpy.types.INFO_HT_header._dyn_ui_initialize()[0])
+'scripts/startup/overrides.py'
+
+>>> bpy.types.INFO_HT_header.draw
+<function _GenericUI._dyn_ui_initialize.<locals>.draw_ls at 0x2aaab6ffa170>
+
+>>> inspect.getfile(bpy.types.INFO_HT_header.draw)
+'/home/satishg/bin/blenderinstalldir/blender-2.70-linux-glibc211-x86_64/2.70/scripts/modules/bpy_types.py'
+
+>>> bpy.types.INFO_HT_header.draw._draw_funcs
+[<function ALL_HT_header_draw_override at 0x2aaab6e4d5f0>]
+
