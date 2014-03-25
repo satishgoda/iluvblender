@@ -56,6 +56,8 @@ class ContextExplorer(bpy.types.Operator):
                 if isinstance(item, bpy.types.Object):
                     kwargs['icon'] = 'OBJECT_DATA'
                 layout.prop(*args, **kwargs)
+            elif isinstance(item, bpy.types.ObjectBase):
+                layout.label(item.object.name)
             else:
                 layout.label(str(item))
 
@@ -80,7 +82,7 @@ class ContextExplorer(bpy.types.Operator):
             column2.prop(context, prop.identifier)
     
     def invoke(self, context, value):
-        return context.window_manager.invoke_props_dialog(self, width=1280)
+        return context.window_manager.invoke_props_dialog(self, width=800)
 
     def execute(self, context):
         return {'FINISHED'}
