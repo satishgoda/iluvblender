@@ -54,11 +54,14 @@ class ContextExplorer(bpy.types.Operator):
         for name in sorted(attributes - ignored_attributes):
             value = getattr(context, name)
             if (not name.startswith('__')) and value:
-                column1.box().label('context.'+name)
+                split_C_prop = column1.box().split(percentage=0.3)
+                split_C_prop_name = split_C_prop.column()
+                split_C_prop_description = split_C_prop.column()
+                split_C_prop_name.label('context.'+name)
                 column = column1.column()
                 if isinstance(value, (list, tuple)):
                     first = value[0]
-                    column.label(first.rna_type.description)
+                    split_C_prop_description.label(first.rna_type.description)
                     for item in value:
                         draw_item(column, item)
                 else:
