@@ -24,8 +24,23 @@ class LabelOp(bpy.types.Operator):
     bl_idname = 'debug.label'
     bl_label = ''
     bl_description = ''
-    bl_options = {'INTERNAL'}
+    bl_options = {'REGISTER'}
 
+    data_path = bpy.props.StringProperty()
+    data_path_type = bpy.props.StringProperty()
+
+    def draw(self, context):
+        layout = self.layout
+        path_type = self.data_path_type
+        if path_type:
+            layout.label(path_type)
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        context.window_manager.clipboard = self.data_path
+        return {'FINISHED'}
 
 class ContextExplorer(bpy.types.Operator):
     bl_idname = 'debug.context_explorer'
@@ -65,7 +80,7 @@ class ContextExplorer(bpy.types.Operator):
                 layout.label(str(item))
 
         def description(item):
-            return "{} - {}".format(item.rna_type.description, str(item.__class__))
+            return "{}".format(item.rna_type.description)
 
         for name in sorted(attributes - ignored_attributes):
             value = getattr(context, name)
@@ -74,13 +89,15 @@ class ContextExplorer(bpy.types.Operator):
                 split_C_prop_name = split_C_prop.column()
                 split_C_prop_description = split_C_prop.column()
                 split_C_prop_name.alert = True
-                split_C_prop_name.operator('debug.label', text='context.'+name)
                 column = column1.column_flow()
+                oper_props = split_C_prop_name.operator('debug.label', text='context.'+name)
                 if isinstance(value, collections.abc.Sequence):
+                    oper_props.data_path_type = str(value[0].__class__)
                     split_C_prop_description.label(description(value[0]))
                     for item in value:
                         draw_item(column, item)
                 else:
+                    oper_props.data_path_type = str(value.__class__)
                     split_C_prop_description.label(description(value))
                     draw_item(column, value)
 
@@ -160,3 +177,4 @@ def unregister():
 
 if __name__ == '__main__':
     register()
+
