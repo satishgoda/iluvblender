@@ -45,22 +45,24 @@ class ContextExplorer(bpy.types.Operator):
         def draw_item(layout, item):
             if isinstance(item, bpy.types.ID):
                 if isinstance(item, bpy.types.Object):
-                    box.prop(item, 'name', icon='OBJECT_DATA')
+                    layout.prop(item, 'name', icon='OBJECT_DATA')
                 else:
-                    box.prop(item, 'name')
+                    layout.prop(item, 'name')
             else:
-                box.label(str(item))
+                layout.label(str(item))
 
         for name in sorted(attributes - ignored_attributes):
             value = getattr(context, name)
             if (not name.startswith('__')) and value:
-                column1.row().label('context.'+name)
-                box = column1.box()
+                column1.box().label('context.'+name)
+                column = column1.column()
                 if isinstance(value, (list, tuple)):
+                    first = value[0]
+                    column.label(first.rna_type.description)
                     for item in value:
-                        draw_item(box, item)
+                        draw_item(column, item)
                 else:
-                    draw_item(box, value)
+                    draw_item(column, value)
 
         for prop in sorted(rna_properties, key=lambda prop: prop.type):
             column2.prop(context, prop.identifier)
