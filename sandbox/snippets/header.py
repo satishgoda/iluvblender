@@ -131,3 +131,68 @@ AttributeError: type object 'CONSOLE_HT_header' has no attribute '_draw_funcs'
 >>> bpy.types.CONSOLE_HT_header.draw
 <function _GenericUI._dyn_ui_initialize.<locals>.draw_ls at 0x2aaab1e09e60>
 
+#################################################################
+
+>>> for header in bpy.types.Header.__subclasses__():
+...     if header.__module__.startswith('bl_ui') and header.bl_space_type in enum_space_types:
+...         print("{}\n   {}\n   {}".format(header, header.__module__, header.draw))
+...         
+<class 'bl_ui.space_clip.CLIP_HT_header'>
+   bl_ui.space_clip
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_console.CONSOLE_HT_header'>
+   bl_ui.space_console
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_dopesheet.DOPESHEET_HT_header'>
+   bl_ui.space_dopesheet
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_filebrowser.FILEBROWSER_HT_header'>
+   bl_ui.space_filebrowser
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_graph.GRAPH_HT_header'>
+   bl_ui.space_graph
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_image.IMAGE_HT_header'>
+   bl_ui.space_image
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_info.INFO_HT_header'>
+   bl_ui.space_info
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_logic.LOGIC_HT_header'>
+   bl_ui.space_logic
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_nla.NLA_HT_header'>
+   bl_ui.space_nla
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_node.NODE_HT_header'>
+   bl_ui.space_node
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_outliner.OUTLINER_HT_header'>
+   bl_ui.space_outliner
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_properties.PROPERTIES_HT_header'>
+   bl_ui.space_properties
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_sequencer.SEQUENCER_HT_header'>
+   bl_ui.space_sequencer
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_text.TEXT_HT_header'>
+   bl_ui.space_text
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_time.TIME_HT_header'>
+   bl_ui.space_time
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_userpref.USERPREF_HT_header'>
+   bl_ui.space_userpref
+   <function ALL_HT_header_draw_override at 0x2aaab1c047a0>
+<class 'bl_ui.space_view3d.VIEW3D_HT_header'>
+   bl_ui.space_view3d
+   <function _GenericUI._dyn_ui_initialize.<locals>.draw_ls at 0x2aaab1c67200>
+
+
+def debug_headers():
+    enum_space_types = bpy.types.Space.bl_rna.properties['type'].enum_items
+    import inspect
+    for header in bpy.types.Header.__subclasses__():
+        if header.__module__.startswith('bl_ui') and header.bl_space_type in enum_space_types:
+            print("{}\n   {}\n   {}".format(header, header.draw, inspect.getfile(header.draw)))
