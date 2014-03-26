@@ -1,5 +1,4 @@
 == Some of my recent dev work that I blogged about  ==
-https://github.com/satishgoda/iluvblender/blob/master/addons/debug/debug_app_debug_flags.py 
 
 http://learningblender3dsoftware.blogspot.in/2014/03/development-workflow.html
 
@@ -9,8 +8,9 @@ http://learningblender3dsoftware.blogspot.in/2014/02/ui-experiments-1.html
 
 
 == Some of my WIP tools for Blender ==
-
-
+https://github.com/satishgoda/iluvblender/blob/master/sandbox/dev/bpy_dev_tools.py
+ 
+https://github.com/satishgoda/iluvblender/blob/master/addons/debug/debug_app_debug_flags.py 
 
  https://github.com/satishgoda/iluvblender/blob/master/addons/debug/debug_python_paths.py 
 
