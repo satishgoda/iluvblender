@@ -131,6 +131,11 @@ def ALL_HT_header_draw_override(self, context):
         text = "[{}] - {}".format(area.name, area.description)
         icon = area.icon
         
+        saved_operator_context = row.operator_context
+        row.operator_context = 'EXEC_SCREEN'
+        row.prop(context.window_manager, 'app_mode', text = '')
+        row.operator_context = saved_operator_context
+        
         row.label(text, icon=icon)
     else:
         header_map[context.area.type](self, context)
@@ -151,6 +156,25 @@ def switch_header_menu_item(self, context):
     layout.separator()
 
 
+def handle_app_mode(self, context):
+    app_mode = context.window_manager.app_mode
+    if app_mode == 'BUILD':
+        context.area.type = 'IMAGE_EDITOR'
+    elif app_mode == 'CREATE':
+        context.area.type = 'SEQUENCE_EDITOR'
+    elif app_mode == 'VIEW':
+        context.area.type = 'FILE_BROWSER'
+    
+    area = context.area
+    if area.y == area.regions[0].y:
+        bpy.ops.screen.header_flip()
+
+
+@bpy.app.handlers.persistent
+def application_default_mode(incoming):
+    bpy.data.screens['Default'].areas[4].type = 'IMAGE_EDITOR'
+    
+
 def register():
     bpy.utils.register_class(ContextExplorer)
     bpy.utils.register_class(LabelOp)
@@ -161,7 +185,12 @@ def register():
     bpy.app.debug_value = 1
     
     bpy.types.INFO_MT_window.prepend(switch_header_menu_item)
+    
+    items = (('BUILD', 'Build', 'BUILD the storyboard'), ('CREATE', 'Create', 'Create the storyboard'), ('VIEW', 'View', 'View the storyboard'))
+    
+    bpy.types.WindowManager.app_mode = bpy.props.EnumProperty(items=items, name="Application Mode", description="application modes", default='BUILD', update=handle_app_mode)
 
+    bpy.app.handlers.load_post.append(application_default_mode)
 
 def unregister():
     bpy.utils.unregister_class(ContextExplorer)
@@ -176,8 +205,9 @@ def unregister():
     bpy.app.debug_value = 0
     
     bpy.types.INFO_MT_window.remove(switch_header_menu_item)
+    
+    bpy.app.handlers.load_post.remove(application_default_mode)
 
 
 if __name__ == '__main__':
     register()
-
