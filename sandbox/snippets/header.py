@@ -103,5 +103,10 @@ header.bl_space_type
 >>> vars(bpy.types.INFO_HT_header.draw)
 {'_draw_funcs': [<function ALL_HT_header_draw_override at 0x2aaab6e4d5f0>]}
 
+
 >>> bpy.types.CONSOLE_HT_header._dyn_ui_initialize()
 [<function CONSOLE_HT_header.draw at 0x2aaab1ac1440>, <function CONSOLE_HT_header_debug_paths_menu at 0x2aaab1bdfb00>]
+
+
+>>> bpy.types.VIEW3D_HT_header._dyn_ui_initialize()
+[<function VIEW3D_HT_header.draw at 0x2aaab1b8af80>, <function draw_pause at 0x2aaab1c7e200>]
