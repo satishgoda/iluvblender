@@ -7,15 +7,31 @@ bl_info = {
     "blender": (2, 7, 0),
 }
 
-
 import bpy
-
-print (__name__)
 
 
 def register():
-    print(bpy.context, ' in {}.register'.format(__name__))
+    keyconfig = bpy.context.window_manager.keyconfigs.addon
+    
+    if keyconfig:
+        for source, destination in (('Console', 'TEXT_EDITOR'), ('Text', 'CONSOLE')):
+            args = ('wm.context_set_enum', 'ESC', 'PRESS')
+            kwargs = {'shift':True}
+        
+            keymap = keyconfig.keymaps.get(source)
+            
+            if not keymap:
+                keymap = keyconfig.keymaps.new(source)
+            
+            kmi = keymap.keymap_items.new(*args, **kwargs)
+
+            properties = kmi.properties
+            properties.data_path = 'area.type'
+            properties.value = destination
 
 
 def unregister():
-    print(bpy.context, ' in {}.register'.format(__name__))
+    keyconfig = bpy.context.window_manager.keyconfigs.addon
+    
+    if keyconfig:
+        pass
