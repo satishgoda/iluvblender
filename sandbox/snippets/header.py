@@ -110,3 +110,24 @@ header.bl_space_type
 
 >>> bpy.types.VIEW3D_HT_header._dyn_ui_initialize()
 [<function VIEW3D_HT_header.draw at 0x2aaab1b8af80>, <function draw_pause at 0x2aaab1c7e200>]
+
+
+##############################################################
+
+>>> bpy.types.CONSOLE_HT_header
+<class 'bl_ui.space_console.CONSOLE_HT_header'>
+
+>>> bpy.types.CONSOLE_HT_header.draw
+<function CONSOLE_HT_header.draw at 0x2aaab1ac1440>
+
+>>> bpy.types.CONSOLE_HT_header._draw_funcs
+Traceback (most recent call last):
+  File "<blender_console>", line 1, in <module>
+AttributeError: type object 'CONSOLE_HT_header' has no attribute '_draw_funcs'
+
+>>> bpy.types.CONSOLE_HT_header._dyn_ui_initialize()
+[<function CONSOLE_HT_header.draw at 0x2aaab1ac1440>]
+
+>>> bpy.types.CONSOLE_HT_header.draw
+<function _GenericUI._dyn_ui_initialize.<locals>.draw_ls at 0x2aaab1e09e60>
+
