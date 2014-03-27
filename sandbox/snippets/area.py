@@ -10,10 +10,10 @@ def explain(cls):
     for prop in cls.bl_rna.properties:
         if prop.identifier in ('rna_type',):
             continue
-        print("{} ({})\n\t{}\n".format(prop.identifier, prop.name, prop.description))
+        ptype = prop.fixed_type.identifier if hasattr(prop, 'fixed_type') else prop.type
+        print("{}\n\t{} {}\n\t{}\n".format(prop.name, prop.identifier, ptype, prop.description))
 
 def register():
-    # http://blender.stackexchange.com/questions/1153/is-it-possible-to-add-a-custom-property-on-bpy-types-sequence
     bpy.types.Area.basic_info = (lambda area, flag=False: "You get nothing" if flag else (area.type, len(area.regions)))
     bpy.types.Area.basic_info.__doc__ = "Get the basic information of an area"
     bpy.types.Area.basic_info.__annotations__['flag'] = 'Flag to flag an issue'
