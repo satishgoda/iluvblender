@@ -165,8 +165,11 @@ def handle_app_mode(self, context):
     elif app_mode == 'VIEW':
         context.area.type = 'FILE_BROWSER'
     
-    if context.area.is_header_down():
-        bpy.ops.screen.header_flip()
+    area = context.area
+    if area.is_header_down():
+        overrides = context.copy()
+        overrides['region'] = area.regions[0]
+        bpy.ops.screen.header_flip(overrides)
 
 
 @bpy.app.handlers.persistent
