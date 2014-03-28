@@ -165,8 +165,7 @@ def handle_app_mode(self, context):
     elif app_mode == 'VIEW':
         context.area.type = 'FILE_BROWSER'
     
-    area = context.area
-    if area.y == area.regions[0].y:
+    if context.area.is_header_down():
         bpy.ops.screen.header_flip()
 
 
@@ -186,11 +185,22 @@ def register():
     
     bpy.types.INFO_MT_window.prepend(switch_header_menu_item)
     
-    items = (('BUILD', 'Build', 'BUILD the storyboard'), ('CREATE', 'Create', 'Create the storyboard'), ('VIEW', 'View', 'View the storyboard'))
+    items = (('BUILD', 'Build', 'BUILD the storyboard'), 
+             ('CREATE', 'Create', 'Create the storyboard'), 
+             ('VIEW', 'View', 'View the storyboard'))
     
-    bpy.types.WindowManager.app_mode = bpy.props.EnumProperty(items=items, name="Application Mode", description="application modes", default='BUILD', update=handle_app_mode)
+    bpy.types.WindowManager.app_mode = bpy.props.EnumProperty(items=items, 
+                                                            name="Application Mode", 
+                                                            description="application modes", 
+                                                            default='BUILD', 
+                                                            update=handle_app_mode)
 
     bpy.app.handlers.load_post.append(application_default_mode)
+    
+    bpy.types.Area.is_header_down = lambda self: self.y == self.regions[0].y
+    
+    bpy.types.Screen.area_info = lambda self: tuple((area.type, area, (area.x, area.y), (area.width, area.height)) for area in self.areas)
+
 
 def unregister():
     bpy.utils.unregister_class(ContextExplorer)
@@ -207,6 +217,9 @@ def unregister():
     bpy.types.INFO_MT_window.remove(switch_header_menu_item)
     
     bpy.app.handlers.load_post.remove(application_default_mode)
+
+    del bpy.types.Area.is_header_down
+    del bpy.types.Screen.area_info
 
 
 if __name__ == '__main__':
