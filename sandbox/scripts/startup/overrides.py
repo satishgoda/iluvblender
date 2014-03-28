@@ -48,7 +48,7 @@ class ContextExplorer(bpy.types.Operator):
     bl_label = 'Context Explorer'
     bl_description = 'Context Explorer'
     bl_options = {'REGISTER'}
-    
+
     def draw(self, context):
         layout = self.layout
 
@@ -105,7 +105,7 @@ class ContextExplorer(bpy.types.Operator):
 
         for prop in sorted(rna_properties, key=lambda prop: prop.type):
             column2.prop(context, prop.identifier)
-    
+
     def invoke(self, context, value):
         return context.window_manager.invoke_props_dialog(self, width=980)
 
@@ -117,25 +117,25 @@ class ContextExplorer(bpy.types.Operator):
 def ALL_HT_header_draw_override(self, context):
     if bpy.app.debug_value == 1:
         layout = self.layout
-        
+
         row = layout.row(align=True)
         row.alert = True
         saved_operator_context = row.operator_context
-        
+
         row.operator_context = 'EXEC_DEFAULT'
         row.operator('wm.debug_menu', text='', icon='LOOP_BACK').debug_value = 0
         row.operator_context = saved_operator_context
         row.operator('debug.context_explorer', text='', icon='QUESTION')
-        
+
         area = Area(context)
         text = "[{}] - {}".format(area.name, area.description)
         icon = area.icon
-        
+
         saved_operator_context = row.operator_context
         row.operator_context = 'EXEC_SCREEN'
         row.prop(context.window_manager, 'app_mode', text = '')
         row.operator_context = saved_operator_context
-        
+
         row.label(text, icon=icon)
     else:
         header_map[context.area.type](self, context)
@@ -143,16 +143,15 @@ def ALL_HT_header_draw_override(self, context):
 
 def switch_header_menu_item(self, context):
     layout = self.layout
-    
+
     saved_operator_context = layout.operator_context
     layout.operator_context = 'EXEC_DEFAULT'
-    
+
     args = ('wm.debug_menu',)
     kwargs = {'text': 'Draw Custom Headers', 'icon':'GHOST_ENABLED'}
     layout.operator(*args, **kwargs).debug_value = 1
-    
+
     layout.operator_context = saved_operator_context
-    
     layout.separator()
 
 
@@ -164,7 +163,7 @@ def handle_app_mode(self, context):
         context.area.type = 'SEQUENCE_EDITOR'
     elif app_mode == 'VIEW':
         context.area.type = 'FILE_BROWSER'
-    
+
     area = context.area
     if area.is_header_bottom():
         overrides = context.copy()
@@ -180,9 +179,9 @@ def application_default_mode(incoming):
 @bpy.app.handlers.persistent
 def make_headers_consistent(incoming):
     window = bpy.context.window_manager.windows[0]
-    
-    for area in filter(lambda area: area.is_header_bottom(), window.screen.areas):
-        overrides = bpy.context.copy()    
+
+    for area in filter(bpy.types.Area.is_header_bottom, window.screen.areas):
+        overrides = bpy.context.copy()
 
         overrides['window'] = window
         overrides['screen'] = window.screen
@@ -192,31 +191,10 @@ def make_headers_consistent(incoming):
         bpy.ops.screen.header_flip(overrides)
 
 
-@bpy.app.handlers.persistent
-def keymaps(incoming):
-    """Registers keymaps for this app"""
-    print(keymaps.__name__, keymaps.__module__, keymaps.__doc__)
-    keyconfig = bpy.context.window_manager.keyconfigs.user
-    
-    for source, destination in (('Console', 'TEXT_EDITOR'), ('Text', 'CONSOLE')):
-        args = ('wm.context_set_enum', 'ESC', 'PRESS')
-        kwargs = {'shift':True}
-        
-        keymap = keyconfig.keymaps.get(source)
-        
-        if not keymap:
-            keymap = keyconfig.keymaps.new(source)
-            
-            properties = keymap.keymap_items.new(*args, **kwargs).properties
-            
-        properties.data_path = 'area.type'
-        properties.value = destination
-
-
 def register():
     bpy.utils.register_class(ContextExplorer)
     bpy.utils.register_class(LabelOp)
-    
+
     for header in bl_ui_headers:
         if hasattr(header.draw, '_draw_funcs'):
             for func in header.draw._draw_funcs:
@@ -224,41 +202,41 @@ def register():
         header.draw = ALL_HT_header_draw_override
 
     bpy.app.debug_value = 1
-    
+
     bpy.types.INFO_MT_window.prepend(switch_header_menu_item)
-    
-    items = (('BUILD', 'Build', 'BUILD the storyboard'), 
-             ('CREATE', 'Create', 'Create the storyboard'), 
+
+    items = (('BUILD', 'Build', 'BUILD the storyboard'),
+             ('CREATE', 'Create', 'Create the storyboard'),
              ('VIEW', 'View', 'View the storyboard'))
-    
-    bpy.types.WindowManager.app_mode = bpy.props.EnumProperty(items=items, 
-                                                            name="Application Mode", 
-                                                            description="application modes", 
-                                                            default='BUILD', 
+
+    bpy.types.WindowManager.app_mode = bpy.props.EnumProperty(items=items,
+                                                            name="Application Mode",
+                                                            description="application modes",
+                                                            default='BUILD',
                                                             update=handle_app_mode)
 
     bpy.app.handlers.load_post.append(application_default_mode)
     bpy.app.handlers.load_post.append(make_headers_consistent)
-    
+
     bpy.types.Area.is_header_bottom = lambda self: self.y == self.regions[0].y
-    
+
     bpy.types.Screen.area_info = lambda self: tuple((area.type, area, (area.x, area.y), (area.width, area.height)) for area in self.areas)
 
 
 def unregister():
     bpy.utils.unregister_class(ContextExplorer)
     bpy.utils.unregister_class(LabelOp)
-    
+
     for header in bl_ui_headers:
         header.draw = header_map[header.bl_space_type]
 
     for area in bpy.context.screen.areas:
         area.tag_redraw()
-        
+
     bpy.app.debug_value = 0
-    
+
     bpy.types.INFO_MT_window.remove(switch_header_menu_item)
-    
+
     bpy.app.handlers.load_post.remove(make_headers_consistent)
     bpy.app.handlers.load_post.remove(application_default_mode)
 
