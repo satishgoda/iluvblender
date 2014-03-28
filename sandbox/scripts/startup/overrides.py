@@ -166,7 +166,7 @@ def handle_app_mode(self, context):
         context.area.type = 'FILE_BROWSER'
     
     area = context.area
-    if area.is_header_down():
+    if area.is_header_bottom():
         overrides = context.copy()
         overrides['region'] = area.regions[0]
         bpy.ops.screen.header_flip(overrides)
@@ -175,13 +175,52 @@ def handle_app_mode(self, context):
 @bpy.app.handlers.persistent
 def application_default_mode(incoming):
     bpy.data.screens['Default'].areas[4].type = 'IMAGE_EDITOR'
+
+
+@bpy.app.handlers.persistent
+def make_headers_consistent(incoming):
+    window = bpy.context.window_manager.windows[0]
     
+    for area in filter(lambda area: area.is_header_bottom(), window.screen.areas):
+        overrides = bpy.context.copy()    
+
+        overrides['window'] = window
+        overrides['screen'] = window.screen
+        overrides['area'] = area
+        overrides['region'] = area.regions[0]
+
+        bpy.ops.screen.header_flip(overrides)
+
+
+@bpy.app.handlers.persistent
+def keymaps(incoming):
+    """Registers keymaps for this app"""
+    print(keymaps.__name__, keymaps.__module__, keymaps.__doc__)
+    keyconfig = bpy.context.window_manager.keyconfigs.user
+    
+    for source, destination in (('Console', 'TEXT_EDITOR'), ('Text', 'CONSOLE')):
+        args = ('wm.context_set_enum', 'ESC', 'PRESS')
+        kwargs = {'shift':True}
+        
+        keymap = keyconfig.keymaps.get(source)
+        
+        if not keymap:
+            keymap = keyconfig.keymaps.new(source)
+            
+            properties = keymap.keymap_items.new(*args, **kwargs).properties
+            
+        properties.data_path = 'area.type'
+        properties.value = destination
+
 
 def register():
     bpy.utils.register_class(ContextExplorer)
     bpy.utils.register_class(LabelOp)
     
     for header in bl_ui_headers:
+        if hasattr(header.draw, '_draw_funcs'):
+            for func in header.draw._draw_funcs:
+                print(func.__module__, func.__name__)
         header.draw = ALL_HT_header_draw_override
 
     bpy.app.debug_value = 1
@@ -199,8 +238,9 @@ def register():
                                                             update=handle_app_mode)
 
     bpy.app.handlers.load_post.append(application_default_mode)
+    bpy.app.handlers.load_post.append(make_headers_consistent)
     
-    bpy.types.Area.is_header_down = lambda self: self.y == self.regions[0].y
+    bpy.types.Area.is_header_bottom = lambda self: self.y == self.regions[0].y
     
     bpy.types.Screen.area_info = lambda self: tuple((area.type, area, (area.x, area.y), (area.width, area.height)) for area in self.areas)
 
@@ -219,9 +259,11 @@ def unregister():
     
     bpy.types.INFO_MT_window.remove(switch_header_menu_item)
     
+    bpy.app.handlers.load_post.remove(make_headers_consistent)
     bpy.app.handlers.load_post.remove(application_default_mode)
 
-    del bpy.types.Area.is_header_down
+
+    del bpy.types.Area.is_header_bottom
     del bpy.types.Screen.area_info
 
 
