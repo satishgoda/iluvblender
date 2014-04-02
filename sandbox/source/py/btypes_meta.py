@@ -23,13 +23,19 @@ class Class:
         else:
             pass
         finally:
-            name, module = cls.__name__, cls.__module__
+            name, module = cls.__qualname__, cls.__module__
             return Class.Info(name, module, file)
 
-def main():
-    for subclass in type.__subclasses__(type):
-        print(Class.info(subclass))
+
+def info(cls='type'):
+    try:
+        for subclass in type.__subclasses__(eval(cls)):
+            print(Class.info(subclass))
+    except NameError as ne:
+        header = "Invalid Input:"
+        help = 'Try entering a valid class like "type" or "object"'
+        print('{} {}\n\t{}'.format(header, ne, help))
 
 
 if __name__ == '__main__':
-    main()
+    info('object')
