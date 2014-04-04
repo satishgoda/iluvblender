@@ -1,4 +1,3 @@
-
 bl_info = {
     "name": "Custom Screenshot Creator",
     "author": "Satish Goda (iluvblender on BA, satishgoda@gmail.com)",
@@ -22,9 +21,6 @@ class OutputFilename(object):
     dirname = os.getcwd()
 
     def __init__(self, filepath, ext, suffix=''):
-        import bpy
-        import os
-
         self.filename = bpy.path.display_name_from_filepath(filepath)
         self.dirname = os.path.dirname(filepath)
         self.ext = ext
@@ -37,7 +33,6 @@ class OutputFilename(object):
 
     @property
     def filepath(self):
-        import os
         filename = self.filename
         if self.suffix:
             filename += self.getSuffix()
