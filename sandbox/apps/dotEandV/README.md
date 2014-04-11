@@ -1,8 +1,7 @@
-
 About
 =====
 
-Editor and viewer for GraphVix dot files.
+Editor and viewer for GraphViz dot files.
 
 References
 ==========
