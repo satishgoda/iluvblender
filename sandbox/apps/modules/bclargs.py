@@ -14,11 +14,15 @@ action_store_true = (
     ('--no-native-pixels', "Do not use native pixel size, for high resolution displays (MacBook 'Retina')"),
 )
 
-
 for action in action_store_true:
-    help = action[-1]
-    args = action[:-1]
+    args, help = action[:-1], action[-1]
     parser.add_argument(*args, help=help, action='store_true')
+
+
+parser.add_argument('--window-geometry', '-p',
+                    nargs=4, type=int,
+                    action='store',
+                    help='Open with lower left corner at <sx>, <sy> and width and height as <w>, <h>')
 
 
 if __name__ == '__main__':
@@ -27,4 +31,5 @@ if __name__ == '__main__':
     from pprint import pprint
 
     pprint(args)
+
 
