@@ -19,6 +19,24 @@ for action in action_store_true:
     parser.add_argument(*args, help=help, action='store_true')
 
 
+parser.add_argument('--scene', '-S',
+                    help='Set the active scene <name> for rendering',
+                    type=str,
+                    action='store')
+
+
+action_store_int_1 = (
+    ('--frame-start', '-s', 'Set start to frame <frame> (use before the -a argument)'),
+    ('--frame-end', '-e', 'Set end to frame <frame> (use before the -a argument)'),
+    ('--frame-jump', '-j', 'Set number of frames to step forward after each rendered frame'),
+)
+
+for action in action_store_int_1:
+    args, help = action[:-1], action[-1]
+    parser.add_argument(*args, help=help,
+                        type=int,
+                        action='store')
+
 parser.add_argument('--window-geometry', '-p',
                     nargs=4, type=int,
                     action='store',
