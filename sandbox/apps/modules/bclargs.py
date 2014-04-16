@@ -38,13 +38,13 @@ parser.add_argument('--render-frame', '-f',
                     type=render_frame,
                     action='store')
 
-action_store_int_1 = (
+action_store_int = (
     ('--frame-start', '-s', 'Set start to frame <frame> (use before the -a argument)'),
     ('--frame-end', '-e', 'Set end to frame <frame> (use before the -a argument)'),
     ('--frame-jump', '-j', 'Set number of frames to step forward after each rendered frame'),
 )
 
-for action in action_store_int_1:
+for action in action_store_int:
     args, help = action[:-1], action[-1]
     parser.add_argument(*args, help=help,
                         type=int,
