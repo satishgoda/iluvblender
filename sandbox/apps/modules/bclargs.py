@@ -25,6 +25,19 @@ parser.add_argument('--scene', '-S',
                     action='store')
 
 
+def render_frame(arg):
+    try:
+        int(arg)
+    except ValueError as e:
+        message = '\n\tvalid options are int, +int, -int'
+        raise argparse.ArgumentTypeError(e.message+message)
+    return arg
+
+parser.add_argument('--render-frame', '-f',
+                    help='Render frame <frame> and save it. \n+<frame> start frame relative, -<frame> end frame relative.',
+                    type=render_frame,
+                    action='store')
+
 action_store_int_1 = (
     ('--frame-start', '-s', 'Set start to frame <frame> (use before the -a argument)'),
     ('--frame-end', '-e', 'Set end to frame <frame> (use before the -a argument)'),
@@ -48,6 +61,6 @@ if __name__ == '__main__':
 
     from pprint import pprint
 
-    pprint(args)
+    pprint(vars(args))
 
 
