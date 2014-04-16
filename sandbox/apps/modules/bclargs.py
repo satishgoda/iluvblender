@@ -38,10 +38,37 @@ parser.add_argument('--render-frame', '-f',
                     type=render_frame,
                     action='store')
 
+
+render_output_help='''Set the render path and file name.
+    Use // at the start of the path to
+        render relative to the blend file.
+    The # characters are replaced by the frame number, and used to define zero padding.
+        ani_##_test.png becomes ani_01_test.png
+        test-######.png becomes test-000001.png
+        When the filename does not contain #, The suffix #### is added to the filename
+    The frame number will be added at the end of the filename.
+        eg: blender -b foobar.blend -o //render_ -F PNG -x 1 -a
+        //render_ becomes //render_####, writing frames as //render_0001.png//
+'''
+
+parser.add_argument('--render-output', '-o',
+                    help=render_output_help,
+                    type=str,
+                    action='store')
+
+
+parser.add_argument('--engine', '-E',
+                    help="Specify the render engine. use -E help to list available engines",
+                    type=str,
+                    action='store')
+
+
 action_store_int = (
     ('--frame-start', '-s', 'Set start to frame <frame> (use before the -a argument)'),
     ('--frame-end', '-e', 'Set end to frame <frame> (use before the -a argument)'),
     ('--frame-jump', '-j', 'Set number of frames to step forward after each rendered frame'),
+    ('--threads', '-t', '''Use amount of <threads> for rendering and other operations
+    [1-64], 0 for systems processor count.''')
 )
 
 for action in action_store_int:
