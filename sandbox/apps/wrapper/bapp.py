@@ -9,7 +9,7 @@ import itertools
 class BlenderStartupError(Exception):
     def __init__(self, *args):
         super(BlenderStartupError, self).__init__(*args)
-    
+
     def message(self):
         content, args = self.args
         print("{0}: {1}".format(self.__class__.__name__, content))
@@ -20,19 +20,22 @@ class BlenderStartupError(Exception):
 _program = sys.argv[0]
 _program_child = "blender"
 _required_directories = ('./config', './scripts')
-_custom_modules = '/home/satishg/blender/apps/modules'
+_custom_module_paths = ('/home/satishg/blender/apps/modules', '/home/satishg/education/blender/modules')
 
 
-sys.path.insert(0, _custom_modules)
+for path in _custom_module_paths:
+    sys.path.insert(0, path)
 
 
 try:
     import bargs
-    
     p = bargs.ProgramDetails()
-    
     print(p.launcher)
-    
+
+    from bclargs import parser
+
+    args = parser.parse_args()
+
     try:
         if not all(itertools.imap(os.path.exists, _required_directories)):
             raise BlenderStartupError("The following directories do not exist",
@@ -45,13 +48,16 @@ try:
         env = os.environ.copy()
         env['BLENDER_USER_CONFIG'] = _required_directories[0] 
         env['BLENDER_USER_SCRIPTS'] = _required_directories[1]
-        env['PYTHONPATH'] = _custom_modules
-        
+        env['PYTHONPATH'] = ':'.join(_custom_module_paths)
+
         program_args = [_program_child]
-        
+
         if os.path.exists('./boot.py'):
             program_args.extend('--python boot.py'.split())
-        
+
+        if args.background:
+            program_args.append('--background')
+
         p = Popen(program_args, env=env)
 
         print("Parent {0} with pid {1} launched child with pid {2}".format(_program, os.getpid(), p.pid))
